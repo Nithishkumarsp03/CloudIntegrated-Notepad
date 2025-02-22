@@ -8,6 +8,7 @@ import sendIcon from '../assets/sendIcon.png';
 import { Checkbox, FormControlLabel, FormGroup } from '@mui/material';
 import FallingCharacters from '../components/fallingCharacters';
 import useEditorStore from '../globalStore';
+import { Link } from 'react-router-dom';
 
 const LoginPage = () => {
   const [ text ] = useTypewriter({
@@ -70,7 +71,8 @@ const LoginPage = () => {
             btnText='Login'
             endIcon={<img src={sendIcon} alt="send" width={16} height={16} />}
           />
-          <p className='para' style={{fontSize:'16px'}}>Or</p>
+            <p className='para' style={{ fontSize: '16px' }}>Or</p>
+            <Link to='/textEditor/0'>
           <ButtonComponent
               styles={{
                 backgroundColor: '', color: "black", border: '1px solid black',
@@ -90,6 +92,7 @@ const LoginPage = () => {
             startIcon={<img width={20} height={20} src={googleIcon} alt='googleIcon'/>}
             btnText='Sign in with google'
           />
+            </Link>
           <p className='register-account' >Don't have an account? Sign up here!</p>
           </div>
         </div>

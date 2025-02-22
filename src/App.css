@@ -8,3 +8,16 @@
   font-style: normal;
   font-weight: 200;
 }
+
+.ql-editor {
+  font-family: inherit !important;
+  /* Ensures bold & italics inherit fonts */
+}
+
+.ql-editor strong {
+  font-weight: bold !important;
+}
+
+.ql-editor em {
+  font-style: italic !important;
+}
