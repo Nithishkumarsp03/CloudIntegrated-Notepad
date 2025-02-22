@@ -1,0 +1,28 @@
+.editor-container {
+    width: 600px;
+    margin: 50px auto;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    overflow: hidden;
+    position: relative;
+}
+
+.editor {
+    height: 300px;
+}
+
+.editor-toolbar {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    background: #f1f1f1;
+    border-top: 1px solid #ccc;
+    padding: 5px;
+}
+
+.hidden-toolbar .ql-toolbar {
+    display: flex !important;
+    justify-content: center;
+    border: none;
+    padding: 5px;
+}
