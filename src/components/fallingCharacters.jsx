@@ -34,8 +34,8 @@ const FallingCharacters = () => {
 
             randomIcon.onload = () => {
                 papers.push({
-                    x: Math.random() * canvas.width, // Random x position
-                    y: Math.random() * -100 - 50, // Starts just above the screen (-50 to -150)
+                    x: Math.random() * -200, // Starts further off the left side
+                    y: Math.random() * canvas.height, // Random y position
                     speed: Math.random() * 1.2 + 0.5, // Slightly faster speed (0.5 to 1.7)
                     rotation: Math.random() * 360,
                     rotationSpeed: (Math.random() - 0.5) * 0.3, // Slower rotation
@@ -46,28 +46,31 @@ const FallingCharacters = () => {
         }
 
         // Add some initial characters so they appear sooner
-        for (let i = 0; i < 5; i++) {
+        for (let i = 0; i < 10; i++) { // Reduced initial count for spacing
             createPaper();
         }
 
         // Start adding new papers over time
         const paperInterval = setInterval(() => {
-            if (papers.length < 15) { // Limits the total number of icons
+            if (papers.length < 20) { // Limits total number of icons
                 createPaper();
             }
-        }, 1000); // Adds 1 new character every second (faster appearance)
+        }, 1000); // Slower frequency for better spacing
 
         function startAnimation() {
             function update() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-                papers.forEach((paper) => {
-                    paper.y += paper.speed; // Moves downward
+                papers.forEach((paper, index) => {
+                    paper.x += paper.speed; // Moves rightward
                     paper.rotation += paper.rotationSpeed;
 
-                    if (paper.y > canvas.height) {
-                        paper.y = Math.random() * -100 - 50; // Respawns just above the screen
-                        paper.x = Math.random() * canvas.width;
+                    if (paper.x > canvas.width + 50) { // Adds buffer before respawn
+                        papers[index] = { // Reset moving character instead of respawning only offscreen
+                            ...paper,
+                            x: Math.random() * -200, // Start further left
+                            y: Math.random() * canvas.height
+                        };
                     }
 
                     ctx.save();
