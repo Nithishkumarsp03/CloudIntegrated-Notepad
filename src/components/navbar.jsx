@@ -1,6 +1,6 @@
-import React from 'react'
-import '../styles/navBar.css';
-import { Link, useNavigate } from 'react-router-dom';
+import React from 'react';
+import '../styles/navbar.css';
+import {  useNavigate } from 'react-router-dom';
 import useEditorStore from '../globalStore';
 
 const Navbar = (
