@@ -6,10 +6,8 @@
 
 .right-content {
     display: flex;
-    height: 90%;
-    gap: 10px;
-    border: 1px solid black;
+    box-sizing: border-box;
+    height: 91.29%;
     width: 100%;
-    padding: 10px;
-    /* Prevents it from pushing the navbar */
-}
+    padding: 1% 1% 1% 0;
+    }

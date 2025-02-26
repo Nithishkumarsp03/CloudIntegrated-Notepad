@@ -36,13 +36,13 @@ export const InputField = ({
           '& .MuiOutlinedInput-root': {
             '& .MuiOutlinedInput-notchedOutline': {
               borderWidth: '2px', // Ensure only one border is applied
-              borderColor: '#9571e4' // Default border color
+              borderColor: '#0b6bcb' // Default border color
             },
             '&:hover .MuiOutlinedInput-notchedOutline': {
-              borderColor: '#6A40B5 !important' // Hover effect
+              borderColor: '#094f99 !important' // Hover effect
             },
             '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-              borderColor: '#6A40B5 !important' // Focus border color
+              borderColor: '#063a73 !important' // Focus border color
             }
           },
           ...styles

@@ -21,3 +21,14 @@
 .ql-editor em {
   font-style: italic !important;
 }
+
+.ql-toolbar .ql-picker {
+  position: relative;
+  z-index: 10;
+}
+
+.ql-toolbar .ql-picker-options {
+  top: auto !important;
+  bottom: 100% !important;
+  margin-bottom: 5px;
+}

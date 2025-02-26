@@ -34,28 +34,28 @@ const FallingCharacters = () => {
 
             randomIcon.onload = () => {
                 papers.push({
-                    x: Math.random() * -200, // Starts further off the left side
+                    x: Math.random() * -400, // Wider starting range for better spread
                     y: Math.random() * canvas.height, // Random y position
-                    speed: Math.random() * 1.2 + 0.5, // Slightly faster speed (0.5 to 1.7)
+                    speed: Math.random() * 1 + 0.4, // Adjusted speed (slower min)
                     rotation: Math.random() * 360,
-                    rotationSpeed: (Math.random() - 0.5) * 0.3, // Slower rotation
-                    size: Math.random() * 40 + 40,
+                    rotationSpeed: (Math.random() - 0.5) * 0.2, // Slower rotation
+                    size: Math.random() * 35 + 25, // Smaller max size (20-50px)
                     image: randomIcon
                 });
             };
         }
 
-        // Add some initial characters so they appear sooner
-        for (let i = 0; i < 10; i++) { // Reduced initial count for spacing
+        // Add some initial characters
+        for (let i = 0; i < 4; i++) { // Increased initial spread
             createPaper();
         }
 
         // Start adding new papers over time
         const paperInterval = setInterval(() => {
-            if (papers.length < 20) { // Limits total number of icons
+            if (papers.length < 15) { // Limits total number for better spread
                 createPaper();
             }
-        }, 1000); // Slower frequency for better spacing
+        }, 1200); // Slightly slower frequency
 
         function startAnimation() {
             function update() {
@@ -66,9 +66,9 @@ const FallingCharacters = () => {
                     paper.rotation += paper.rotationSpeed;
 
                     if (paper.x > canvas.width + 50) { // Adds buffer before respawn
-                        papers[index] = { // Reset moving character instead of respawning only offscreen
+                        papers[index] = {
                             ...paper,
-                            x: Math.random() * -200, // Start further left
+                            x: Math.random() * -400, // Wider respawn spread
                             y: Math.random() * canvas.height
                         };
                     }

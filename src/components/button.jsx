@@ -30,22 +30,24 @@ export const ButtonComponent = ({
     <div>
       <Button
         sx={{
-          backgroundColor: '#6A40B5',
+          backgroundColor: '#0b6bcb',
           color: "white",
           border: 'transparent',
-          borderRadius: '24px',
           alignItems: 'center',
           position: 'relative',
           overflow: 'hidden',
+          paddingTop: '7px',
+          paddingBottom: '7px',
+          typography: { xl: '14px', md: '12px',sm:"10px" }, 
           "&:hover": {
             transform: "scaleY(1.02)",
             transition: "0.4s",
-            backgroundColor: '#5A369E',
+            backgroundColor: '#094f99',
             boxShadow: 'rgba(0, 0, 0, 0.35) 0px 5px 15px',
           },
           "&:active": {
             transform: "scale(0.98)",
-            backgroundColor: "#4A2E85",
+            backgroundColor: "#063a73",
             transition: "0.1s",
             boxShadow: 'rgba(0, 0, 0, 0.45) 0px 2px 10px'
           },

@@ -6,7 +6,7 @@ const Main = () => {
 
     
   return (
-      <div className='mainPage'>
+    <div className='mainPage' style={{ backgroundColor:"#f5f7fa"}}>
           <Appbar />
           <RightContentMainPage/>
     </div>
