@@ -7,7 +7,7 @@ const useEditorStore = create((set) => ({
     },
 
     tabs: [
-        { id: 1, title: "Tab 1", content: "Page 1" },
+        { id: 1, title: "Tabffffffffffffds 1", content: "Page 1" },
         { id: 2, title: "Tab 2", content: "Page 2" },
         { id: 3, title: "Tab 3", content: "Page 3" },
     ],
@@ -37,6 +37,9 @@ const useEditorStore = create((set) => ({
                 tab.id === id ? { ...tab, content } : tab
             ),
         })),
+    deleteTabContent: (id) => set((state) => ({
+        tabs: state.tabs.filter((tab) => tab.id!== id),
+    })) 
 }));
 
 export default useEditorStore;
