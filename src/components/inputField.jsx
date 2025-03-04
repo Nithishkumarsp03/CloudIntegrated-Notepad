@@ -27,7 +27,7 @@ export const InputField = ({
             paddingLeft: 0,
             paddingTop: '3px',
             margin: 0,
-            transform: 'translate(14px, 5px) scale(1)' // Adjust label positioning
+            transform: 'translate(14px, 5px) scale(1)'
           },
           '& .MuiInputLabel-shrink': {
             transform: 'translate(14px, -9px) scale(0.85)',

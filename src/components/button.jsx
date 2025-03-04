@@ -8,18 +8,19 @@ export const ButtonComponent = ({
   handleClick,
   endIcon,
   imgAnim = false,
+  className,
 }) => {
   const [icon, setIcon] = useState({
     hover: false,
     anime: false,
-    mouseEnter:false
+    mouseEnter: false
   });
 
   function handleOnClick() {
     if (icon.mouseEnter) {
-      setIcon((prev) => ({ ...prev, anime: true,mouseEnter:false }));
+      setIcon((prev) => ({ ...prev, anime: true, mouseEnter: false }));
     }
-    setIcon((prev) => ({ ...prev, hover: false }))
+    setIcon((prev) => ({ ...prev, hover: false }));
     if (handleClick) {
       handleClick();
     }
@@ -29,16 +30,15 @@ export const ButtonComponent = ({
   return (
     <div>
       <Button
+        className={`relative group overflow-hidden ${className}`}
         sx={{
           backgroundColor: '#0b6bcb',
           color: "white",
           border: 'transparent',
           alignItems: 'center',
-          position: 'relative',
-          overflow: 'hidden',
           paddingTop: '7px',
           paddingBottom: '7px',
-          typography: { xl: '14px', md: '12px',sm:"10px" }, 
+          typography: { xl: '14px', md: '12px', sm: "10px" },
           "&:hover": {
             transform: "scaleY(1.02)",
             transition: "0.4s",
@@ -61,7 +61,12 @@ export const ButtonComponent = ({
       >
         {btnText}
         {imgAnim && (
-          <span className={icon.anime ? 'endIconAnim' : icon.hover ? 'endIconHover' : 'endIcon'}>
+          <span
+            className={`
+              absolute top-[9px] transition-all 
+              ${icon.anime ? 'animate-iconAnim' : icon.hover ? 'animate-iconHover' : 'right-[-20px] opacity-0'}
+            `}
+          >
             {endIcon}
           </span>
         )}

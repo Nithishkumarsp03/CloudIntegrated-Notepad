@@ -1,222 +1,116 @@
 import React, { useEffect, useState } from "react";
-import "react-quill-new/dist/quill.snow.css";
-import ReactQuill from "react-quill-new";
+import { EditorContent, useEditor } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import Bold from "@tiptap/extension-bold";
+import Italic from "@tiptap/extension-italic";
+import Underline from "@tiptap/extension-underline";
+import BulletList from "@tiptap/extension-bullet-list";
+import OrderedList from "@tiptap/extension-ordered-list";
+import ListItem from "@tiptap/extension-list-item";
+import CodeBlock from "@tiptap/extension-code-block";
+import Image from "@tiptap/extension-image";
+import { FiBold, FiItalic, FiUnderline, FiList, FiImage, FiCode } from "react-icons/fi";
 import useEditorStore from "../globalStore";
-import '../styles/textEditor.css';
+import '../textEditor.css';
 
-const TextEditor = ({ id = 1 }) => {
+const TextEditor = ({ id }) => {
     const { tabs, updateTabContent } = useEditorStore();
-    const tab = tabs.find((tab) => tab.id === id);
-    const initialContent = tab ? tab.content : "";
-
-    const [content, setContent] = useState(initialContent);
+    const [tabContent, setTabContent] = useState("");
 
     useEffect(() => {
-        setContent(initialContent ? initialContent : 1);
-    }, [id, tabs, tab, initialContent]);
+        const content = tabs.find(val => val.id === id)?.content || "";
+        setTabContent(content);
+    }, [id, tabs]);
 
-    // Update store whenever content changes
-    const handleContentChange = (value) => {
-        setContent(value);
-        updateTabContent(id, value);
+    const editor = useEditor({
+        extensions: [
+            StarterKit,
+            Bold,
+            Italic,
+            Underline,
+            BulletList,
+            OrderedList,
+            ListItem,
+            CodeBlock,
+            Image.configure({ allowBase64: true }) // Ensure base64 images are allowed
+        ],
+        content: tabContent,
+        onUpdate: ({ editor }) => {
+            updateTabContent(id, editor.getHTML());
+        },
+    });
+
+    useEffect(() => {
+        if (editor && tabContent) {
+            editor.commands.setContent(tabContent);
+        }
+    }, [tabContent, editor]);
+
+    const handleImageUpload = (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            if (editor) {
+                editor.chain().focus().insertContent(
+                    `<img src="${e.target.result}" alt="uploaded image" style="max-width: 200px; height: auto;" />`
+                ).run();
+            }
+        };
+        reader.readAsDataURL(file);
     };
 
-    const modules = {
-        toolbar: { container: "#custom-toolbar" },
-    };
+
+
+
+    if (!editor) {
+        return null;
+    }
 
     return (
-        <div
-            style={{
-                height: "100%",
-                width: "100%",
-                display: "flex",
-                flexDirection: "column",
-                textAlign: "left",
-                position: "relative",
-                backgroundColor:"white"
-            }}
-        >
-            {/* <span style={{marginLeft:'800px'}}>Untitled</span> */}
-            <div style={{ flex: 1, overflow: "scroll", scrollbarWidth: "none" }}>
-                <ReactQuill
-                    theme="snow"
-                    value={content}
-                    onChange={handleContentChange}
-                    modules={modules}
-                    formats={[
-                        "header",
-                        "font",
-                        "size",
-                        "bold",
-                        "italic",
-                        "underline",
-                        "strike",
-                        "color",
-                        "background",
-                        "list",
-                        "bullet",
-                        "blockquote",
-                        "code-block",
-                        "link",
-                        "image",
-                        "align",
-                    ]}
-                    style={{
-                        height: "100%",
-                        width: "100%",
-                    }}
-                />
+        <div className="w-full flex flex-col items-center transition-all duration-300 h-[610px] overflow-scroll scrollbar-hide">
+            {/* Editor Content */}
+            <div className="w-full h-full overflow-y-auto bg-white shadow-lg p-4">
+                <EditorContent editor={editor} key={id} className="min-h-[200px] tiptap" />
             </div>
 
-            {/* Custom toolbar at the bottom */}
-            <div
-                id="custom-toolbar"
-                style={{
-                    width: "100%",
-                    background: "#f3f3f3",
-                    padding: "5px",
-                    display: "flex",
-                    justifyContent: "center",
-                    flexWrap: "wrap",
-                    gap: "8px",
-                }}
-            >
-                <select className="ql-font">
-                    <option value="sans-serif">Sans-Serif</option>
-                    <option value="serif">Serif</option>
-                    <option value="monospace">Monospace</option>
-                </select>
+            {/* Formatting Toolbar */}
+            <div className="w-full bg-white shadow-lg p-2 flex flex-wrap justify-start gap-2 mb-4">
+                <button onClick={() => editor.chain().focus().toggleBold().run()} className={`p-2 hover:bg-gray-200 rounded ${editor.isActive("bold") ? "bg-gray-300" : ""}`}>
+                    <FiBold size={20} />
+                </button>
+                <button onClick={() => editor.chain().focus().toggleItalic().run()} className={`p-2 hover:bg-gray-200 rounded ${editor.isActive("italic") ? "bg-gray-300" : ""}`}>
+                    <FiItalic size={20} />
+                </button>
+                <button onClick={() => editor.chain().focus().toggleUnderline().run()} className={`p-2 hover:bg-gray-200 rounded ${editor.isActive("underline") ? "bg-gray-300" : ""}`}>
+                    <FiUnderline size={20} />
+                </button>
+                <button onClick={() => editor.chain().focus().toggleBulletList().run()} className={`p-2 hover:bg-gray-200 rounded ${editor.isActive("bulletList") ? "bg-gray-300" : ""}`}>
+                    <FiList size={20} />
+                </button>
+                <button onClick={() => editor.chain().focus().toggleOrderedList().run()} className={`p-2 hover:bg-gray-200 rounded ${editor.isActive("orderedList") ? "bg-gray-300" : ""}`}>
+                    <FiList size={20} />
+                </button>
+                <button onClick={() => editor.chain().focus().toggleCodeBlock().run()} className={`p-2 hover:bg-gray-200 rounded ${editor.isActive("codeBlock") ? "bg-gray-300" : ""}`}>
+                    <FiCode size={20} />
+                </button>
 
-                <select className="ql-size">
-                    <option value="10px">10px</option>
-                    <option value="12px">12px</option>
-                    <option value="14px">14px</option>
-                    <option value="16px" selected>16px</option>
-                    <option value="18px">18px</option>
-                    <option value="24px">24px</option>
-                    <option value="32px">32px</option>
-                </select>
-
-                <button className="ql-bold"></button>
-                <button className="ql-italic"></button>
-                <button className="ql-underline"></button>
-                <button className="ql-strike"></button>
-
-                <select className="ql-header">
-                    <option value="1">H1</option>
-                    <option value="2">H2</option>
-                    <option value="3">H3</option>
-                    <option selected></option>
-                </select>
-
-                <select className="ql-color"></select>
-                <select className="ql-background"></select>
-
-                <button className="ql-list" value="ordered"></button>
-                <button className="ql-list" value="bullet"></button>
-
-                <select className="ql-align">
-                    <option selected></option>
-                    <option value="center"></option>
-                    <option value="right"></option>
-                </select>
-
-                <button className="ql-blockquote"></button>
-                <button className="ql-code-block"></button>
-
-                <button className="ql-link"></button>
-                <button className="ql-image"></button>
-
-                <button className="ql-clean"></button>
+                {/* Image Upload Button */}
+                <label className="p-2 cursor-pointer hover:bg-gray-200 rounded">
+                    <FiImage size={20} />
+                    <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
+                </label>
             </div>
-            <style>{`
-                .ql-container {
-                    width: 100%;
-                    height: 100%;
-                    background: white !important;
-                    border: none !important;
-                    border-radius: 0 12px 0 0;
-                    overflow: scroll;
-                    scrollbar-width: none;
-                }
 
-                .ql-toolbar {
-                    background: white !important;
-                    border: none !important;
-                    padding: 6px;
-                }
-
-                .ql-editor {
-                    white-space: pre-wrap;
-                    overflow: scroll;
-                    scrollbar-width: none;
-                    word-break: break-word;
-                    max-width: 100%;
-                    max-height: 100%;
-                    background: white !important;
-                    color: black;
-                    border: none !important;
-                }
-
-                .ql-editor::-webkit-scrollbar {
-                    display: none;
-                }
-
-                #custom-toolbar {
-                    background: white !important;
-                    border: none !important;
-                    border-radius: 0 0 12px 0;
-                    padding: 12px;
-                    height: 70px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    gap: 12px;
-                }
-
-                /* Styles for Buttons & Select Dropdowns */
-                #custom-toolbar button,
-                #custom-toolbar select {
-                    background: white !important;
-                    border: none !important;
-                    padding: 12px 16px;
-                    height: 45px;
-                    min-width: 50px;
-                    border-radius: 8px;
-                    cursor: pointer;
-                    font-size: 18px;
-                    font-weight: 600;
-                    transition: background 0.3s ease, transform 0.1s ease;
-                }
-
-                /* Hover effect for buttons */
-                #custom-toolbar button:hover,
-                #custom-toolbar select:hover {
-                    background: #f0f0f0;
-                    transform: scale(1.05);
-                }
-
-                /* Bold & Bigger Font Styles for Select Menus */
-                #custom-toolbar select.ql-font,
-                #custom-toolbar select.ql-size,
-                #custom-toolbar select.ql-header {
-                    font-weight: 700 !important;
-                    font-size: 20px !important;
-                    padding: 10px 14px !important;
-                    height: 50px;
-                    border-radius: 8px;
-                    cursor: pointer;
-                }
-
-                /* Ensure Dropdown Options are Also Bold */
-                #custom-toolbar select.ql-font option,
-                #custom-toolbar select.ql-size option,
-                #custom-toolbar select.ql-header option {
-                    font-weight: 700;
-                    font-size: 18px;
-                }
-            `}</style>
+            {/* Inline CSS to Remove Outline */}
+            <style>
+                {`
+                    .ProseMirror:focus {
+                        outline: none !important;
+                    }
+                `}
+            </style>
         </div>
     );
 };
