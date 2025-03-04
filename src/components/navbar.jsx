@@ -50,14 +50,14 @@ const Navbar = ({ setId, id }) => {
                     <div
                         key={tab.id}
                         className={`relative cursor-pointer py-[14px] flex gap-2 items-center justify-center font-medium transition-all duration-300 ease-in-out group 
-        ${tab.id === id ? "bg-white border-l-[5px] border-[#0b6bcb] shadow-md animate-popup" : ""}`}
+                        ${tab.id === id ? "bg-white border-l-[5px] border-[#0b6bcb] shadow-md" : "hover:bg-gray-100"}`}
                         onClick={() => handleClick(tab.id)}
                         onDoubleClick={() => handleDoubleClick(tab.id)}
                     >
                         <span className="max-w-[50px] whitespace-nowrap overflow-hidden text-ellipsis font-medium text-[#BDBDBD]">
                             {editingTabId === tab.id ? (
                                 <input
-                                    className={`border-none outline-none bg-transparent w-full text-center font-medium  ${tab.id === id ? "text-[#0b6bcb] font-medium" : "text-[#BDBDBD] font-medium"
+                                    className={`border-none outline-none bg-transparent w-full text-center font-medium transition-all duration-200 focus:ring-2 focus:ring-blue-500 rounded ${tab.id === id ? "text-[#0b6bcb] font-medium" : "text-[#BDBDBD] font-medium"
                                         }`}
                                     value={tab.title}
                                     onChange={(event) => handleTitleChange(event, tab.id)}
@@ -66,13 +66,16 @@ const Navbar = ({ setId, id }) => {
                                     autoFocus
                                 />
                             ) : (
-                                <span className={`max-w-[50px] whitespace-nowrap overflow-hidden text-ellipsis font-medium ${tab.id === id ? "text-[#0b6bcb]" : "text-[#BDBDBD]"}`}>{tab.title}</span>
+                                <span className={`max-w-[50px] whitespace-nowrap overflow-hidden text-ellipsis font-medium ${tab.id === id ? "text-[#0b6bcb]" : "text-[#BDBDBD]"
+                                    }`}>
+                                    {tab.title}
+                                </span>
                             )}
                         </span>
                         <GoTrash
                             color="red"
                             onClick={(event) => handleDelete(event, tab.id)}
-                            className="hidden group-hover:block"
+                            className="hidden group-hover:block transition-all duration-200 hover:scale-110"
                         />
                     </div>
                 ))}
