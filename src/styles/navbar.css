@@ -12,7 +12,7 @@
     overflow-y: auto;
     height: 100%;
     scrollbar-width: none;
-    padding-bottom: 10px;
+    padding-bottom: 10px;   
 }
 
 .tab-item, .tab-item-selected {
