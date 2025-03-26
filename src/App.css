@@ -9,7 +9,7 @@
   font-weight: 200;
 }
 
-.App {
-  height: 100vh;
-  width: 100vw;
+::-webkit-scrollbar-button  {
+  display: none;
+  width: 0;
 }
