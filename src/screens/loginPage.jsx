@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { InputField } from "../components/inputField";
 import { ButtonComponent } from "../components/button";
 import googleIcon from "../assets/googleIcon.png";
@@ -14,10 +14,14 @@ import eraser from "../assets/eraserImage.png";
 import WaterDrop from "../assets/svgs/waterDrop";
 
 const LoginPage = () => {
-  const { login, setUserName, setPassword } = useEditorStore();
+
+  const [userDetails, setUserDetails] = useState({
+    userName: '',
+    password: ''
+  })
 
   return (
-    <div className="bg-[#edf5fd] min-h-screen flex justify-center items-center relative overflow-hidden p-4">
+    <div className="bg-[#edf5fd] w-full min-h-screen flex justify-center items-center relative overflow-hidden p-4">
       {/* Decorative Water Drops */}
       <div className="absolute right-10 top-10 sm:right-[250px] rotate-[-125deg]">
         <WaterDrop width={50} height={50} />
@@ -80,16 +84,16 @@ const LoginPage = () => {
             <InputField
               label="UserName"
               className="w-full"
-              value={login.userName}
-              onChange={(e) => setUserName(e)}
+              value={userDetails.userName}
+              onChange={(e) => setUserDetails(p => ({...p,userName:e.target.value}))}
             />
 
             <InputField
               label="Password"
               className="w-full"
               type="password"
-              value={login.password}
-              onChange={(e) => setPassword(e)}
+              value={userDetails.password}
+              onChange={(e) => setUserDetails(p => ({ ...p, password: e.target.value }))}
             />
           </div>
 

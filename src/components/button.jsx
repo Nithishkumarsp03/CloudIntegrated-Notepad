@@ -35,6 +35,7 @@ export const ButtonComponent = ({
           backgroundColor: '#0b6bcb', // Base blue color
           color: "white",
           border: 'none',
+          minWidth:"full",
           borderRadius: '8px',
           padding: '8px 20px',
           fontSize: '14px',
@@ -42,6 +43,7 @@ export const ButtonComponent = ({
           textTransform: 'none',
           boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
           transition: 'all 0.3s ease',
+          cursor:"pointer",
           "&:hover": {
             backgroundColor: '#1a73e8', 
             transform: "translateY(-2px)",

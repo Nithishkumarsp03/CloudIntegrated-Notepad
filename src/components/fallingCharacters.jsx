@@ -94,7 +94,7 @@ const FallingCharacters = () => {
         };
     }, []);
 
-    return <canvas ref={canvasRef} style={{ position: "absolute", top: 0, left: 0, zIndex: 1 }} />;
+    return <canvas ref={canvasRef} style={{ position: "absolute", width:"full", top: 0, left: 0, zIndex: 1 }} />;
 };
 
 export default FallingCharacters;

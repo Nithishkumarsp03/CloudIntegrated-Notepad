@@ -1,39 +1,70 @@
 import { create } from "zustand";
+import { tabsData } from "./utils";
 
-const useEditorStore = create((set) => ({
-    login: { userName: "", password: "" },
+const useEditorStore = create((set, get) => ({
+    isSidebarOpen: true, // State for sidebar visibility
+    data: tabsData, // State for storing data
+    search: "", // State for search functionality
+    darkMode: false,
+    
+    setDarkMode: () => {
+        const { darkMode } = get();
+        set({ darkMode: !darkMode });
+    },
 
-    tabs: [
-        { id: 1, title: "Tab 1", content: "Page 1" },
-        { id: 2, title: "Tab 2", content: "Page 2" },
-        { id: 3, title: "Tab 3", content: "Page 3" },
-    ],
+    // Set initial data from tabsData
+    setData: () => {
+        set({ data: tabsData });
+    },
 
-    setTab: (id, title) =>
-        set((state) => ({
-            tabs: [...state.tabs, { id, title, content: "" }],
-        })),
+    // Delete an item from the data
+    deleteData: (timeIndex, itemIndex) => {
+        const { data } = get();
+        const newData = data.map((timeSlot) => {
+            if (timeSlot.id === timeIndex) {
+                // Filter out the item with the matching itemIndex
+                return {
+                    ...timeSlot,
+                    data: timeSlot.data.filter((item) => item.id !== itemIndex),
+                };
+            }
+            return timeSlot; // Return unchanged timeSlot if id doesn't match
+        });
+        set({ data: newData });
+    },
 
-    updateTabTitle: (id, title) =>
-        set((state) => ({
-            tabs: state.tabs.map((tab) => (tab.id === id ? { ...tab, title } : tab)),
-        })),
+    renameData: (timeIndex, itemIndex, value) => {
+        const { data } = get();
+        const newData = data.map((timeSlot) => {
+            if (timeSlot.id === timeIndex) {
+                // Filter out the item with the matching itemIndex
+                return {
+                    ...timeSlot,
+                    data: timeSlot.data.map((item) => {
+                        if (item.id === itemIndex) {
+                            return (
+                                {...item, title: value }
+                            )
+                        }
+                        return item;
+                    }),
+                };
+            }
+            return timeSlot; // Return unchanged timeSlot if id doesn't match
+        });
+        console.log(newData,timeIndex,itemIndex)
+        set({ data: newData });
+    },
 
-    updateTabContent: (id, content) =>
-        set((state) => ({
-            tabs: state.tabs.map((tab) => (tab.id === id ? { ...tab, content } : tab)),
-        })),
+    // Toggle sidebar visibility
+    setIsSideBarOpen: () => {
+        set((state) => ({ isSidebarOpen: !state.isSidebarOpen }));
+    },
 
-    deleteTab: (id) =>
-        set((state) => ({
-            tabs: state.tabs.filter((tab) => tab.id !== id),
-        })),
-
-    setUserName: (userName) =>
-        set((state) => ({ login: { ...state.login, userName } })),
-
-    setPassword: (password) =>
-        set((state) => ({ login: { ...state.login, password } })),
+    // Update search term
+    setSearch: (val) => {
+        set({ search: val });
+    },
 }));
 
 export default useEditorStore;
