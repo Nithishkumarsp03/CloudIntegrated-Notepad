@@ -9,6 +9,7 @@ export const ButtonComponent = ({
   endIcon,
   imgAnim = false,
   className,
+  isRipple = true
 }) => {
   const [icon, setIcon] = useState({
     hover: false,
@@ -30,6 +31,8 @@ export const ButtonComponent = ({
   return (
     <div>
       <Button
+        disableRipple={!isRipple}
+        focusRipple
         className={`relative group overflow-hidden ${className}`}
         sx={{
           backgroundColor: '#0b6bcb', // Base blue color

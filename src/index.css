@@ -35,3 +35,13 @@
     background-color: #1f2937;
   }
 }
+
+.ProseMirror ul {
+    padding-left: 1.5rem;
+    list-style-type: disc;
+}
+
+.ProseMirror ul ul {
+    list-style-type: circle;
+    padding-left: 1.5rem;
+}

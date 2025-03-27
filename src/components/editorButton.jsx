@@ -1,12 +1,57 @@
-import React from 'react'
+import React from 'react';
 import { ButtonComponent } from './button';
+import useEditorStore from '../globalStore';
 
-const EditorButton = ({handleClick,btnText,isActive}) => {
+const EditorButton = ({ handleClick, btnText, isActive, classes }) => {
+  const { darkMode } = useEditorStore();
+
+  // Define light and dark mode styles
+  const lightStyles = {
+    minWidth: "44px",
+    padding: "11px 6px 11px 8px",
+    backgroundColor: "#F3F4F6",
+    color:"#9CA3AF",
+    borderRadius:"12px",
+    boxShadow: 0 ,
+    "&:hover": {
+      backgroundColor: "#F9FAFB",
+      color:"#1F2937",
+      "&:active": {
+        boxShadow: 0,
+        backgroundColor: "white",
+      },
+    },
+    ...classes,
+  };
+
+  const darkStyles = {
+    minWidth: "44px",
+    padding: "11px 6px 11px 8px",
+    borderRadius: "12px",
+    backgroundColor: "#1F2937", 
+    color: "#A1A1AA", 
+    boxShadow:  0 ,
+    "&:hover": {
+      backgroundColor: "#4A5568",
+      color:"#6D28D9",
+      "&:active": {
+        boxShadow: 0,
+        backgroundColor: "#424242",
+      },
+    },
+    ...classes,
+  };
+
   return (
     <div>
-          <ButtonComponent btnText={btnText} styles={{ minWidth:"40px",padding:"8px 8px", backgroundColor: !isActive ? "white" : "#F3F4F6", boxShadow: isActive && 0, "&:hover": {backgroundColor:"#F9FAFB","&:active":{boxShadow:0,backgroundColor:"white"}}}} handleClick={handleClick} />
+      <ButtonComponent
+        // isRipple={false}
+        btnText={btnText}
+        styles={darkMode ? darkStyles : lightStyles}
+        handleClick={handleClick}
+      />
     </div>
-  )
-}
+  );
+};
 
 export default EditorButton;
