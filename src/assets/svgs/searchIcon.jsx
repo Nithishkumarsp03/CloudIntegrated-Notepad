@@ -1,5 +1,5 @@
 import * as React from "react"
-const SearchIcon = (props) => (
+export const SearchIcon = (props) => (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" {...props}>
         <title>{"search"}</title>
         <path
@@ -9,5 +9,4 @@ const SearchIcon = (props) => (
         />
     </svg>
 )
-export default SearchIcon;
 
