@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { tabsData } from "./utils";
 
 const useEditorStore = create((set, get) => ({
-    isSidebarOpen: true, 
+    isSidebarOpen: false, 
     data: tabsData, 
     search: "", 
     darkMode: false,

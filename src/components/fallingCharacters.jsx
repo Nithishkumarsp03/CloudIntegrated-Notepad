@@ -24,7 +24,6 @@ const FallingCharacters = () => {
             return;
         }
 
-        // Fullscreen Canvas
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
 
@@ -34,41 +33,39 @@ const FallingCharacters = () => {
 
             randomIcon.onload = () => {
                 papers.push({
-                    x: Math.random() * -400, // Wider starting range for better spread
-                    y: Math.random() * canvas.height, // Random y position
-                    speed: Math.random() * 1 + 0.4, // Adjusted speed (slower min)
+                    x: Math.random() * -400,
+                    y: Math.random() * canvas.height, 
+                    speed: Math.random() * 1 + 0.4,
                     rotation: Math.random() * 360,
-                    rotationSpeed: (Math.random() - 0.5) * 0.2, // Slower rotation
-                    size: Math.random() * 35 + 25, // Smaller max size (20-50px)
+                    rotationSpeed: (Math.random() - 0.5) * 0.2, 
+                    size: Math.random() * 35 + 25, 
                     image: randomIcon
                 });
             };
         }
 
-        // Add some initial characters
-        for (let i = 0; i < 4; i++) { // Increased initial spread
+        for (let i = 0; i < 4; i++) { 
             createPaper();
         }
 
-        // Start adding new papers over time
         const paperInterval = setInterval(() => {
-            if (papers.length < 15) { // Limits total number for better spread
+            if (papers.length < 15) { 
                 createPaper();
             }
-        }, 1200); // Slightly slower frequency
+        }, 1200);
 
         function startAnimation() {
             function update() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
 
                 papers.forEach((paper, index) => {
-                    paper.x += paper.speed; // Moves rightward
+                    paper.x += paper.speed; 
                     paper.rotation += paper.rotationSpeed;
 
-                    if (paper.x > canvas.width + 50) { // Adds buffer before respawn
+                    if (paper.x > canvas.width + 50) {
                         papers[index] = {
                             ...paper,
-                            x: Math.random() * -400, // Wider respawn spread
+                            x: Math.random() * -400, 
                             y: Math.random() * canvas.height
                         };
                     }
@@ -83,7 +80,7 @@ const FallingCharacters = () => {
                 animationFrameId = requestAnimationFrame(update);
             }
 
-            update(); // Start the animation loop
+            update(); 
         }
 
         startAnimation();

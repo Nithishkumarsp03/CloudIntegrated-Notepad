@@ -15,23 +15,19 @@ const Appbar = () => {
     const open = Boolean(anchorEl);
     const isMobile = useMediaQuery('(max-width:768px)');
 
-    // Toggle dark mode
     const toggleDarkMode = () => {
         setDarkMode(!darkMode);
         document.documentElement.classList.toggle("dark");
     };
 
-    // Handle profile menu open
     const handleProfileMenuOpen = (event) => {
         setAnchorEl(event.currentTarget);
     };
 
-    // Handle profile menu close
     const handleProfileMenuClose = () => {
         setAnchorEl(null);
     };
 
-    // Toggle search bar visibility on mobile
     const toggleSearch = () => {
         setShowSearch(!showSearch);
     };
@@ -61,7 +57,6 @@ const Appbar = () => {
                 overflowX: 'hidden',
                 boxSizing: 'border-box'
             }}>
-                {/* Top Row for Mobile */}
                 <Box sx={{
                     display: 'flex',
                     width: '100%',
@@ -69,12 +64,11 @@ const Appbar = () => {
                     alignItems: 'center',
                     boxSizing: 'border-box'
                 }}>
-                    {/* Left Side: Hamburger Icon */}
                     <Box sx={{
                         display: 'flex',
                         alignItems: 'center',
                         gap: '40px',
-                        minWidth: 0 // Prevents flex items from overflowing
+                        minWidth: 0 
                     }}>
                         <span
                             className="cursor-pointer text-gray-500 dark:text-gray-400"
@@ -122,7 +116,6 @@ const Appbar = () => {
 
                     </Box>
 
-                    {/* Center of Appbar: App Name - Only shown on mobile */}
                     {isMobile && (
                         <Box sx={{
                             flexGrow: 1,
@@ -136,7 +129,6 @@ const Appbar = () => {
                         </Box>
                     )}
 
-                    {/* Right Side: Icons */}
                     <Box sx={{
                         display: "flex",
                         alignItems: "center",
@@ -189,7 +181,6 @@ const Appbar = () => {
                     </Box>
                 </Box>
 
-                {/* Search bar for mobile - appears below when toggled */}
                 {isMobile && showSearch && (
                     <Box sx={{
                         width: 'calc(100% - 24px)',
@@ -213,7 +204,6 @@ const Appbar = () => {
                     </Box>
                 )}
 
-                {/* Center of Appbar: App Name - Only shown on desktop */}
                 {!isMobile && (
                     <Box sx={{
                         position: 'absolute',
@@ -231,22 +221,41 @@ const Appbar = () => {
                     </Box>
                 )}
 
-                {/* Profile Menu */}
                 <Menu
                     id="profile-menu"
                     anchorEl={anchorEl}
                     open={open}
                     onClose={handleProfileMenuClose}
-                    sx={{
-                        "& .MuiPaper-root": {
-                            backgroundColor: darkMode ? "#1f2937" : "#ffffff",
-                            color: darkMode ? "#ffffff" : "#000000",
-                        },
+                    PaperProps={{
+                        className: `
+            bg-white dark:bg-gray-800
+            text-gray-900 dark:text-gray-100
+            border border-gray-200 dark:border-gray-700
+            shadow-lg
+            min-w-[180px]
+            py-1
+            rounded-md
+        `,
                     }}
                 >
-                    <MenuItem onClick={handleProfileMenuClose}>Profile</MenuItem>
-                    <MenuItem onClick={handleProfileMenuClose}>Settings</MenuItem>
-                    <MenuItem onClick={handleProfileMenuClose}>Logout</MenuItem>
+                    <MenuItem
+                        onClick={handleProfileMenuClose}
+                        className="hover:bg-gray-100 dark:hover:bg-gray-700 px-4 py-2 text-sm"
+                    >
+                        Profile
+                    </MenuItem>
+                    <MenuItem
+                        onClick={handleProfileMenuClose}
+                        className="hover:bg-gray-100 dark:hover:bg-gray-700 px-4 py-2 text-sm"
+                    >
+                        Settings
+                    </MenuItem>
+                    <MenuItem
+                        onClick={handleProfileMenuClose}
+                        className="hover:bg-gray-100 dark:hover:bg-gray-700 px-4 py-2 text-sm text-red-600 dark:text-red-400"
+                    >
+                        Logout
+                    </MenuItem>
                 </Menu>
             </Toolbar>
         </AppBar>

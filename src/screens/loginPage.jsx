@@ -22,7 +22,6 @@ const LoginPage = () => {
 
   return (
     <div className="bg-[#edf5fd] w-full min-h-screen flex justify-center items-center relative overflow-hidden p-4">
-      {/* Decorative Water Drops */}
       <div className="absolute right-10 top-10 sm:right-[250px] rotate-[-125deg]">
         <WaterDrop width={50} height={50} />
       </div>
@@ -44,18 +43,14 @@ const LoginPage = () => {
 
       <FallingCharacters />
 
-      {/* Main Container */}
       <div className="flex flex-col md:flex-row shadow-lg rounded-lg z-10 w-full max-w-[900px]">
-        {/* Left Section with Bubble Effect */}
         <div className="hidden md:flex flex-col bg-[#0b6bcb] text-white w-1/2 rounded-l-lg p-10 relative">
-          {/* Bubble Effect */}
           <div className="absolute w-6 h-6 bg-white opacity-20 rounded-full top-10 left-10"></div>
           <div className="absolute w-4 h-4 bg-white opacity-20 rounded-full bottom-20 right-14"></div>
           <div className="absolute w-3 h-3 bg-white opacity-20 rounded-full top-28 right-20"></div>
           <div className="absolute w-5 h-5 bg-white opacity-20 rounded-full bottom-40 left-20"></div>
           <div className="absolute w-7 h-7 bg-white opacity-20 rounded-full top-48 left-32"></div>
 
-          {/* Notepad & Stationery Images */}
           <div className="absolute w-[300px] h-[300px] rotate-[-20deg] bottom-[120px] left-[50px]">
             <img src={notePad} alt="notepad" />
           </div>
@@ -72,7 +67,6 @@ const LoginPage = () => {
           </p>
         </div>
 
-        {/* Right Section (Form) */}
         <div className="bg-white w-full md:w-1/2 sm:p-12 p-8 pb-4 sm:pb-4 rounded-r-lg flex flex-col">
           <img src={logo} alt="logo" className="mx-auto mb-4 w-12 h-12" />
           <p className="text-center text-lg font-semibold">Welcome Back</p>
@@ -112,6 +106,7 @@ const LoginPage = () => {
           <ButtonComponent
             imgAnim={true}
             btnText="Login"
+            styles={{ boxShadow: 0}}
             className="mt-4"
             endIcon={<img src={sendIcon} alt="send" width={18} height={18} />}
           />
@@ -120,7 +115,8 @@ const LoginPage = () => {
 
           <Link to="/textEditor/1">
             <ButtonComponent
-              className="mt-3 bg-transparent text-black border border-black hover:bg-gray-200 hover:shadow-md active:scale-95 transition-all"
+              className="mt-3 bg-transparent hover:bg-gray-200 hover:shadow-md active:scale-95 transition-all"
+              styles={{backgroundColor: "transparent", color: "black", border: "1px solid gray", "&:hover": { backgroundColor: "transparent" },boxShadow:0,"&:active":{backgroundColor: "transparent"}}}
               startIcon={<img width={20} height={20} src={googleIcon} alt="googleIcon" />}
               btnText="Sign in with Google"
             />

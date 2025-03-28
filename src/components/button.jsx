@@ -1,5 +1,7 @@
 import { Button } from '@mui/material';
 import React, { useState } from 'react';
+import { useMediaQuery } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 
 export const ButtonComponent = ({
   btnText = "button",
@@ -16,6 +18,9 @@ export const ButtonComponent = ({
     anime: false,
     mouseEnter: false
   });
+
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm")); 
 
   function handleOnClick() {
     if (icon.mouseEnter) {
@@ -35,7 +40,7 @@ export const ButtonComponent = ({
         focusRipple
         className={`relative group overflow-hidden ${className}`}
         sx={{
-          backgroundColor: '#0b6bcb', // Base blue color
+          backgroundColor: '#0b6bcb',
           color: "white",
           border: 'none',
           minWidth:"full",
@@ -53,7 +58,7 @@ export const ButtonComponent = ({
             boxShadow: '0 6px 12px rgba(0, 0, 0, 0.2)',
           },
           "&:active": {
-            backgroundColor: '#1557b0', // Slightly darker but still vibrant blue for active
+            backgroundColor: '#1557b0', 
             transform: "translateY(0)",
             boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
           },
@@ -66,7 +71,7 @@ export const ButtonComponent = ({
         onMouseEnter={() => setIcon((prev) => ({ ...prev, hover: true, mouseEnter: true }))}
       >
         {btnText}
-        {imgAnim && (
+        {imgAnim && !isMobile && (
           <span
             className={`
               absolute top-[10.5px] transition-all 

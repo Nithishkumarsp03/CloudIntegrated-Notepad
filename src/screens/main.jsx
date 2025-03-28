@@ -13,7 +13,6 @@ const Main = () => {
   const isMobile = useMediaQuery('(max-width: 768px)');
   const { isSidebarOpen } = useEditorStore();
 
-  // Close sidebar when switching to mobile view
   useEffect(() => {
     if (isMobile) {
       useEditorStore.setState({ isSidebarOpen: false });
@@ -24,9 +23,7 @@ const Main = () => {
     <div className="flex flex-col h-screen dark:bg-gray-900 w-full overflow-hidden">
       <Appbar />
 
-      {/* Main content area */}
       <div className="flex flex-1 overflow-hidden relative">
-        {/* Navbar - positioned absolutely on mobile, normally in flex on desktop */}
         <div className={cn(
           "h-full transition-all duration-300",
           {
@@ -39,7 +36,6 @@ const Main = () => {
           <Navbar />
         </div>
 
-        {/* Content area with editor */}
         <div className={cn(
           "flex flex-col flex-1 p-3.5 gap-4 transition-all duration-300",
           {
@@ -56,7 +52,6 @@ const Main = () => {
           />
         </div>
 
-        {/* Mobile overlay when navbar is open */}
         {isMobile && !isSidebarOpen && (
           <div
             className="fixed inset-0 bg-black bg-opacity-50 z-10 lg:hidden"

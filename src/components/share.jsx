@@ -8,17 +8,14 @@ const ShareComponent = ({ title, text, url }) => {
     const [anchorEl, setAnchorEl] = React.useState(null);
     const open = Boolean(anchorEl);
 
-    // Handle click on the share icon
     const handleShareClick = (event) => {
         setAnchorEl(event.currentTarget);
     };
 
-    // Handle menu close
     const handleMenuClose = () => {
         setAnchorEl(null);
     };
 
-    // Native Web Share API
     const handleNativeShare = async () => {
         if (navigator.share) {
             try {
@@ -35,12 +32,10 @@ const ShareComponent = ({ title, text, url }) => {
             console.log("Web Share API not supported.");
             handleFallbackShare();
         }
-        handleMenuClose(); // Close the menu after sharing
+        handleMenuClose();
     };
 
-    // Fallback sharing options
     const handleFallbackShare = () => {
-        // Copy to clipboard
         navigator.clipboard
             .writeText(url)
             .then(() => {
@@ -49,37 +44,47 @@ const ShareComponent = ({ title, text, url }) => {
             .catch(() => {
                 alert("Failed to copy link to clipboard.");
             });
-        handleMenuClose(); // Close the menu after copying
+        handleMenuClose();
     };
 
     return (
         <>
-            {/* Share Icon */}
-            <Tooltip title="Share">
+            <Tooltip title="Share" arrow>
                 <IconButton
                     onClick={handleShareClick}
-                    sx={{ color: "inherit" }}
+                    className={`text-gray-700 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400`}
+                    aria-label="share"
                 >
                     <ShareIcon />
                 </IconButton>
             </Tooltip>
 
-            {/* Share Menu */}
             <Menu
                 anchorEl={anchorEl}
                 open={open}
                 onClose={handleMenuClose}
-                sx={{
-                    "& .MuiPaper-root": {
-                        backgroundColor: !darkMode ? "#ffffff" : "#111827",
-                        color: !darkMode ? "#000000" : "#ffffff",
-                    },
+                PaperProps={{
+                    className: `
+                        bg-white dark:bg-gray-800
+                        text-gray-900 dark:text-gray-100
+                        border border-gray-200 dark:border-gray-700
+                        shadow-lg
+                        min-w-[220px]
+                        py-1
+                        rounded-md
+                    `,
                 }}
             >
-                <MenuItem onClick={handleNativeShare}>
+                <MenuItem
+                    onClick={handleNativeShare}
+                    className="hover:bg-gray-100 dark:hover:bg-gray-700 px-4 py-2 text-sm"
+                >
                     Share via Web Share API
                 </MenuItem>
-                <MenuItem onClick={handleFallbackShare}>
+                <MenuItem
+                    onClick={handleFallbackShare}
+                    className="hover:bg-gray-100 dark:hover:bg-gray-700 px-4 py-2 text-sm"
+                >
                     Copy Link to Clipboard
                 </MenuItem>
             </Menu>

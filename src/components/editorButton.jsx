@@ -5,7 +5,6 @@ import useEditorStore from '../globalStore';
 const EditorButton = ({ handleClick, btnText, isActive, classes }) => {
   const { darkMode } = useEditorStore();
 
-  // Define light and dark mode styles
   const lightStyles = {
     minWidth: "44px",
     padding: "11px 6px 11px 8px",

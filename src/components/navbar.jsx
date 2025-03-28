@@ -24,12 +24,10 @@ const Navbar = () => {
     const open = Boolean(anchorEl);
     const isMobile = useMediaQuery('(max-width: 768px)');
 
-    // Sync filter with data from the store
     useEffect(() => {
         setFilter(data);
     }, [data]);
 
-    // Handle search filter
     useEffect(() => {
         if (!search) {
             setFilter(data);
@@ -84,7 +82,6 @@ const Navbar = () => {
 
     return (
         <>
-            {/* Mobile overlay - only visible when navbar is open on mobile */}
             {isMobile && !isSidebarOpen && (
                 <div
                     className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
@@ -92,22 +89,18 @@ const Navbar = () => {
                 />
             )}
 
-            {/* Navbar Container */}
             <div
                 className={cn(
                     "flex-shrink-0 h-screen overflow-hidden box-border border-r border-gray-200 dark:border-gray-800 bg-gradient-to-b from-blue-50 to-purple-50 dark:from-gray-900 dark:to-gray-800 shadow-lg transition-all duration-300 ease-in-out",
                     {
-                        // Desktop styles
                         "w-[280px]": !isSidebarOpen && !isMobile,
                         "w-0 border-r-0": isSidebarOpen && !isMobile,
-                        // Mobile styles
                         "fixed inset-y-0 left-0 z-50 w-[280px] lg:relative lg:inset-auto": isMobile,
                         "-translate-x-full lg:translate-x-0": isMobile && isSidebarOpen,
                     }
                 )}
             >
                 <div className="h-full flex flex-col">
-                    {/* Mobile header */}
                     {isMobile && !isSidebarOpen && (
                         <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
                             <h3 className="font-medium text-gray-700 dark:text-gray-300">My Notes</h3>
@@ -128,16 +121,13 @@ const Navbar = () => {
                         </div>
                     )}
 
-                    {/* Content area */}
                     <div className="flex-1 overflow-hidden flex flex-col pt-4">
                         {filter.length === 0 ? (
                             <div className="flex-1 flex items-center justify-center p-4">
                                 <NoTabsFound />
                             </div>
                         ) : (
-                            <div className={cn("flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-blue-200 scrollbar-track-blue-50  dark:scrollbar-thumb-gray-600 dark:scrollbar-track-gray-800", {
-                                "pt-0": !isMobile,
-                                "pt-2": isMobile,
+                                <div className={cn("flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-blue-200 scrollbar-track-blue-50  dark:scrollbar-thumb-purple-600 dark:scrollbar-track-transparent", {
                             })}>
                                 <div className="space-y-6 px-4 pb-4">
                                     {filter.map((tab) => (
@@ -155,8 +145,6 @@ const Navbar = () => {
                                                             {
                                                                 "bg-gradient-to-r from-blue-100 to-purple-100 border border-blue-100 dark:border-purple-500 text-blue-700 dark:text-purple-200 shadow-sm":
                                                                     id.dayId === tab.id && id.tabId === data.id,
-                                                                "h-[40px]": !isMobile,
-                                                                "h-[36px]": isMobile,
                                                             }
                                                         )}
                                                     >
@@ -196,7 +184,7 @@ const Navbar = () => {
                                                             </span>
                                                         </span>
                                                         <div
-                                                            className="opacity-0 rounded-sm bg-transparent group-hover:opacity-100 transition-opacity duration-300 text-blue-500 dark:text-purple-400 ml-auto flex-shrink-0"
+                                                            className="opacity-1 sm:opacity-0 rounded-sm bg-transparent group-hover:opacity-100 transition-opacity duration-300 text-blue-500 dark:text-purple-400 ml-auto flex-shrink-0 "
                                                             onClick={(e) => e.stopPropagation()}
                                                         >
                                                             <BsThreeDots
@@ -225,18 +213,35 @@ const Navbar = () => {
                     open={open}
                     onClose={handleMenuClose}
                     PaperProps={{
-                        className: "bg-gradient-to-b from-blue-50 to-purple-50 dark:from-gray-800 dark:to-gray-700 text-blue-700 dark:text-purple-300 text-sm border border-blue-100 dark:border-purple-900",
+                        className: `
+            bg-white dark:bg-gray-800 
+            text-gray-900 dark:text-purple-200 
+            text-sm 
+            border border-gray-200 dark:border-purple-900/50
+            shadow-lg dark:shadow-purple-900/10
+            rounded-md
+            min-w-[120px]
+        `,
                     }}
                 >
                     <MenuItem
                         onClick={() => handleRename(selectedItem.timeIndex, selectedItem.itemIndex)}
-                        className="text-blue-700 dark:text-purple-300 text-sm hover:bg-blue-100 dark:hover:bg-purple-800"
+                        className={`
+            text-gray-700 dark:text-purple-200 
+            text-sm 
+            hover:bg-blue-50 dark:hover:bg-purple-900/30
+            transition-colors duration-200
+        `}
                     >
                         Rename
                     </MenuItem>
                     <MenuItem
                         onClick={() => handleDelete(selectedItem.timeIndex, selectedItem.itemIndex)}
-                        className="text-blue-700 dark:text-purple-300 hover:bg-blue-100 dark:hover:bg-purple-800"
+                        className={`
+            text-gray-700 dark:text-purple-200 
+            hover:bg-blue-50 dark:hover:bg-purple-900/30
+            transition-colors duration-200
+        `}
                     >
                         Delete
                     </MenuItem>

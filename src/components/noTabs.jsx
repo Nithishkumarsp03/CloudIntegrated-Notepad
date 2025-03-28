@@ -3,7 +3,6 @@ import React from "react";
 const NoTabsFound = () => {
     return (
         <div className="flex flex-col items-center justify-center h-full p-6 text-center">
-            {/* Icon */}
             <svg
                 className="w-16 h-16 text-gray-400 dark:text-gray-500 mb-4"
                 fill="none"
@@ -19,12 +18,10 @@ const NoTabsFound = () => {
                 />
             </svg>
 
-            {/* Message */}
             <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-2">
                 No Tabs Found!
             </h2>
 
-            {/* Subtext */}
             <p className="text-gray-500 dark:text-gray-400 font-normal">
                 Try adjusting your search or creating a new tab.
             </p>

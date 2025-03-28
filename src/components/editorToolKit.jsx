@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import { fontFamilyOptions } from "../utils";
 import EditorButton from "./editorButton";
 import BoldIcon from "../assets/svgs/bold";
-import Italics from "../assets/svgs/italics";
 import Underline from "../assets/svgs/underline";
 import LeftAlign from "../assets/svgs/leftAlign";
 import RightAlign from "../assets/svgs/rightAlign";
@@ -157,7 +156,6 @@ const EditorToolKit = ({ handleClick, fontStyle }) => {
 
     return (
         <div className={`p-2 rounded-2xl flex justify-between shadow-md ${darkMode ? "bg-gray-800" : "bg-gray-100"}`}>
-            {/* Desktop Layout (unchanged) */}
             <div className="hidden md:flex gap-10">
                 <Select
                     classes={{ root: "h-full max-h-11 w-full min-w-40 max-w-40 shadow-sm" }}
@@ -223,7 +221,6 @@ const EditorToolKit = ({ handleClick, fontStyle }) => {
                 </div>
             </div>
 
-            {/* Mobile Layout */}
             <div className="flex md:hidden w-full justify-between items-center">
                 <Select
                     classes={{ root: "h-full max-h-11 w-full max-w-[120px] shadow-sm" }}
@@ -306,7 +303,7 @@ const EditorToolKit = ({ handleClick, fontStyle }) => {
                                 <span className="text-gray-600 dark:text-gray-300">
                                     {val.icon}
                                 </span>
-                                <span className="text-sm">
+                                <span className="text-sm text-black dark:text-white">
                                     {val.id === 4 && "Strikethrough"}
                                     {val.id === 6 && "List"}
                                     {val.id === 7 && "Left Align"}
@@ -321,7 +318,6 @@ const EditorToolKit = ({ handleClick, fontStyle }) => {
                 </Menu>
             </div>
 
-            {/* Link Popover (shared between desktop and mobile) */}
             <Popover
                 open={open}
                 anchorEl={anchorEl}
