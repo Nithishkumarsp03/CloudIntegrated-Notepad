@@ -9,24 +9,24 @@ const StyledTooltip = ({ title, children, display }) => {
                     {title}
                 </div>
             }
-            arrow // Add an arrow to the tooltip
+            arrow 
             placement="top"
             componentsProps={{
                 tooltip: {
                     sx: {
                         display:display,
-                        backgroundColor: '#1F2937', // Background color
-                        color: '#FFFFFF', // Text color
-                        fontSize: '14px', // Font size
-                        padding: '8px 12px', // Padding
-                        borderRadius: '8px', // Border radius
+                        backgroundColor: '#1F2937', 
+                        color: '#FFFFFF', 
+                        fontSize: '14px',
+                        padding: '8px 12px', 
+                        borderRadius: '8px',
                         border:"#1F2937",
-                        boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)', // Shadow for light mode
+                        boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)', 
                     },
                 },
                 arrow: {
                     sx: {
-                        color: '#1F2937', // Match tooltip background color
+                        color: '#1F2937', 
                     },
                 },
             }}

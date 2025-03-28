@@ -29,7 +29,7 @@ export const InputField = ({
             paddingLeft: '10px',
             margin: 0,
             fontSize: '14px',
-            color: '#0b6bcb', // Text color
+            color: '#0b6bcb', 
           },
           '& .MuiFormLabel-root': {
             fontSize: '14px',
@@ -37,22 +37,22 @@ export const InputField = ({
             paddingTop: '3px',
             margin: 0,
             transform: 'translate(14px, 5px) scale(1)',
-            color: '#0b6bcb', // Label color
+            color: '#0b6bcb',
           },
           '& .MuiInputLabel-shrink': {
             transform: 'translate(14px, -9px) scale(0.85)',
-            color: '#0b6bcb', // Shrunk label color
+            color: '#0b6bcb',
           },
           '& .MuiOutlinedInput-root': {
             '& .MuiOutlinedInput-notchedOutline': {
-              borderWidth: '2px', // Default border width
-              borderColor: '#0b6bcb', // Default border color
+              borderWidth: '2px', 
+              borderColor: '#0b6bcb', 
             },
             '&:hover .MuiOutlinedInput-notchedOutline': {
-              borderColor: '#1a73e8 !important', // Hover border color (more vibrant blue)
+              borderColor: '#1a73e8 !important',
             },
             '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-              borderColor: '#1557b0 !important', // Focus border color (slightly darker blue)
+              borderColor: '#1557b0 !important',
             }
           },
           ...styles
