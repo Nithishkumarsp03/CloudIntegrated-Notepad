@@ -1,6 +1,6 @@
 import { Select, MenuItem, Popover, TextField, Button, useMediaQuery, Menu, IconButton } from "@mui/material";
-import React, { useState } from "react";
-import { fontFamilyOptions } from "../utils";
+import React, { useEffect, useRef, useState } from "react";
+import { fontFamilyOptions, fontSizes } from "../utils";
 import EditorButton from "./editorButton";
 import BoldIcon from "../assets/svgs/bold";
 import Underline from "../assets/svgs/underline";
@@ -14,62 +14,65 @@ import Undo from "../assets/svgs/undo";
 import Redo from "../assets/svgs/redo";
 import BulletList from "../assets/svgs/bulletList";
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import TextColor from "../assets/svgs/textColor";
+import Modal from "./modal";
 
 const EditorToolKit = ({ handleClick, fontStyle }) => {
     const [fontFamily, setFontFamily] = useState(fontFamilyOptions[0].family);
+    const [fontSize, setFontSize] = useState(fontSizes[4].size);
     const [anchorEl, setAnchorEl] = useState(null);
-    const [linkUrl, setLinkUrl] = useState("");
     const [mobileMenuAnchor, setMobileMenuAnchor] = useState(null);
     const open = Boolean(anchorEl);
     const mobileMenuOpen = Boolean(mobileMenuAnchor);
     const isMobile = useMediaQuery('(max-width: 768px)');
+    const [linkUrl, setLinkUrl] = useState("");
+    const [linkModel, setLinkModel] = useState(false);
+    const { darkMode } = useEditorStore();
 
-    const { darkMode, charactersTotalCount } = useEditorStore();
-
+    const textColorRef = useRef(null);
     const [activeStyles, setActiveStyles] = useState({
         bold: false,
-        italic: false,
         underline: false,
         strikethrough: false,
-        link: false,
         leftAlign: false,
         rightAlign: false,
         centerAlign: false,
-        bulletList: false
+        bulletList: false,
     });
+    const [textColor, setTextColor] = useState(!darkMode ? 'white' : 'black');
 
     const handleFont = (e) => {
         setFontFamily(e.target.value);
-        fontStyle(e.target.value);
+        const family = fontFamilyOptions.find(font => font.family === e.target.value);
+        fontStyle(family);
     };
 
-    const handleLinkClick = (event) => {
-        setAnchorEl(event.currentTarget);
+    const handleFontSize = (e) => {
+        setFontSize(e.target.value);
+        handleClick({ fontSize: e.target.value });
     };
 
-    const handleLinkSubmit = () => {
-        if (linkUrl) {
-            let processedUrl = linkUrl;
-            if (!linkUrl.startsWith('http://') && !linkUrl.startsWith('https://')) {
-                processedUrl = `https://${linkUrl}`;
-            }
-            handleClick(`link:${processedUrl}`);
-        } else {
-            handleClick("link:");
-        }
-        setLinkUrl("");
-        setAnchorEl(null);
+    const handleLink = () => {
+        setLinkModel(!linkModel);
+    }
+
+    const handleLinkSubmit = (e) => {
+        handleClick({link:e.url,text:e.text})
     };
 
-    const handleClose = () => {
-        setLinkUrl("");
-        setAnchorEl(null);
+    const handleColor = (color) => {
+        handleClick({ color: color });
+        setTextColor(color);
     };
 
-    const handleActive = (key) => {
-        if (key === "link") return;
+    const handleActive = (key, event) => {
 
         setActiveStyles(prev => ({ ...prev, [key]: !prev[key] }));
+
+        if (key === "textColor") {
+            textColorRef.current.click();
+            return;
+        }
 
         if (["leftAlign", "rightAlign", "centerAlign", "undo", "redo"].includes(key)) {
             handleClick(key);
@@ -90,24 +93,28 @@ const EditorToolKit = ({ handleClick, fontStyle }) => {
     const editorButtons = [
         {
             id: 1,
+            name:"Bold",
             icon: <BoldIcon />,
             handleClick: () => handleActive("bold"),
             isActive: activeStyles.bold,
         },
         {
             id: 2,
+            name:"UnderLine",
             icon: <Underline />,
             handleClick: () => handleActive("underline"),
             isActive: activeStyles.underline,
         },
         {
             id: 3,
+            name:"Link",
             icon: <LinkIcon />,
-            handleClick: handleLinkClick,
+            handleClick: (e) => handleLink(),
             isActive: activeStyles.link,
         },
         {
             id: 4,
+            name:"StrikeThrough",
             icon: <StrikeThrough />,
             handleClick: () => handleActive("strikethrough"),
             isActive: activeStyles.strikethrough,
@@ -115,12 +122,14 @@ const EditorToolKit = ({ handleClick, fontStyle }) => {
         },
         {
             id: 6,
+            name:"BulletList",
             icon: <BulletList />,
             handleClick: () => handleActive("bulletList"),
             classes: { padding: "8px 6px" }
         },
         {
             id: 7,
+            name:"Left Align",
             icon: <LeftAlign />,
             handleClick: () => handleActive("leftAlign"),
             isActive: activeStyles.leftAlign,
@@ -128,6 +137,7 @@ const EditorToolKit = ({ handleClick, fontStyle }) => {
         },
         {
             id: 8,
+            name:"Center Align",
             icon: <CenterAlign />,
             handleClick: () => handleActive("centerAlign"),
             isActive: activeStyles.centerAlign,
@@ -135,6 +145,7 @@ const EditorToolKit = ({ handleClick, fontStyle }) => {
         },
         {
             id: 9,
+            name:"Right Align",
             icon: <RightAlign />,
             handleClick: () => handleActive("rightAlign"),
             isActive: activeStyles.rightAlign,
@@ -142,21 +153,31 @@ const EditorToolKit = ({ handleClick, fontStyle }) => {
         },
         {
             id: 10,
+            name:"Undo",
             icon: <Undo />,
             handleClick: () => handleActive("undo"),
             classes: { padding: "8px 6px" }
         },
         {
             id: 11,
+            name:"Redo",
             icon: <Redo />,
             handleClick: () => handleActive("redo"),
             classes: { padding: "8px 6px" }
         },
+        {
+            id: 12,
+            name:"Text Color",
+            icon: <TextColor style={{ color: textColor }} />,
+            handleClick: () => handleActive('textColor'),
+            classes: { color: "none", opacity: "0.7"}
+        },
     ];
 
     return (
-        <div className={`p-2 rounded-2xl flex justify-between shadow-md ${darkMode ? "bg-gray-800" : "bg-gray-100"}`}>
-            <div className="hidden md:flex gap-10">
+        <div className={`p-2 rounded-2xl overflow-hidden flex justify-between shadow-md ${darkMode ? "bg-gray-800" : "bg-gray-100"}`}>
+            {/* display */}
+            <div className="hidden md:flex gap-5">
                 <Select
                     classes={{ root: "h-full max-h-11 w-full min-w-40 max-w-40 shadow-sm" }}
                     sx={{
@@ -193,10 +214,12 @@ const EditorToolKit = ({ handleClick, fontStyle }) => {
                         <MenuItem
                             key={family.id}
                             value={family.family}
+                            fontWeight={family.weight}
                             sx={{
                                 fontSize: "16px",
                                 padding: "8px",
                                 fontFamily: family.family,
+                                fontWeight: family.fontWeight,
                                 backgroundColor: darkMode ? "#374151" : "white",
                                 color: darkMode ? "#E5E7EB" : "#1F2937",
                                 "&:hover": {
@@ -208,7 +231,56 @@ const EditorToolKit = ({ handleClick, fontStyle }) => {
                         </MenuItem>
                     ))}
                 </Select>
-                <div className="flex gap-10">
+                <Select
+                    classes={{ root: "h-full max-h-11 w-full min-w-24 max-w-24 shadow-sm" }}
+                    sx={{
+                        borderRadius: "12px",
+                        backgroundColor: darkMode ? "#374151" : "white",
+                        color: darkMode ? "#E5E7EB" : "#1F2937",
+                        "& .MuiOutlinedInput-notchedOutline": {
+                            border: "none",
+                        },
+                        "& .MuiSvgIcon-root": {
+                            color: darkMode ? "#9CA3AF" : "#6B7280",
+                        },
+                    }}
+                    MenuProps={{
+                        PaperProps: {
+                            sx: {
+                                backgroundColor: darkMode ? "#374151" : "white",
+                                borderRadius: "7px",
+                                border: darkMode ? "1px solid #4B5563" : "1px solid #D1D5DB",
+                                mt: "-60px",
+                            },
+                        },
+                        MenuListProps: {
+                            sx: {
+                                padding: 0,
+                            },
+                        },
+                    }}
+                    value={fontSize}
+                    onChange={handleFontSize}
+                >
+                    {fontSizes.map(font => (
+                        <MenuItem
+                            key={font.id}
+                            value={font.size}
+                            sx={{
+                                fontSize: "16px",
+                                padding: "8px",
+                                backgroundColor: darkMode ? "#374151" : "white",
+                                color: darkMode ? "#E5E7EB" : "#1F2937",
+                                "&:hover": {
+                                    backgroundColor: darkMode ? "#4B5563" : "#F3F4F6",
+                                },
+                            }}
+                        >
+                            {font.size}
+                        </MenuItem>
+                    ))}
+                </Select>
+                <div className="flex gap-5">
                     {editorButtons.map((val) => (
                         <EditorButton
                             key={val.id}
@@ -222,8 +294,9 @@ const EditorToolKit = ({ handleClick, fontStyle }) => {
             </div>
 
             <div className="flex md:hidden w-full justify-between items-center">
+                {/* mobile */}
                 <Select
-                    classes={{ root: "h-full max-h-11 w-full max-w-[120px] shadow-sm" }}
+                    classes={{ root: "h-full max-h-11 w-full min-w-[100px] max-w-[120px] shadow-sm mr-4" }}
                     sx={{
                         borderRadius: "12px",
                         fontFamily: fontFamily,
@@ -243,6 +316,7 @@ const EditorToolKit = ({ handleClick, fontStyle }) => {
                         <MenuItem
                             key={family.id}
                             value={family.family}
+                            fontWeight={family.fontWeight}
                             sx={{
                                 fontSize: "14px",
                                 padding: "6px",
@@ -253,9 +327,58 @@ const EditorToolKit = ({ handleClick, fontStyle }) => {
                         </MenuItem>
                     ))}
                 </Select>
-
+                <Select
+                    classes={{ root: "h-full max-h-11 w-full min-w-22 max-w-22 shadow-sm" }}
+                    sx={{
+                        borderRadius: "12px",
+                        backgroundColor: darkMode ? "#374151" : "white",
+                        color: darkMode ? "#E5E7EB" : "#1F2937",
+                        "& .MuiOutlinedInput-notchedOutline": {
+                            border: "none",
+                        },
+                        "& .MuiSvgIcon-root": {
+                            color: darkMode ? "#9CA3AF" : "#6B7280",
+                        },
+                    }}
+                    MenuProps={{
+                        PaperProps: {
+                            sx: {
+                                backgroundColor: darkMode ? "#374151" : "white",
+                                borderRadius: "7px",
+                                border: darkMode ? "1px solid #4B5563" : "1px solid #D1D5DB",
+                                mt: "-60px",
+                            },
+                        },
+                        MenuListProps: {
+                            sx: {
+                                padding: 0,
+                            },
+                        },
+                    }}
+                    value={fontSize}
+                    onChange={handleFontSize}
+                >
+                    {fontSizes.map(font => (
+                        <MenuItem
+                            key={font.id}
+                            value={font.size}
+                            sx={{
+                                fontSize: "16px",
+                                padding: "8px",
+                                backgroundColor: darkMode ? "#374151" : "white",
+                                color: darkMode ? "#E5E7EB" : "#1F2937",
+                                "&:hover": {
+                                    backgroundColor: darkMode ? "#4B5563" : "#F3F4F6",
+                                },
+                            }}
+                        >
+                            {font.size}
+                        </MenuItem>
+                    ))}
+                </Select>
                 <div className="flex gap-2">
-                    {editorButtons.slice(0, 3).map((val) => (
+                    <input type="color" ref={textColorRef} className="hidden" onChange={(e) => handleColor(e.target.value)} />
+                    {editorButtons.slice(0, 2).map((val) => (
                         <EditorButton
                             key={val.id}
                             btnText={val.icon}
@@ -287,11 +410,15 @@ const EditorToolKit = ({ handleClick, fontStyle }) => {
                         }
                     }}
                 >
-                    {editorButtons.slice(3).map((val) => (
+                    {editorButtons.slice(2).map((val) => (
                         <MenuItem
                             key={val.id}
-                            onClick={() => {
-                                val.handleClick();
+                            onClick={(e) => {
+                                if (val.id === 3) {
+                                    handleActive("link", e);
+                                } else {
+                                    val.handleClick();
+                                }
                                 handleMobileMenuClose();
                             }}
                             sx={{
@@ -303,14 +430,8 @@ const EditorToolKit = ({ handleClick, fontStyle }) => {
                                 <span className="text-gray-600 dark:text-gray-300">
                                     {val.icon}
                                 </span>
-                                <span className="text-sm text-black dark:text-white">
-                                    {val.id === 4 && "Strikethrough"}
-                                    {val.id === 6 && "List"}
-                                    {val.id === 7 && "Left Align"}
-                                    {val.id === 8 && "Center"}
-                                    {val.id === 9 && "Right Align"}
-                                    {val.id === 10 && "Undo"}
-                                    {val.id === 11 && "Redo"}
+                                <span className="text-md text-black dark:text-white text-center">
+                                    {val.name}
                                 </span>
                             </div>
                         </MenuItem>
@@ -318,74 +439,11 @@ const EditorToolKit = ({ handleClick, fontStyle }) => {
                 </Menu>
             </div>
 
-            <Popover
-                open={open}
-                anchorEl={anchorEl}
-                onClose={handleClose}
-                anchorOrigin={{
-                    vertical: 'top',
-                    horizontal: 'center',
-                }}
-                transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'center',
-                }}
-                PaperProps={{
-                    sx: {
-                        p: 2,
-                        backgroundColor: darkMode ? "#374151" : "white",
-                        color: darkMode ? "#E5E7EB" : "#1F2937",
-                        width: isMobile ? '90%' : 300,
-                        maxWidth: '90vw',
-                    }
-                }}
-            >
-                <div className="flex flex-col gap-2">
-                    <TextField
-                        autoFocus
-                        label="Enter URL"
-                        variant="outlined"
-                        size="small"
-                        fullWidth
-                        value={linkUrl}
-                        onChange={(e) => setLinkUrl(e.target.value)}
-                        sx={{
-                            '& .MuiInputBase-root': {
-                                color: darkMode ? "#E5E7EB" : "#1F2937",
-                            },
-                            '& .MuiOutlinedInput-root': {
-                                '& fieldset': {
-                                    borderColor: darkMode ? "#4B5563" : "#D1D5DB",
-                                },
-                                '&:hover fieldset': {
-                                    borderColor: darkMode ? "#6B7280" : "#9CA3AF",
-                                },
-                            },
-                        }}
-                    />
-                    <div className="flex justify-end gap-2">
-                        <Button
-                            variant="text"
-                            onClick={handleClose}
-                            sx={{ color: darkMode ? "#9CA3AF" : "#6B7280" }}
-                        >
-                            Cancel
-                        </Button>
-                        <Button
-                            variant="contained"
-                            onClick={handleLinkSubmit}
-                            sx={{
-                                backgroundColor: darkMode ? "#6D28D9" : "#7C3AED",
-                                '&:hover': {
-                                    backgroundColor: darkMode ? "#5B21B6" : "#6D28D9",
-                                }
-                            }}
-                        >
-                            Apply
-                        </Button>
-                    </div>
-                </div>
-            </Popover>
+            <Modal
+                isOpen={linkModel}
+                onClose={() => setLinkModel(!linkModel)}
+                onInsertLink={handleLinkSubmit}
+            />
         </div>
     );
 };

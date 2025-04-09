@@ -7,8 +7,10 @@ import { useEffect, useState, useMemo, useCallback, useRef } from 'react';
 import Underline from '@tiptap/extension-underline';
 import TextStyle from '@tiptap/extension-text-style';
 import FontFamily from '@tiptap/extension-font-family';
+import FontSize from '@tiptap/extension-font-size';
 import { fontFamilyOptions } from '../utils';
 import Link from '@tiptap/extension-link';
+import Color from '@tiptap/extension-color';
 import React from 'react';
 
 const debounce = (func, wait) => {
@@ -23,10 +25,10 @@ const debounce = (func, wait) => {
     };
 };
 
-const Tiptap = React.memo(({ action, fontStyle = fontFamilyOptions[0].family }) => {
+const Tiptap = React.memo(({ action, fontStyle = fontFamilyOptions[0].family, color }) => {
     const { isSidebarOpen, setCharacterCount } = useEditorStore();
     const [width, setWidth] = useState('');
-    const [content, setContent] = useState('<p>Hello World</p>');
+    const [content, setContent] = useState('<p></p>');
     const [editorAction, setEditorAction] = useState(null);
     const [isTyping, setIsTyping] = useState(false);
     const editorRef = useRef(null);
@@ -51,7 +53,6 @@ const Tiptap = React.memo(({ action, fontStyle = fontFamilyOptions[0].family }) 
     }, 300), [setCharacterCount]);
 
     const handleKeyDown = useCallback((event) => {
-        // Handle Ctrl+A (Select All)
         if (event.ctrlKey && event.key === 'a') {
             event.preventDefault();
             if (editorRef.current) {
@@ -70,6 +71,7 @@ const Tiptap = React.memo(({ action, fontStyle = fontFamilyOptions[0].family }) 
                     },
                 },
             }),
+            FontSize,
             Underline,
             CharacterCount,
             TextAlign.configure({
@@ -77,26 +79,37 @@ const Tiptap = React.memo(({ action, fontStyle = fontFamilyOptions[0].family }) 
                 alignments: ['left', 'center', 'right'],
                 defaultAlignment: 'left',
             }),
+            Color.configure({
+                types: ['textStyle'],
+            }),
             TextStyle,
             FontFamily.configure({
                 types: ['textStyle', 'paragraph'],
             }),
             Link.configure({
-                openOnClick: false,
+                openOnClick: true,
                 HTMLAttributes: {
-                    class: 'text-blue-600 dark:text-blue-400 underline',
+                    class: 'text-blue-600 dark:text-blue-400 underline cursor-pointer',
                     rel: 'noopener noreferrer',
                     target: '_blank',
                 },
+                validate: href => /^https?:\/\//.test(href),
             }),
         ],
         content,
         editorProps: {
             attributes: {
                 class: `h-[90%] dark:text-white outline-none ${width} p-4 overflow-auto min-h-[300px]`,
-                style: `font-family: ${fontStyle}`,
+                style: `font-family: ${fontStyle.family}; font-weight: ${fontStyle.fontWeight} !important;`,
             },
             handleKeyDown: handleKeyDown,
+            handleClick: (view, pos, event) => {
+                // Allow link clicks to work normally
+                if (event.target.tagName === 'A') {
+                    return false; // Let the browser handle the click
+                }
+                return true; // Let Tiptap handle other clicks
+            },
         },
         onUpdate: ({ editor }) => {
             setIsTyping(true);
@@ -116,7 +129,7 @@ const Tiptap = React.memo(({ action, fontStyle = fontFamilyOptions[0].family }) 
 
     useEffect(() => {
         if (!editor || !fontStyle) return;
-        editor.chain().focus().setFontFamily(fontStyle).run();
+        editor.chain().focus().setFontFamily(fontStyle.family).run();
     }, [fontStyle, editor]);
 
     useEffect(() => {
@@ -127,14 +140,39 @@ const Tiptap = React.memo(({ action, fontStyle = fontFamilyOptions[0].family }) 
     useEffect(() => {
         if (!editor || !editorAction) return;
 
-        if (editorAction.startsWith('link:')) {
-            const url = editorAction.replace('link:', '');
-            if (url) {
-                editor.chain().focus().toggleLink({ href: url }).run();
-            } else {
-                editor.chain().focus().unsetLink().run();
-            }
+        if (editorAction.fontSize) {
+            editor.chain().focus().setMark('textStyle', { fontSize: editorAction.fontSize }).run();
             return;
+        }
+
+        if (editorAction.color) {
+            const color = editorAction.color.startsWith('#') ? editorAction.color : `#${editorAction.color}`;
+            editor.chain().focus().setColor(color).run();
+            return;
+        }
+
+        if (editorAction.link) {
+            const { link, text } = editorAction;
+
+            if (typeof link === 'string') {
+                if (text) {
+                    editor
+                        .chain()
+                        .focus()
+                        .insertContent(`<a href="${link}" >${text}</a>`)
+                        .run();
+                } else {
+                    editor
+                        .chain()
+                        .focus()
+                        .toggleLink({
+                            href: link,
+                        })
+                        .run();
+                }
+            } else {
+                console.warn('Invalid link passed to editorAction.link:', link);
+            }
         }
 
         switch (editorAction) {
@@ -153,14 +191,20 @@ const Tiptap = React.memo(({ action, fontStyle = fontFamilyOptions[0].family }) 
             case 'bold':
                 editor.chain().focus().toggleBold().run();
                 break;
-            case 'italic':
-                editor.chain().focus().toggleItalic().run();
+            case 'boldClose':
+                editor.chain().focus().unsetBold().run();
                 break;
             case 'underline':
                 editor.chain().focus().toggleUnderline().run();
                 break;
+            case 'underlineClose':
+                editor.chain().focus().unsetUnderline().run();
+                break;
             case 'strikethrough':
                 editor.chain().focus().toggleStrike().run();
+                break;
+            case 'strikethroughClose':
+                editor.chain().focus().unsetStrike().run();
                 break;
             case 'leftAlign':
                 editor.chain().focus().setTextAlign('left').run();

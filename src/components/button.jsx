@@ -2,6 +2,7 @@ import { Button } from '@mui/material';
 import React, { useState } from 'react';
 import { useMediaQuery } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
+import { Search } from '@mui/icons-material';
 
 export const ButtonComponent = ({
   btnText = "button",
@@ -11,7 +12,8 @@ export const ButtonComponent = ({
   endIcon,
   imgAnim = false,
   className,
-  isRipple = true
+  isRipple = true,
+  type = "text"
 }) => {
   const [icon, setIcon] = useState({
     hover: false,
@@ -36,6 +38,7 @@ export const ButtonComponent = ({
   return (
     <div>
       <Button
+        type={type}
         disableRipple={!isRipple}
         focusRipple
         className={`relative group overflow-hidden ${className}`}
@@ -51,7 +54,8 @@ export const ButtonComponent = ({
           textTransform: 'none',
           boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
           transition: 'all 0.3s ease',
-          cursor:"pointer",
+          cursor: "pointer",
+          textWrap:"nowrap",
           "&:hover": {
             backgroundColor: '#1a73e8', 
             transform: "translateY(-2px)",
