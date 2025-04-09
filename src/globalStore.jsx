@@ -5,7 +5,7 @@ const useEditorStore = create((set, get) => ({
     isSidebarOpen: false, 
     data: tabsData, 
     search: "", 
-    darkMode: false,
+    darkMode: true,
     charactersTotalCount: 0,
     
     setCharacterCount: (value) => {

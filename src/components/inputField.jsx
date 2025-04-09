@@ -22,6 +22,7 @@ export const InputField = ({
         sx={{
           '& .MuiInputBase-root': {
             height: '40px',
+            backgroundColor:"transparent",
             padding: 0
           },
           '& .MuiInputBase-input': {
@@ -29,10 +30,12 @@ export const InputField = ({
             paddingLeft: '10px',
             margin: 0,
             fontSize: '14px',
-            color: '#0b6bcb', 
+            // color: '#0b6bcb', 
+            backgroundColor:"transparent",
           },
           '& .MuiFormLabel-root': {
             fontSize: '14px',
+            backgroundColor: "transparent",
             paddingLeft: 0,
             paddingTop: '3px',
             margin: 0,

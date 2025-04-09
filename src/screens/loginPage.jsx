@@ -5,23 +5,38 @@ import googleIcon from "../assets/googleIcon.png";
 import sendIcon from "../assets/sendIcon.png";
 import { Checkbox, FormControlLabel, FormGroup } from "@mui/material";
 import FallingCharacters from "../components/fallingCharacters";
-import useEditorStore from "../globalStore";
 import { Link } from "react-router-dom";
 import logo from "../assets/logo.png";
 import notePad from "../assets/notepad.png";
 import pencil from "../assets/pencil.png";
 import eraser from "../assets/eraserImage.png";
 import WaterDrop from "../assets/svgs/waterDrop";
+import { cn } from '../components/cn';
 
 const LoginPage = () => {
-
+  const [isSignUp, setIsSignUp] = useState(false);
   const [userDetails, setUserDetails] = useState({
     userName: '',
-    password: ''
-  })
+    password: '',
+    email: '',
+    confirmPassword: ''
+  });
+
+  const toggleSignUp = () => setIsSignUp(!isSignUp);
+
+  const handleInputChange = (e) => {
+    if (e.target) {
+      const { name, value } = e.target;
+      setUserDetails(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
+  };
 
   return (
     <div className="bg-[#edf5fd] w-full min-h-screen flex justify-center items-center relative overflow-hidden p-4">
+      {/* WaterDrop backgrounds */}
       <div className="absolute right-10 top-10 sm:right-[250px] rotate-[-125deg]">
         <WaterDrop width={50} height={50} />
       </div>
@@ -44,6 +59,7 @@ const LoginPage = () => {
       <FallingCharacters />
 
       <div className="flex flex-col md:flex-row shadow-lg rounded-lg z-10 w-full max-w-[900px]">
+        {/* Left decorative panel */}
         <div className="hidden md:flex flex-col bg-[#0b6bcb] text-white w-1/2 rounded-l-lg p-10 relative">
           <div className="absolute w-6 h-6 bg-white opacity-20 rounded-full top-10 left-10"></div>
           <div className="absolute w-4 h-4 bg-white opacity-20 rounded-full bottom-20 right-14"></div>
@@ -63,51 +79,66 @@ const LoginPage = () => {
 
           <p className="text-center text-xl font-semibold mt-5">Online Notepad</p>
           <p className="text-center text-sm mt-auto pb-8 font-medium">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit.
+            {isSignUp ? "Join our community today!" : "Your ideas, always within reach. Login to access your notes anywhere."}
           </p>
         </div>
 
+        {/* Right form panel */}
         <div className="bg-white w-full md:w-1/2 sm:p-12 p-8 pb-4 sm:pb-4 rounded-r-lg flex flex-col">
-          <img src={logo} alt="logo" className="mx-auto mb-4 w-12 h-12" />
-          <p className="text-center text-lg font-semibold">Welcome Back</p>
-          <p className="text-center text-sm text-gray-600 font-medium pb-4">
-            Sign in to continue
+          <span className="ml-8">
+            <img src={logo} alt="logo" className="mx-auto mb-4 w-[70px] h-12" />
+          </span>
+          <p className="text-center text-lg font-semibold">
+            {isSignUp ? "Create Your Account" : "Welcome Back"}
+          </p>
+          <p className={cn("text-center text-sm text-gray-600 font-medium pb-4")}>
+            {isSignUp ? "Get started with your free account" : "Sign in to continue"}
           </p>
 
-          <div className="flex flex-col gap-4">
+          <div className={`flex flex-col gap-4 ${isSignUp && 'mb-2.5'}`}>
+            {isSignUp && (
+              <InputField
+                label="Email"
+                name="email"
+                value={userDetails.email}
+                onChange={handleInputChange}
+              />
+            )}
+
             <InputField
-              label="UserName"
-              className="w-full"
+              label="Username"
+              name="userName"
               value={userDetails.userName}
-              onChange={(e) => setUserDetails(p => ({...p,userName:e.target.value}))}
+              onChange={handleInputChange}
             />
 
             <InputField
               label="Password"
-              className="w-full"
-              type="password"
+              name="password"
               value={userDetails.password}
-              onChange={(e) => setUserDetails(p => ({ ...p, password: e.target.value }))}
-            />
+              onChange={handleInputChange}
+              />
+
           </div>
 
-          <div className="flex justify-between items-center mt-4 mb-3">
-            <FormGroup>
-              <FormControlLabel
-                control={<Checkbox size="small" />}
-                label={<span className="text-sm font-normal">Remember me</span>}
-              />
-            </FormGroup>
-            <p className="text-[#0b6bcb] text-sm cursor-pointer hover:underline font-semibold">
-              Forgot password?
-            </p>
-          </div>
+          {!isSignUp && (
+            <div className="flex justify-between items-center mt-4 mb-3">
+              <FormGroup>
+                <FormControlLabel
+                  control={<Checkbox size="small" />}
+                  label={<span className="text-sm font-normal">Remember me</span>}
+                />
+              </FormGroup>
+              <p className="text-[#0b6bcb] text-sm cursor-pointer hover:underline font-semibold">
+                Forgot password?
+              </p>
+            </div>
+          )}
 
           <ButtonComponent
             imgAnim={true}
-            btnText="Login"
-            styles={{ boxShadow: 0}}
-            className="mt-4"
+            btnText={isSignUp ? "Sign Up" : "Login"}
+            styles={{ boxShadow: 0 }}
             endIcon={<img src={sendIcon} alt="send" width={18} height={18} />}
           />
 
@@ -116,16 +147,26 @@ const LoginPage = () => {
           <Link to="/textEditor/1">
             <ButtonComponent
               className="mt-3 bg-transparent hover:bg-gray-200 hover:shadow-md active:scale-95 transition-all"
-              styles={{backgroundColor: "transparent", color: "black", border: "1px solid gray", "&:hover": { backgroundColor: "transparent" },boxShadow:0,"&:active":{backgroundColor: "transparent"}}}
+              styles={{
+                backgroundColor: "transparent",
+                color: "black",
+                border: "1px solid gray",
+                "&:hover": { backgroundColor: "transparent" },
+                boxShadow: 0,
+                "&:active": { backgroundColor: "transparent" }
+              }}
               startIcon={<img width={20} height={20} src={googleIcon} alt="googleIcon" />}
-              btnText="Sign in with Google"
+              btnText={isSignUp ? "Sign up with Google" : "Sign in with Google"}
             />
           </Link>
 
           <p className="text-center text-sm font-semibold mt-16">
-            Don't have an account?{' '}
-            <span className="text-[#0b6bcb] cursor-pointer hover:underline font-semibold">
-              Sign up here!
+            {isSignUp ? "Already have an account?" : "Don't have an account?"}{' '}
+            <span
+              className="text-[#0b6bcb] cursor-pointer hover:underline font-semibold"
+              onClick={toggleSignUp}
+            >
+              {isSignUp ? "Sign in here!" : "Sign up here!"}
             </span>
           </p>
         </div>

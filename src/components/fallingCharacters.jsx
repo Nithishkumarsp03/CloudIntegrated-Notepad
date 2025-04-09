@@ -5,7 +5,6 @@ import alignCenter from '../assets/alignCenter.png';
 import italic from '../assets/italic.png';
 import eraser from '../assets/eraser.png';
 import underline from '../assets/underline.png';
-import fill from '../assets/fill.png';
 import text from '../assets/text.png';
 
 const FallingCharacters = () => {

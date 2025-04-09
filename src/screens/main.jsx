@@ -12,10 +12,11 @@ const Main = () => {
   const [fontStyle, setFontStyle] = useState('arial');
   const isMobile = useMediaQuery('(max-width: 768px)');
   const { isSidebarOpen } = useEditorStore();
+  const [color, setColor] = useState('#000000');
 
   useEffect(() => {
     if (isMobile) {
-      useEditorStore.setState({ isSidebarOpen: false });
+      useEditorStore.setState({ isSidebarOpen: true });
     }
   }, [isMobile]);
 
@@ -45,10 +46,11 @@ const Main = () => {
             "w-[calc(100%-280px)]": !isMobile && !isSidebarOpen
           }
         )}>
-          <Tiptap action={active} fontStyle={fontStyle} />
+          <Tiptap action={active} fontStyle={fontStyle} color={color} />
           <EditorToolKit
             handleClick={e => setActive(e)}
             fontStyle={setFontStyle}
+            handleColorClick={e => setColor(e)}
           />
         </div>
 
