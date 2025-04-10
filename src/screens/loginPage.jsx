@@ -242,7 +242,10 @@ const LoginPage = () => {
                     ? "bg-slate-700 hover:bg-slate-600 text-white border border-slate-600"
                     : "bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 shadow-sm"
                 )}
-                startIcon={<Facebook className={darkMode ? "text-blue-400" : "text-blue-600"} />}
+                startIcon={<Facebook
+                  className="text-white"
+                  sx={{ fontSize: "14px" }}
+                />}
                 btnText="Facebook"
               />
             </Link>

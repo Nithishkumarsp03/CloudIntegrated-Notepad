@@ -7,7 +7,7 @@ const useEditorStore = create((set, get) => ({
     isSidebarOpen: false, 
     data: tabsData, 
     search: "", 
-    darkMode: false,
+    darkMode: true,
     charactersTotalCount: 0,
     
     setCharacterCount: (value) => {
@@ -16,6 +16,7 @@ const useEditorStore = create((set, get) => ({
     
     setDarkMode: () => {
         const { darkMode } = get();
+        document.documentElement.classList.toggle("dark");
         set({ darkMode: !darkMode });
     },
 

@@ -1,8 +1,20 @@
+'use client';
+
 import { motion, useAnimation } from 'framer-motion';
 import { forwardRef, useCallback, useImperativeHandle, useRef } from 'react';
 import { cn } from '../../components/cn';
 
-const SearchIcon = forwardRef(({ onMouseEnter, onMouseLeave, className, size = 40, ...props }, ref) => {
+const defaultTransition = {
+    times: [0, 0.4, 1],
+    duration: 0.5,
+};
+
+const pathVariants = {
+    normal: { x: 0 },
+    animate: { x: [0, -1.5, 0] },
+};
+
+const PanelRightOpenIcon = forwardRef(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 
@@ -39,43 +51,37 @@ const SearchIcon = forwardRef(({ onMouseEnter, onMouseLeave, className, size = 4
     return (
         <div
             className={cn(
-                'cursor-pointer select-none p-2 hover:bg-accent rounded-md transition-colors duration-200 flex items-center justify-center',
+                `cursor-pointer select-none p-2 hover:bg-accent rounded-md transition-colors duration-200 flex items-center justify-center`,
                 className
             )}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
             {...props}
         >
-            <motion.svg
+            <svg
                 xmlns="http://www.w3.org/2000/svg"
-                width={'1.5em'}
-                height={'1.5em'}
+                width={size}
+                height={size}
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                variants={{
-                    normal: { x: 0, y: 0 },
-                    animate: {
-                        x: [0, 0, -3, 0],
-                        y: [0, -4, 0, 0],
-                    },
-                }}
-                transition={{
-                    duration: 1,
-                    bounce: 0.3,
-                }}
-                animate={controls}
             >
-                <circle cx="11" cy="11" r="8" />
-                <path d="m21 21-4.3-4.3" />
-            </motion.svg>
+                <rect width="18" height="18" x="3" y="3" rx="2" />
+                <path d="M15 3v18" />
+                <motion.path
+                    transition={defaultTransition}
+                    variants={pathVariants}
+                    animate={controls}
+                    d="m10 15-3-3 3-3"
+                />
+            </svg>
         </div>
     );
 });
 
-SearchIcon.displayName = 'SearchIcon';
+PanelRightOpenIcon.displayName = 'PanelRightOpenIcon';
 
-export { SearchIcon };
+export { PanelRightOpenIcon };

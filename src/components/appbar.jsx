@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import {
     AppBar,
     Toolbar,
@@ -8,26 +8,27 @@ import {
     MenuItem,
     Typography
 } from "@mui/material";
-import { AccountCircle, Brightness4, Brightness7, ShareSharp } from "@mui/icons-material";
+import { AccountCircle, Brightness4, Brightness7 } from "@mui/icons-material";
 import { FiMail, FiGithub } from "react-icons/fi";
 import useEditorStore from "../globalStore";
 import { cn } from "./cn";
-import HamburgerIcon from "../assets/svgs/hamburger";
-import { SearchIcon } from "../assets/svgs/searchIcon";
 import logo from "../assets/logo.png";
 import Customer from "../assets/svgs/customerIcon";
+import { SearchIcon } from '../assets/svgs/searchIcon';
+import { PanelLeftOpenIcon } from "../assets/svgs/leftSidebar";
+import { PanelRightOpenIcon } from "../assets/svgs/rightSidebar";
+import { ShareIcon } from "../assets/svgs/share";
 import ShareModal from "./share";
-import ShareIcon from "../assets/svgs/share";
 
 const Appbar = () => {
     const [customerAnchorEl, setCustomerAnchorEl] = useState(null);
-    const { setIsSideBarOpen, darkMode, setDarkMode, isUserLoggedIn } = useEditorStore();
+    const { setIsSideBarOpen, darkMode, setDarkMode, isUserLoggedIn, isSidebarOpen } = useEditorStore();
     const [share, setShare] = useState(false);
     const isMobile = useMediaQuery("(max-width:768px)");
+    const searchRef = useRef(null);
 
     const toggleDarkMode = () => {
         setDarkMode(!darkMode);
-        document.documentElement.classList.toggle("dark");
     };
 
     const teamMembers = [
@@ -90,27 +91,39 @@ const Appbar = () => {
                             className="cursor-pointer text-gray-500 dark:text-gray-400"
                             onClick={setIsSideBarOpen}
                         >
-                            <HamburgerIcon
-                                fill="transparent"
-                                stroke={darkMode ? "#ffffff" : "#000000"}
-                                className={isMobile ? "h-6 w-6" : "h-8 w-8"}
-                            />
+                            {isSidebarOpen ?
+                                <PanelLeftOpenIcon />
+                                :
+                                <PanelRightOpenIcon />
+                            }
                         </span>
 
                         {/* Search */}
-                        <div className="max-w-[300px] hidden md:block">
+                        <div
+                            className="max-w-[300px] hidden md:block"
+                            onMouseEnter={() => searchRef.current?.startAnimation()}
+                            onMouseLeave={() => searchRef.current?.stopAnimation()}
+                        >
                             <div className="flex items-center gap-3 min-w-0 flex-shrink flex-grow">
                                 <SearchIcon
-                                    className={cn("w-6 h-6", {
-                                        "text-gray-700": !darkMode,
-                                        "text-gray-300": darkMode,
-                                    })}
+                                    className={cn(
+                                        "text-gray-700 dark:text-gray-300",
+                                        {
+                                            "text-gray-700": !darkMode,
+                                            "text-gray-300": darkMode,
+                                        }
+                                    )}
+                                    ref={searchRef}
                                 />
                                 <input
                                     type="text"
                                     placeholder="Search Notes..."
                                     className={cn(
-                                        "w-[100px] dark:focus:border-purple-600 sm:min-w-[250px] sm:w-[250px] h-10 px-3 py-1.5 bg-white dark:bg-gray-800 border-[1.5px] border-gray-200 dark:border-gray-700 rounded-3xl shadow-sm focus:outline-none text-sm font-normal font-sans",
+                                        "w-[100px] sm:min-w-[250px] sm:w-[250px] h-10 px-3 py-1.5",
+                                        "bg-white dark:bg-gray-800 border-[1.5px]",
+                                        "border-gray-200 dark:border-gray-700 rounded-3xl",
+                                        "shadow-sm focus:outline-none text-sm font-normal font-sans",
+                                        "focus:border-blue-500 dark:focus:border-purple-600",
                                         {
                                             "text-gray-700": !darkMode,
                                             "text-gray-300": darkMode,
@@ -131,7 +144,7 @@ const Appbar = () => {
                     <div className="flex items-center gap-2 flex-shrink-0">
                         {isUserLoggedIn &&
                             <span className="text-black dark:text-white cursor-pointer" onClick={() => setShare(!share)}>
-                                <ShareIcon />
+                                <ShareIcon/>
                             </span>
                         }
                         {/* Dark Mode Toggle */}

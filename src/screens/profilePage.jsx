@@ -3,7 +3,6 @@ import { Link, useNavigate } from "react-router-dom";
 import {
     Box,
     Typography,
-    TextField,
     Avatar,
     IconButton,
     MenuItem,
@@ -12,13 +11,14 @@ import {
     InputLabel,
     FormControlLabel,
 } from '@mui/material';
-import { ArrowBack, Check, Notifications, Security, Download, BorderBottom, Edit, AddAPhoto } from '@mui/icons-material';
+import { Check, Notifications, Security, Download, BorderBottom, Edit, AddAPhoto } from '@mui/icons-material';
 import useEditorStore from '../globalStore';
 import NotePad from "../assets/svgs/notePad";
 import { cn } from '../components/cn';
 import { ButtonComponent } from '../components/button';
 import ProfileSwitch from '../components/switch';
 import { InputField } from '../components/inputField';
+import BackArrow from '../assets/svgs/backArrow';
 
 const ProfilePage = () => {
     const { darkMode } = useEditorStore();
@@ -111,13 +111,12 @@ const ProfilePage = () => {
                     "mb-6 p-4 sm:p-6 rounded-xl shadow-lg flex items-center justify-between",
                     darkMode ? "border border-gray-700 bg-gradient-to-r from-gray-900 to-gray-800" : "border border-blue-100 bg-gradient-to-r from-blue-50 to-purple-50"
                 )}>
-                    <Box className="flex items-center">
-                        <IconButton
-                            onClick={() => navigate(-1)}
-                            className={`mr-3 ${darkMode ? 'text-purple-200 hover:bg-purple-900/30' : 'text-blue-700 hover:bg-blue-100'} transition-colors`}
-                        >
-                            <ArrowBack />
-                        </IconButton>
+                    <Box className="flex items-center gap-4">
+                        <span className={cn('text-white',{
+                            'text-black' : !darkMode
+                        })}>
+                            <BackArrow/>
+                        </span>
                         <Typography variant="h5" className={`font-bold ${darkMode ? 'text-purple-100' : 'text-blue-800'}`}>
                             Profile Settings
                         </Typography>
@@ -256,7 +255,7 @@ const ProfilePage = () => {
 
                                 <FormControl fullWidth variant="outlined">
                                     <InputLabel id="gender-label" sx={{
-                                        color: darkMode ? "rgb(233, 213, 255)" : "#0b6bcb", '&.Mui-focused': {
+                                        color: darkMode ? !edit ? "rgb(233, 213, 255)" : "black" : "#0b6bcb", '&.Mui-focused': {
                                             color: darkMode ? "rgb(233, 213, 255)" : "#0b6bcb"
                                     } }}>Gender</InputLabel>
                                     <Select

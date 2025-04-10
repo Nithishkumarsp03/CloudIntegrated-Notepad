@@ -36,9 +36,12 @@ const EditorToolKit = ({ handleClick, fontStyle }) => {
         leftAlign: false,
         rightAlign: false,
         centerAlign: false,
-        bulletList: false,
+        bulletList: false,  
     });
     const [textColor, setTextColor] = useState(darkMode ? 'white' : 'black');
+    useEffect(() => {
+        setTextColor(darkMode ? 'white' : 'black');
+    },[darkMode])
 
      useEffect(() => {
         setFontFamily(DEFAULT_FONT_FAMILY);
