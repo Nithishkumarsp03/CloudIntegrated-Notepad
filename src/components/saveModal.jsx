@@ -17,7 +17,7 @@ import { ButtonComponent } from './button';
 const SaveModal = ({ isOpen, onClose, onSave, onSaveAs, currentFileName }) => {
     const { darkMode } = useEditorStore();
     const theme = useTheme();
-    const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
+    const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
     const [fileName, setFileName] = useState(currentFileName || '');
     const [isSaveAs, setIsSaveAs] = useState(false);
 
@@ -44,9 +44,20 @@ const SaveModal = ({ isOpen, onClose, onSave, onSaveAs, currentFileName }) => {
         <Dialog
             open={isOpen}
             onClose={onClose}
-            fullScreen={fullScreen}
             fullWidth
             maxWidth="sm"
+            sx={{
+                '& .MuiDialog-container': {
+                    alignItems: 'center', // Always center vertically
+                    justifyContent: 'center', // Center horizontally
+                },
+                '& .MuiPaper-root': {
+                    margin: '20px',
+                    width: isSmallScreen ? 'calc(100% - 40px)' : '100%',
+                    maxHeight: 'calc(100vh - 40px)',
+                    overflowY: 'auto'
+                }
+            }}
             PaperProps={{
                 sx: {
                     bgcolor: darkMode ? '#111827' : 'background.paper',
@@ -149,24 +160,26 @@ const SaveModal = ({ isOpen, onClose, onSave, onSaveAs, currentFileName }) => {
                         />
 
                         <Box sx={{ display: 'flex', gap: 2 }}>
-                            <ButtonComponent
-                                btnText="Cancel"
-                                handleClick={onClose}
-                                styles={{
-                                    minWidth: '100px',
-                                    height: '40px',
-                                    backgroundColor: darkMode ? '#374151' : '#E5E7EB',
-                                    color: darkMode ? '#F3F4F6' : '#111827',
-                                    borderRadius: '8px',
-                                    textTransform: 'none',
-                                    fontWeight: 500,
-                                    fontSize: '0.875rem',
-                                    '&:hover': {
-                                        backgroundColor: darkMode ? '#4B5563' : '#D1D5DB',
-                                        boxShadow: 'none'
-                                    }
-                                }}
-                            />
+                            {!isSmallScreen && ( // Only show Cancel button on larger screens
+                                <ButtonComponent
+                                    btnText="Cancel"
+                                    handleClick={onClose}
+                                    styles={{
+                                        minWidth: '100px',
+                                        height: '40px',
+                                        backgroundColor: darkMode ? '#374151' : '#E5E7EB',
+                                        color: darkMode ? '#F3F4F6' : '#111827',
+                                        borderRadius: '8px',
+                                        textTransform: 'none',
+                                        fontWeight: 500,
+                                        fontSize: '0.875rem',
+                                        '&:hover': {
+                                            backgroundColor: darkMode ? '#4B5563' : '#D1D5DB',
+                                            boxShadow: 'none'
+                                        }
+                                    }}
+                                />
+                            )}
                             <ButtonComponent
                                 type="submit"
                                 btnText={isSaveAs ? 'Save As' : 'Save'}
@@ -197,4 +210,4 @@ const SaveModal = ({ isOpen, onClose, onSave, onSaveAs, currentFileName }) => {
     );
 };
 
-export default SaveModal;
+export default SaveModal;   

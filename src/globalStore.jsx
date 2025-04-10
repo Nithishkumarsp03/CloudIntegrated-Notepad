@@ -2,10 +2,12 @@ import { create } from "zustand";
 import { tabsData } from "./utils";
 
 const useEditorStore = create((set, get) => ({
+    isUserLoggedIn: true,
+    userDetails:{},
     isSidebarOpen: false, 
     data: tabsData, 
     search: "", 
-    darkMode: true,
+    darkMode: false,
     charactersTotalCount: 0,
     
     setCharacterCount: (value) => {
