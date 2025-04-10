@@ -9,7 +9,7 @@ import { cn } from "../components/cn";
 
 const Main = () => {
   const [active, setActive] = useState('');
-  const [fontStyle, setFontStyle] = useState('arial');
+  const [fontStyle, setFontStyle] = useState('');
   const isMobile = useMediaQuery('(max-width: 768px)');
   const { isSidebarOpen } = useEditorStore();
   const [color, setColor] = useState('#000000');

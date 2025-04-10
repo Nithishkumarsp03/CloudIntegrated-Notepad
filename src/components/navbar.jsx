@@ -4,14 +4,13 @@ import NotePad from "../assets/svgs/notePad";
 import { cn } from "./cn";
 import useEditorStore from "../globalStore";
 import StyledTooltip from "./tooltop";
-import { BsThreeDots, BsPlusLg } from "react-icons/bs";
+import { BsThreeDots } from "react-icons/bs";
 import { FiSearch } from "react-icons/fi";
 import { Menu, MenuItem, useMediaQuery } from "@mui/material";
 import RenameModal from "./renameModel";
 import NoTabsFound from "./noTabs";
 import { ButtonComponent } from "./button";
 import { Add, Save } from "@mui/icons-material";
-import Modal from "./modal";
 import SaveModal from "./saveModal";
 
 const Navbar = () => {
@@ -30,7 +29,7 @@ const Navbar = () => {
     const open = Boolean(anchorEl);
     const isMobile = useMediaQuery('(max-width: 768px)');
     const [newNote, setNewNote] = useState(false);
-    const [saveModal, setSaveModal] = useState(true);
+    const [saveModal, setSaveModal] = useState(false);
 
     useEffect(() => {
         setFilter(data);

@@ -8,20 +8,21 @@ import {
     MenuItem,
     Typography
 } from "@mui/material";
-import { AccountCircle, Brightness4, Brightness7 } from "@mui/icons-material";
-import { FiMail, FiGithub, FiHelpCircle, FiChevronDown, FiChevronUp } from "react-icons/fi";
+import { AccountCircle, Brightness4, Brightness7, ShareSharp } from "@mui/icons-material";
+import { FiMail, FiGithub } from "react-icons/fi";
 import useEditorStore from "../globalStore";
 import { cn } from "./cn";
 import HamburgerIcon from "../assets/svgs/hamburger";
-import ShareComponent from "./share";
 import { SearchIcon } from "../assets/svgs/searchIcon";
 import logo from "../assets/logo.png";
 import Customer from "../assets/svgs/customerIcon";
+import ShareModal from "./share";
+import ShareIcon from "../assets/svgs/share";
 
 const Appbar = () => {
-    const [anchorEl, setAnchorEl] = useState(null);
     const [customerAnchorEl, setCustomerAnchorEl] = useState(null);
-    const { setIsSideBarOpen, darkMode, setDarkMode } = useEditorStore();
+    const { setIsSideBarOpen, darkMode, setDarkMode, isUserLoggedIn } = useEditorStore();
+    const [share, setShare] = useState(false);
     const isMobile = useMediaQuery("(max-width:768px)");
 
     const toggleDarkMode = () => {
@@ -31,7 +32,7 @@ const Appbar = () => {
 
     const teamMembers = [
         {
-            name: "Guna_Nihil N",
+            name: "Guna Nihil N",
             email: "gunanihil3@gamil.com",
             github: "guna2341",
             role: "Frontend Developer"
@@ -128,8 +129,11 @@ const Appbar = () => {
 
                     {/* Right Section */}
                     <div className="flex items-center gap-2 flex-shrink-0">
-                        <ShareComponent mobile={isMobile} />
-
+                        {isUserLoggedIn &&
+                            <span className="text-black dark:text-white cursor-pointer" onClick={() => setShare(!share)}>
+                                <ShareIcon />
+                            </span>
+                        }
                         {/* Dark Mode Toggle */}
                         <IconButton
                             onClick={toggleDarkMode}
@@ -142,12 +146,13 @@ const Appbar = () => {
                         </IconButton>
 
                         {/* Account Button */}
-                        <IconButton
-                            onClick={(e) => setAnchorEl(e.currentTarget)}
-                            sx={{ color: darkMode ? "#fff" : "#000", padding: "6px", flexShrink: 0 }}
-                        >
-                            <AccountCircle fontSize={isMobile ? "small" : "medium"} />
-                        </IconButton>
+                        {isUserLoggedIn &&
+                            <IconButton
+                                sx={{ color: darkMode ? "#fff" : "#000", padding: "6px", flexShrink: 0 }}
+                            >
+                                <AccountCircle fontSize={isMobile ? "small" : "medium"} />
+                            </IconButton>
+                        }
 
                         {/* Customer Support Button */}
                         <IconButton
@@ -275,6 +280,10 @@ const Appbar = () => {
                     </div>
                 </div>
             </Menu>
+            <ShareModal
+                isOpen={share}
+                onClose={() => setShare(!share)}
+            />
         </AppBar>
     );
 };

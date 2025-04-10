@@ -33,6 +33,8 @@ const Tiptap = React.memo(({ action, fontStyle = fontFamilyOptions[0].family, co
     const [isTyping, setIsTyping] = useState(false);
     const editorRef = useRef(null);
 
+    console.log(content);
+
     const calculateWidth = useCallback(() => {
         if (window.innerWidth < 768) return 'w-full';
         if (window.innerWidth < 1024) return isSidebarOpen ? 'w-[calc(100vw-80px)]' : 'w-[calc(100vw-300px)]';

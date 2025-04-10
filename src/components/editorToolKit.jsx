@@ -1,4 +1,4 @@
-import { Select, MenuItem, Popover, TextField, Button, useMediaQuery, Menu, IconButton } from "@mui/material";
+import { Select, MenuItem, Menu, IconButton } from "@mui/material";
 import React, { useEffect, useRef, useState } from "react";
 import { fontFamilyOptions, fontSizes } from "../utils";
 import EditorButton from "./editorButton";
@@ -17,15 +17,14 @@ import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import TextColor from "../assets/svgs/textColor";
 import Modal from "./modal";
 
+const DEFAULT_FONT_FAMILY = 'Times New Roman, serif';
+const DEFAULT_FONT_SIZE = '16px';
+
 const EditorToolKit = ({ handleClick, fontStyle }) => {
-    const [fontFamily, setFontFamily] = useState(fontFamilyOptions[0].family);
-    const [fontSize, setFontSize] = useState(fontSizes[4].size);
-    const [anchorEl, setAnchorEl] = useState(null);
+    const [fontFamily, setFontFamily] = useState(DEFAULT_FONT_FAMILY);
+    const [fontSize, setFontSize] = useState(DEFAULT_FONT_SIZE);
     const [mobileMenuAnchor, setMobileMenuAnchor] = useState(null);
-    const open = Boolean(anchorEl);
     const mobileMenuOpen = Boolean(mobileMenuAnchor);
-    const isMobile = useMediaQuery('(max-width: 768px)');
-    const [linkUrl, setLinkUrl] = useState("");
     const [linkModel, setLinkModel] = useState(false);
     const { darkMode } = useEditorStore();
 
@@ -39,17 +38,37 @@ const EditorToolKit = ({ handleClick, fontStyle }) => {
         centerAlign: false,
         bulletList: false,
     });
-    const [textColor, setTextColor] = useState(!darkMode ? 'white' : 'black');
+    const [textColor, setTextColor] = useState(darkMode ? 'white' : 'black');
+
+     useEffect(() => {
+        setFontFamily(DEFAULT_FONT_FAMILY);
+        setFontSize(DEFAULT_FONT_SIZE);
+
+        const family = fontFamilyOptions.find(font => font.family === DEFAULT_FONT_FAMILY) || {
+            family: DEFAULT_FONT_FAMILY,
+            fontWeight: 'normal'
+        };
+
+        fontStyle(family);
+        handleClick({ fontSize: DEFAULT_FONT_SIZE });
+    }, []);
 
     const handleFont = (e) => {
-        setFontFamily(e.target.value);
-        const family = fontFamilyOptions.find(font => font.family === e.target.value);
+        const newFamily = e.target.value;
+        setFontFamily(newFamily);
+
+        const family = fontFamilyOptions.find(font => font.family === newFamily) || {
+            family: newFamily,
+            fontWeight: 'normal'
+        };
+
         fontStyle(family);
     };
 
     const handleFontSize = (e) => {
-        setFontSize(e.target.value);
-        handleClick({ fontSize: e.target.value });
+        const newSize = e.target.value;
+        setFontSize(newSize);
+        handleClick({ fontSize: newSize });
     };
 
     const handleLink = () => {
@@ -57,20 +76,26 @@ const EditorToolKit = ({ handleClick, fontStyle }) => {
     }
 
     const handleLinkSubmit = (e) => {
-        handleClick({link:e.url,text:e.text})
+        if (e && e.url) {
+            handleClick({ link: e.url, text: e.text || e.url });
+            setLinkModel(false);
+        }
     };
 
     const handleColor = (color) => {
-        handleClick({ color: color });
-        setTextColor(color);
+        if (color) {
+            handleClick({ color: color });
+            setTextColor(color);
+        }
     };
 
-    const handleActive = (key, event) => {
+    const handleActive = (key) => {
+        if (!key) return;
 
         setActiveStyles(prev => ({ ...prev, [key]: !prev[key] }));
 
         if (key === "textColor") {
-            textColorRef.current.click();
+            textColorRef.current?.click();
             return;
         }
 
@@ -93,28 +118,28 @@ const EditorToolKit = ({ handleClick, fontStyle }) => {
     const editorButtons = [
         {
             id: 1,
-            name:"Bold",
+            name: "Bold",
             icon: <BoldIcon />,
             handleClick: () => handleActive("bold"),
             isActive: activeStyles.bold,
         },
         {
             id: 2,
-            name:"UnderLine",
+            name: "UnderLine",
             icon: <Underline />,
             handleClick: () => handleActive("underline"),
             isActive: activeStyles.underline,
         },
         {
             id: 3,
-            name:"Link",
+            name: "Link",
             icon: <LinkIcon />,
-            handleClick: (e) => handleLink(),
+            handleClick: () => handleLink(),
             isActive: activeStyles.link,
         },
         {
             id: 4,
-            name:"StrikeThrough",
+            name: "StrikeThrough",
             icon: <StrikeThrough />,
             handleClick: () => handleActive("strikethrough"),
             isActive: activeStyles.strikethrough,
@@ -122,14 +147,15 @@ const EditorToolKit = ({ handleClick, fontStyle }) => {
         },
         {
             id: 6,
-            name:"BulletList",
+            name: "BulletList",
             icon: <BulletList />,
             handleClick: () => handleActive("bulletList"),
+            isActive: activeStyles.bulletList,
             classes: { padding: "8px 6px" }
         },
         {
             id: 7,
-            name:"Left Align",
+            name: "Left Align",
             icon: <LeftAlign />,
             handleClick: () => handleActive("leftAlign"),
             isActive: activeStyles.leftAlign,
@@ -137,7 +163,7 @@ const EditorToolKit = ({ handleClick, fontStyle }) => {
         },
         {
             id: 8,
-            name:"Center Align",
+            name: "Center Align",
             icon: <CenterAlign />,
             handleClick: () => handleActive("centerAlign"),
             isActive: activeStyles.centerAlign,
@@ -145,7 +171,7 @@ const EditorToolKit = ({ handleClick, fontStyle }) => {
         },
         {
             id: 9,
-            name:"Right Align",
+            name: "Right Align",
             icon: <RightAlign />,
             handleClick: () => handleActive("rightAlign"),
             isActive: activeStyles.rightAlign,
@@ -153,30 +179,30 @@ const EditorToolKit = ({ handleClick, fontStyle }) => {
         },
         {
             id: 10,
-            name:"Undo",
+            name: "Undo",
             icon: <Undo />,
             handleClick: () => handleActive("undo"),
             classes: { padding: "8px 6px" }
         },
         {
             id: 11,
-            name:"Redo",
+            name: "Redo",
             icon: <Redo />,
             handleClick: () => handleActive("redo"),
             classes: { padding: "8px 6px" }
         },
         {
             id: 12,
-            name:"Text Color",
+            name: "Text Color",
             icon: <TextColor style={{ color: textColor }} />,
             handleClick: () => handleActive('textColor'),
-            classes: { color: "none", opacity: "0.7"}
+            classes: { color: "none", opacity: "0.7" }
         },
     ];
 
     return (
         <div className={`p-2 rounded-2xl overflow-hidden flex justify-between shadow-md ${darkMode ? "bg-gray-800" : "bg-gray-100"}`}>
-            {/* display */}
+            {/* desktop display */}
             <div className="hidden md:flex gap-5">
                 <Select
                     classes={{ root: "h-full max-h-11 w-full min-w-40 max-w-40 shadow-sm" }}
@@ -293,8 +319,8 @@ const EditorToolKit = ({ handleClick, fontStyle }) => {
                 </div>
             </div>
 
+            {/* mobile display */}
             <div className="flex md:hidden w-full justify-between items-center">
-                {/* mobile */}
                 <Select
                     classes={{ root: "h-full max-h-11 w-full min-w-[100px] max-w-[120px] shadow-sm mr-4" }}
                     sx={{
@@ -377,7 +403,12 @@ const EditorToolKit = ({ handleClick, fontStyle }) => {
                     ))}
                 </Select>
                 <div className="flex gap-2">
-                    <input type="color" ref={textColorRef} className="hidden" onChange={(e) => handleColor(e.target.value)} />
+                    <input
+                        type="color"
+                        ref={textColorRef}
+                        className="hidden"
+                        onChange={(e) => handleColor(e.target.value)}
+                    />
                     {editorButtons.slice(0, 2).map((val) => (
                         <EditorButton
                             key={val.id}
@@ -413,9 +444,9 @@ const EditorToolKit = ({ handleClick, fontStyle }) => {
                     {editorButtons.slice(2).map((val) => (
                         <MenuItem
                             key={val.id}
-                            onClick={(e) => {
+                            onClick={() => {
                                 if (val.id === 3) {
-                                    handleActive("link", e);
+                                    handleLink();
                                 } else {
                                     val.handleClick();
                                 }
@@ -441,7 +472,7 @@ const EditorToolKit = ({ handleClick, fontStyle }) => {
 
             <Modal
                 isOpen={linkModel}
-                onClose={() => setLinkModel(!linkModel)}
+                onClose={() => setLinkModel(false)}
                 onInsertLink={handleLinkSubmit}
             />
         </div>

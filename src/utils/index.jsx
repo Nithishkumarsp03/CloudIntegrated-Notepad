@@ -58,8 +58,8 @@
 export const fontFamilyOptions = [
     {
         id: 1,
-        name: "Arial",
-        family: "Arial, sans-serif",
+        name: "Times New Roman",
+        family: "Times New Roman, serif",
         fontWeight: "normal"
     },
     {
@@ -70,8 +70,8 @@ export const fontFamilyOptions = [
     },
     {
         id: 3,
-        name: "Times New Roman",
-        family: "Times New Roman, serif",
+        name: "Arial",
+        family: "Arial, sans-serif",
         fontWeight: "normal"
     },
     {
