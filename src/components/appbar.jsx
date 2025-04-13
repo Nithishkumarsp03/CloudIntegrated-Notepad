@@ -6,35 +6,38 @@ import {
     useMediaQuery,
     Menu,
     MenuItem,
-    Typography,
-    Tooltip
+    Typography
 } from "@mui/material";
-import { AccountCircle } from "@mui/icons-material";
-import { FiMail, FiGithub, FiSave } from "react-icons/fi";
+import { AccountCircle, MoreVert } from "@mui/icons-material";
+import { FiMail, FiGithub } from "react-icons/fi";
 import useEditorStore from "../globalStore";
 import { cn } from "./cn";
 import logo from "../assets/logo.png";
 import Customer from "../assets/svgs/customerIcon";
-import { SearchIcon } from '../assets/svgs/searchIcon';
 import { PanelLeftOpenIcon } from "../assets/svgs/leftSidebar";
 import { PanelRightOpenIcon } from "../assets/svgs/rightSidebar";
 import { ShareIcon } from "../assets/svgs/share";
 import ShareModal from "./share";
 import { SunIcon } from "../assets/svgs/sun";
 import { MoonIcon } from "../assets/svgs/moon";
-import SaveModal from "./saveModal";
 import { SaveIcon } from '../assets/svgs/save';
+import SaveModal from '../components/saveModal';
+import { SearchIcon } from '../assets/svgs/searchIcon';
 
 const Appbar = () => {
     const [customerAnchorEl, setCustomerAnchorEl] = useState(null);
+    const [mobileMenuAnchorEl, setMobileMenuAnchorEl] = useState(null);
+    const [saveModal, setSaveModal] = useState(false);
     const { setIsSideBarOpen, darkMode, setDarkMode, isUserLoggedIn, isSidebarOpen } = useEditorStore();
     const [share, setShare] = useState(false);
     const isMobile = useMediaQuery("(max-width:768px)");
     const searchRef = useRef(null);
-    const [saveModal, setSaveModal] = useState(false);
 
     const toggleDarkMode = () => {
         setDarkMode(!darkMode);
+        if (isMobile) {
+            handleMobileMenuClose();
+        }
     };
 
     const teamMembers = [
@@ -54,10 +57,21 @@ const Appbar = () => {
 
     const handleCustomerMenuOpen = (event) => {
         setCustomerAnchorEl(event.currentTarget);
+        if (isMobile) {
+            setMobileMenuAnchorEl(null);
+        }
     };
 
     const handleCustomerMenuClose = () => {
         setCustomerAnchorEl(null);
+    };
+
+    const handleMobileMenuOpen = (event) => {
+        setMobileMenuAnchorEl(event.currentTarget);
+    };
+
+    const handleMobileMenuClose = () => {
+        setMobileMenuAnchorEl(null);
     };
 
     const handleEmailClick = (email) => {
@@ -70,8 +84,14 @@ const Appbar = () => {
         handleCustomerMenuClose();
     };
 
-    const handleSave = () => {
-        console.log("Saving current note...");
+    const handleShareClick = () => {
+        setShare(!share);
+        handleMobileMenuClose();
+    };
+
+    const handleSaveClick = () => {
+        setSaveModal(!saveModal);
+        handleMobileMenuClose();
     };
 
     return (
@@ -85,39 +105,34 @@ const Appbar = () => {
                     ? "linear-gradient(to top, #1f2937, #111827)"
                     : "linear-gradient(to top, #f3f4f6, #e5e7eb)",
                 color: darkMode ? "#ffffff" : "#000000",
-                boxShadow: "0px 1px 3px rgba(0,0,0,0.1)",
-                backdropFilter: "blur(8px)",
+                boxShadow: "none",
             }}
         >
             <Toolbar
                 className={cn(
                     "flex w-full max-w-full box-border overflow-x-hidden",
-                    isMobile ? "flex-col items-start p-2" : "flex-row justify-between items-center px-4"
+                    "flex-row justify-between items-center px-4"
                 )}
             >
                 <div className="flex justify-between items-center w-full box-border">
                     {/* Left Section */}
-                    <div className="flex items-center gap-4 md:gap-10 min-w-0">
-                        <Tooltip title={isSidebarOpen ? "Close Sidebar" : "Open Sidebar"}>
-                            <span
-                                className="cursor-pointer text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
-                                onClick={setIsSideBarOpen}
-                            >
-                                {isSidebarOpen ?
-                                    <PanelLeftOpenIcon />
-                                    :
-                                    <PanelRightOpenIcon />
-                                }
-                            </span>
-                        </Tooltip>
-
-                        {/* Search */}
+                    <div className="flex items-center gap-10 min-w-0">
+                        <span
+                            className="cursor-pointer text-gray-500 dark:text-gray-400"
+                            onClick={setIsSideBarOpen}
+                        >
+                            {isSidebarOpen ?
+                                <PanelLeftOpenIcon />
+                                :
+                                <PanelRightOpenIcon />
+                            }
+                        </span>
                         <div
                             className="max-w-[300px] hidden md:block"
                             onMouseEnter={() => searchRef.current?.startAnimation()}
                             onMouseLeave={() => searchRef.current?.stopAnimation()}
                         >
-                            <div className="flex items-center gap-3 min-w-0 flex-shrink flex-grow">
+                            <div className="md:flex items-center gap-3 min-w-0 flex-shrink flex-grow hidden">
                                 <SearchIcon
                                     className={cn(
                                         "text-gray-700 dark:text-gray-300",
@@ -136,7 +151,7 @@ const Appbar = () => {
                                         "bg-white dark:bg-gray-800 border-[1.5px]",
                                         "border-gray-200 dark:border-gray-700 rounded-3xl",
                                         "shadow-sm focus:outline-none text-sm font-normal font-sans",
-                                        "focus:border-blue-500 dark:focus:border-purple-600 transition-colors",
+                                        "focus:border-blue-500 dark:focus:border-purple-600",
                                         {
                                             "text-gray-700": !darkMode,
                                             "text-gray-300": darkMode,
@@ -146,145 +161,147 @@ const Appbar = () => {
                                 />
                             </div>
                         </div>
+
                     </div>
 
                     {/* Center Logo */}
-                    <div className="flex justify-center w-full pl-0 md:pl-0">
-                        <img src={logo} alt="logo" className="w-[90px] h-[50px] object-contain" />
+                    <div className="flex justify-center absolute left-1/2 transform -translate-x-1/2">
+                        <img src={logo} alt="logo" className="w-[90px] h-[50px]" />
                     </div>
 
                     {/* Right Section */}
-                    <div className="flex items-center gap-1 md:gap-3 flex-shrink-0">
-                        {/* Save Button */}
-                        <Tooltip title="Save Note">
-                            <IconButton
-                                onClick={() => setSaveModal(!saveModal)}
-                                sx={{
-                                    color: darkMode ? "#fff" : "#000",
-                                    padding: "6px",
-                                    flexShrink: 0,
-                                    '&:hover': {
-                                        backgroundColor: darkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0)'
-                                    }
-                                }}
-                            >
-                                <SaveIcon size={20} />
-                            </IconButton>
-                            <SaveModal
-                                isOpen={saveModal}
-                                onClose={() => setSaveModal(false)}
-                                onSave={() => console.log("Save")}
-                            />
-                        </Tooltip>
-
-                        {/* Share Button */}
-                        {isUserLoggedIn && (
-                            <Tooltip title="Share">
+                    <div className="flex items-center gap-0 md:gap-2 flex-shrink-0">
+                        {/* Mobile Menu Icon - only visible on mobile */}
+                        {isMobile && (
+                            <>
                                 <IconButton
-                                    onClick={() => setShare(!share)}
-                                    sx={{
-                                        color: darkMode ? "#fff" : "#000",
-                                        padding: "6px",
-                                        flexShrink: 0,
-                                        '&:hover': {
-                                            backgroundColor: darkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0)'
-                                        }
-                                    }}
+                                    onClick={handleMobileMenuOpen}
+                                    sx={{ color: darkMode ? "#fff" : "#000", padding: "6px", flexShrink: 0 }}
                                 >
-                                    <ShareIcon size={20} />
+                                    <MoreVert fontSize="medium" />
                                 </IconButton>
-                            </Tooltip>
+
+                                {/* Account Button */}
+                                {isUserLoggedIn &&
+                                    <IconButton
+                                        sx={{ color: darkMode ? "#fff" : "#000", padding: "6px", flexShrink: 0 }}
+                                    >
+                                        <AccountCircle fontSize={isMobile ? "small" : "medium"} />
+                                    </IconButton>
+                                }
+                                {/* Customer Support - always visible */}
+                                <IconButton
+                                    onClick={handleCustomerMenuOpen}
+                                    sx={{ color: darkMode ? "#fff" : "#000", padding: "6px", flexShrink: 0, marginLeft: "4px" }}
+                                >
+                                    <Customer fontSize="medium" />
+                                </IconButton>
+                            </>
                         )}
 
-                        {/* Dark Mode Toggle */}
-                        <Tooltip title={darkMode ? "Light Mode" : "Dark Mode"}>
-                            <IconButton
-                                onClick={toggleDarkMode}
-                                sx={{
-                                    color: darkMode ? "#fff" : "#000",
-                                    padding: "6px",
-                                    flexShrink: 0,
-                                    '&:hover': {
-                                        backgroundColor: darkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)'
-                                    }
-                                }}
-                            >
-                                {darkMode ?
-                                    <SunIcon fontSize={isMobile ? "small" : "medium"} size={20} /> :
-                                    <MoonIcon fontSize={isMobile ? "small" : "medium"} size={20} />
-                                }
-                            </IconButton>
-                        </Tooltip>
-
-                        {/* Account Button */}
-                        {isUserLoggedIn && (
-                            <Tooltip title="Account">
+                        {/* Desktop-only visible items */}
+                        {!isMobile && (
+                            <>
+                                {/* Dark Mode Toggle - only on desktop */}
                                 <IconButton
-                                    sx={{
-                                        color: darkMode ? "#fff" : "#000",
-                                        padding: "6px",
-                                        flexShrink: 0,
-                                        '&:hover': {
-                                            backgroundColor: darkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)'
-                                        }
-                                    }}
+                                    onClick={toggleDarkMode}
+                                    sx={{ color: darkMode ? "#fff" : "#000", padding: "6px", flexShrink: 0 }}
                                 >
-                                    <AccountCircle fontSize={isMobile ? "small" : "medium"} />
-                                </IconButton>
-                            </Tooltip>
-                        )}
-
-                        {/* Customer Support Button */}
-                        <Tooltip title="Contact Support">
-                            <IconButton
-                                onClick={handleCustomerMenuOpen}
-                                sx={{
-                                    color: darkMode ? "#fff" : "#000",
-                                    padding: "6px",
-                                    flexShrink: 0,
-                                    marginLeft: "0",
-                                    '&:hover': {
-                                        backgroundColor: darkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)'
+                                    {darkMode ?
+                                        <SunIcon fontSize="medium" size={20} /> :
+                                        <MoonIcon fontSize="medium" size={20} />
                                     }
-                                }}
-                            >
-                                <Customer fontSize={isMobile ? "small" : "medium"} />
-                            </IconButton>
-                        </Tooltip>
-                    </div>
-                </div>
+                                </IconButton>
 
-                {/* Mobile Search - Visible only on small screens */}
-                <div className="w-full mt-2 md:hidden">
-                    <div className="flex items-center gap-3 min-w-0">
-                        <SearchIcon
-                            className={cn(
-                                "text-gray-700 dark:text-gray-300",
-                                {
-                                    "text-gray-700": !darkMode,
-                                    "text-gray-300": darkMode,
+                                {isUserLoggedIn &&
+                                    <span className="text-black dark:text-white cursor-pointer" onClick={() => setShare(!share)}>
+                                        <ShareIcon size={20} />
+                                    </span>
                                 }
-                            )}
-                        />
-                        <input
-                            type="text"
-                            placeholder="Search Notes..."
-                            className={cn(
-                                "w-full h-9 px-3 py-1.5",
-                                "bg-white dark:bg-gray-800 border-[1.5px]",
-                                "border-gray-200 dark:border-gray-700 rounded-3xl",
-                                "shadow-sm focus:outline-none text-sm font-normal font-sans",
-                                "focus:border-blue-500 dark:focus:border-purple-600 transition-colors",
-                                {
-                                    "text-gray-700": !darkMode,
-                                    "text-gray-300": darkMode,
+                                {isUserLoggedIn &&
+                                    <IconButton
+                                        onClick={() => setSaveModal(!saveModal)}
+                                        sx={{
+                                            color: darkMode ? "#fff" : "#000",
+                                            padding: "6px",
+                                            flexShrink: 0,
+                                            '&:hover': {
+                                                backgroundColor: darkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0)'
+                                            }
+                                        }}
+                                    >
+                                        <SaveIcon size={20} />
+                                    </IconButton>
                                 }
-                            )}
-                            onChange={(e) => useEditorStore.getState().setSearch(e.target.value)}
-                        />
+                                {/* Account Button */}
+                                {isUserLoggedIn &&
+                                    <IconButton
+                                        sx={{ color: darkMode ? "#fff" : "#000", padding: "6px", flexShrink: 0 }}
+                                    >
+                                        <AccountCircle fontSize={isMobile ? "small" : "medium"} />
+                                    </IconButton>
+                                }
+                                            <IconButton
+                                                onClick={handleCustomerMenuOpen}
+                                                sx={{ color: darkMode ? "#fff" : "#000", padding: "6px", flexShrink: 0, marginLeft: "7px" }}
+                                            >
+                                                <Customer fontSize="medium" />
+                                            </IconButton>
+                            </>
+                        )}
                     </div>
                 </div>
             </Toolbar>
+
+            {/* Mobile Menu */}
+            <Menu
+                anchorEl={mobileMenuAnchorEl}
+                open={Boolean(mobileMenuAnchorEl)}
+                onClose={handleMobileMenuClose}
+                PaperProps={{
+                    sx: {
+                        backgroundColor: darkMode ? "#374151" : "#FFFFFF",
+                        color: darkMode ? "#E5E7EB" : "#1F2937",
+                        borderRadius: "12px",
+                        border: darkMode ? "1px solid #4B5563" : "1px solid #E5E7EB",
+                        boxShadow: darkMode
+                            ? "0px 4px 6px -1px rgba(0, 0, 0, 0.5), 0px 2px 4px -1px rgba(0, 0, 0, 0.3)"
+                            : "0px 4px 6px -1px rgba(0, 0, 0, 0.1), 0px 2px 4px -1px rgba(0, 0, 0, 0.06)",
+                        minWidth: "180px"
+                    }
+                }}
+                transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+            >
+                {/* Dark Mode Toggle - moved to menu for mobile */}
+                <MenuItem onClick={toggleDarkMode} sx={{ minHeight: 'auto', padding: '8px 16px' }}>
+                    <div className="flex items-center gap-2">
+                        {darkMode ?
+                            <SunIcon className="w-4 h-4" size={16} /> :
+                            <MoonIcon className="w-4 h-4" size={16} />
+                        }
+                        <span>{darkMode ? "Light" : "Dark"} Mode</span>
+                    </div>
+                </MenuItem>
+
+                {isUserLoggedIn && (
+                    <>
+                        <MenuItem onClick={handleShareClick} sx={{ minHeight: 'auto', padding: '8px 16px' }}>
+                            <div className="flex items-center gap-2">
+                                <ShareIcon size={16} />
+                                <span>Share</span>
+                            </div>
+                        </MenuItem>
+
+                        <MenuItem onClick={handleSaveClick} sx={{ minHeight: 'auto', padding: '8px 16px' }}>
+                            <div className="flex items-center gap-2">
+                                <SaveIcon size={16} />
+                                <span>Save</span>
+                            </div>
+                        </MenuItem>
+                    </>
+                )}
+            </Menu>
 
             {/* Customer Support Menu */}
             <Menu
@@ -404,6 +421,11 @@ const Appbar = () => {
             <ShareModal
                 isOpen={share}
                 onClose={() => setShare(!share)}
+            />
+            <SaveModal
+                isOpen={saveModal}
+                onClose={() => setSaveModal(false)}
+                onSave={() => console.log("Save")}
             />
         </AppBar>
     );

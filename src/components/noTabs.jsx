@@ -27,10 +27,6 @@ const NoTabsFound = () => {
             <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-3">
                 No Notes Found
             </h2>
-
-            <p className="text-gray-600 dark:text-gray-400 mb-5 max-w-xs">
-                No notes found for {search}
-            </p>
         </div>
     );
 };

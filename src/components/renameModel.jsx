@@ -29,9 +29,9 @@ const RenameModal = ({ open, onClose, onRename, placeholder = "Enter new file na
     }, [value]);
 
     const handleRename = () => {
+        onClose();  
         if (newName.trim()) {
             onRename(newName);
-            onClose();
             setNewName("");
         }
     };

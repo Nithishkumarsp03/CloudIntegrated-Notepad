@@ -5,7 +5,7 @@ const useEditorStore = create((set, get) => ({
     isUserLoggedIn: true,
     userDetails:{},
     isSidebarOpen: false, 
-    data: tabsData, 
+    data: [], 
     search: "", 
     darkMode: true,
     charactersTotalCount: 0,

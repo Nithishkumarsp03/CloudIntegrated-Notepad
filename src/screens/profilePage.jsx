@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useRef } from 'react';
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
     Box,
     Typography,
@@ -23,7 +23,8 @@ import { SunIcon } from '../assets/svgs/sun';
 import { MoonIcon } from '../assets/svgs/moon';
 
 const ProfilePage = () => {
-    const { darkMode, setDarkMode } = useEditorStore();
+    const { darkMode, setDarkMode, data } = useEditorStore();
+    const navigate = useNavigate();
     const fileInputRef = useRef(null);
     const [profileData, setProfileData] = useState({
         name: 'John Doe',
@@ -90,6 +91,10 @@ const ProfilePage = () => {
         setEdit(!edit);
     }
 
+    const handleSave = () => {
+        navigate('/onBoarding-flow')
+    };
+
     const togglePasswordFields = () => {
         setShowPasswordFields(!showPasswordFields);
         setPasswordMessage({ type: '', text: '' });
@@ -120,9 +125,6 @@ const ProfilePage = () => {
                 text: 'Current password is incorrect. Please try again.'
             });
         }
-    };
-
-    const handleForgotPassword = () => {
     };
 
     const BackgroundPattern = useMemo(() => {
@@ -171,13 +173,13 @@ const ProfilePage = () => {
                             Profile Settings
                         </Typography>
                     </Box>
-                    <Link to={'/texteditor'}>
                         <ButtonComponent
-                            btnText={'Save Changes'}
-                            startIcon={<Check />}
-                            darkMode={darkMode} 
+                        btnText={'Save Changes'}
+                        startIcon={<Check />}
+                        styles={{width:"fit-content"}}
+                        darkMode={darkMode} 
+                        handleClick={handleSave}
                         />
-                    </Link>
                 </Box>
 
                 {/* Main profile content */}
@@ -398,7 +400,7 @@ const ProfilePage = () => {
                                     >
                                         <MenuItem value="male">Male</MenuItem>
                                         <MenuItem value="female">Female</MenuItem>
-                                        <MenuItem value="other">Other</MenuItem>
+                                        <MenuItem value="other">Rather not say</MenuItem>
                                     </Select>
                                 </FormControl>
                             </div>
@@ -522,14 +524,14 @@ const ProfilePage = () => {
                                             />
 
                                             <div className="flex flex-wrap justify-between items-center gap-4 mt-2">
+                                                <Link to='/forgotPassword'>
                                                 <Typography
                                                     variant="body2"
                                                     className={`cursor-pointer hover:underline ${darkMode ? 'text-purple-300' : 'text-blue-600'}`}
-                                                    onClick={handleForgotPassword}
                                                 >
                                                     Forgot Password?
                                                 </Typography>
-
+                                                </Link>
                                                 <ButtonComponent
                                                     btnText="Update Password"
                                                     darkMode={darkMode}

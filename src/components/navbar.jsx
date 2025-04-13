@@ -17,7 +17,7 @@ const Navbar = () => {
         tabId: -1,
     });
 
-    const { isSidebarOpen, search, setSearch, deleteData, data, renameData, darkMode, getHeading } = useEditorStore();
+    const { isSidebarOpen, search, setSearch, deleteData, data, renameData, darkMode, getHeading,addNewTab } = useEditorStore();
     const [filter, setFilter] = useState(data);
     const navigate = useNavigate();
     const [anchorEl, setAnchorEl] = useState(null);
@@ -28,8 +28,15 @@ const Navbar = () => {
     const isMobile = useMediaQuery('(max-width: 768px)');
     const [newNote, setNewNote] = useState(false);
 
+
     useEffect(() => {
-        setFilter(data);
+        if (data && data.length) {
+            setFilter(data);
+            if (id.dayId == -1 && id.tabId == -1) {
+                setId({ dayId: data[0].id, tabId: data[0].data[0].id })
+            }
+            navigate(`/textEditor/${data[0].id}`)
+        }
     }, [data]);
 
     useEffect(() => {
@@ -87,7 +94,7 @@ const Navbar = () => {
 
     const handleClick = (dayId, tabId) => {
         setId((p) => ({ ...p, dayId, tabId }));
-        navigate(`/textEditor/${tabId}`);
+        navigate(`/textEditor/${dayId}`);
         if (isMobile) {
             useEditorStore.setState({ isSidebarOpen: true });
         }
@@ -356,10 +363,10 @@ const Navbar = () => {
             </div>
             <RenameModal
                 open={newNote}
-                onClose={() => setNewNote(!newNote)}
+                onClose={() => setNewNote(false)}
                 heading="New Note"
                 placeholder="Enter Note Name"
-                onRename={(e) => console.log(e)}
+                onRename={(e) => { addNewTab(e)}}
             />
         </>
     );
