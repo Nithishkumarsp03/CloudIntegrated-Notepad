@@ -1,17 +1,17 @@
 import React, { useState, useMemo, useRef } from 'react';
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import {
     Box,
     Typography,
     Avatar,
-    IconButton,
     MenuItem,
     Select,
     FormControl,
     InputLabel,
     FormControlLabel,
+    Alert,
 } from '@mui/material';
-import { Check, Notifications, Security, Download, BorderBottom, Edit, AddAPhoto } from '@mui/icons-material';
+import { Check, Notifications, Security, Edit, AddAPhoto } from '@mui/icons-material';
 import useEditorStore from '../globalStore';
 import NotePad from "../assets/svgs/notePad";
 import { cn } from '../components/cn';
@@ -19,10 +19,11 @@ import { ButtonComponent } from '../components/button';
 import ProfileSwitch from '../components/switch';
 import { InputField } from '../components/inputField';
 import BackArrow from '../assets/svgs/backArrow';
+import { SunIcon } from '../assets/svgs/sun';
+import { MoonIcon } from '../assets/svgs/moon';
 
 const ProfilePage = () => {
-    const { darkMode } = useEditorStore();
-    const navigate = useNavigate();
+    const { darkMode, setDarkMode } = useEditorStore();
     const fileInputRef = useRef(null);
     const [profileData, setProfileData] = useState({
         name: 'John Doe',
@@ -31,24 +32,32 @@ const ProfilePage = () => {
         phone: '+1 (555) 123-4567',
         twoFactorEnabled: false,
         profilePicture: null,
-        notificationsEnabled: true
+        notificationsEnabled: true,
+        password: 'demo123'
     });
     const [tempData, setTempData] = useState(profileData);
     const [previewImage, setPreviewImage] = useState('');
     const [edit, setEdit] = useState(true);
 
-    // Handle file selection
+    const [showPasswordFields, setShowPasswordFields] = useState(false);
+    const [passwordData, setPasswordData] = useState({
+        oldPassword: '',
+        newPassword: ''
+    });
+    const [passwordMessage, setPasswordMessage] = useState({
+        type: '', 
+        text: ''
+    });
+
     const handleFileChange = (e) => {
         if (e.target.files && e.target.files[0]) {
             const selectedFile = e.target.files[0];
 
-            // Update profileData with the selected file
             setProfileData({
                 ...profileData,
                 profilePicture: selectedFile
             });
 
-            // Create a preview URL
             const reader = new FileReader();
             reader.onload = (event) => {
                 setPreviewImage(event.target.result);
@@ -57,12 +66,10 @@ const ProfilePage = () => {
         }
     };
 
-    // Handle avatar click to trigger file upload
     const handleAvatarClick = () => {
         fileInputRef.current.click();
     };
 
-    // Memoize the FormSection component to prevent unnecessary re-renders
     const FormSection = useMemo(() => {
         return ({ title, children }) => (
             <Box className="mb-8 flex flex-col gap-1">
@@ -83,7 +90,41 @@ const ProfilePage = () => {
         setEdit(!edit);
     }
 
-    // Background pattern elements
+    const togglePasswordFields = () => {
+        setShowPasswordFields(!showPasswordFields);
+        setPasswordMessage({ type: '', text: '' });
+        setPasswordData({ oldPassword: '', newPassword: '' });
+    };
+
+    const handlePasswordChange = () => {
+        if (passwordData.oldPassword === profileData.password) {
+            setProfileData({
+                ...profileData,
+                password: passwordData.newPassword
+            });
+
+            setPasswordMessage({
+                type: 'success',
+                text: 'Password updated successfully!'
+            });
+
+            setPasswordData({ oldPassword: '', newPassword: '' });
+
+            setTimeout(() => {
+                setShowPasswordFields(false);
+                setPasswordMessage({ type: '', text: '' });
+            }, 3000);
+        } else {
+            setPasswordMessage({
+                type: 'error',
+                text: 'Current password is incorrect. Please try again.'
+            });
+        }
+    };
+
+    const handleForgotPassword = () => {
+    };
+
     const BackgroundPattern = useMemo(() => {
         return () => (
             <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
@@ -99,9 +140,18 @@ const ProfilePage = () => {
 
     return (
         <Box className={cn(
-            "max-h-screen overflow-x-hidden relative scrollbar-none",
+            "max-h-screen overflow-x-hidden relative scrollbar-none pt-16 lg:pt-0",
             darkMode ? "bg-gradient-to-b from-gray-900 to-gray-800" : "bg-gradient-to-b from-blue-50 to-purple-50"
         )}>
+            <div className="absolute top-4 right-4 z-20 cursor-pointer" onClick={setDarkMode} >
+                <div className="flex items-center gap-2 bg-white/10 dark:bg-gray-800/30 backdrop-blur-sm p-2 rounded-full">
+                    <ProfileSwitch
+                        checked={darkMode}
+                    />
+                    <SunIcon className={cn("text-gray-400", darkMode ? "hidden" : "block")} />
+                    <MoonIcon className={cn("text-gray-400", darkMode ? "block" : "hidden")} />
+                </div>
+            </div>
             <BackgroundPattern />
 
             {/* Main content */}
@@ -112,20 +162,20 @@ const ProfilePage = () => {
                     darkMode ? "border border-gray-700 bg-gradient-to-r from-gray-900 to-gray-800" : "border border-blue-100 bg-gradient-to-r from-blue-50 to-purple-50"
                 )}>
                     <Box className="flex items-center gap-4">
-                        <span className={cn('text-white',{
-                            'text-black' : !darkMode
+                        <span className={cn('text-white', {
+                            'text-black': !darkMode
                         })}>
-                            <BackArrow/>
+                            <BackArrow />
                         </span>
                         <Typography variant="h5" className={`font-bold ${darkMode ? 'text-purple-100' : 'text-blue-800'}`}>
                             Profile Settings
                         </Typography>
                     </Box>
-                    <Link to={'/texteditor/1'}>
+                    <Link to={'/texteditor'}>
                         <ButtonComponent
                             btnText={'Save Changes'}
                             startIcon={<Check />}
-                            darkMode={darkMode}
+                            darkMode={darkMode} 
                         />
                     </Link>
                 </Box>
@@ -254,10 +304,23 @@ const ProfilePage = () => {
                                 />
 
                                 <FormControl fullWidth variant="outlined">
-                                    <InputLabel id="gender-label" sx={{
-                                        color: darkMode ? !edit ? "rgb(233, 213, 255)" : "black" : "#0b6bcb", '&.Mui-focused': {
-                                            color: darkMode ? "rgb(233, 213, 255)" : "#0b6bcb"
-                                    } }}>Gender</InputLabel>
+                                    <InputLabel
+                                        id="gender-label"
+                                        sx={{
+                                            color: edit
+                                                ? (darkMode ? "#ffffff" : "#000000")
+                                                : (darkMode ? "rgb(233, 213, 255)" : "#0b6bcb"),
+                                            '&.Mui-focused': {
+                                                color: darkMode ? "rgb(233, 213, 255)" : "#0b6bcb"
+                                            },
+                                            '&.Mui-disabled': {
+                                                color: darkMode ? "#ffffff !important" : "#000000 !important"
+                                            }
+                                        }}
+                                    >
+                                        Gender
+                                    </InputLabel>
+
                                     <Select
                                         disabled={edit}
                                         labelId="gender-label"
@@ -265,13 +328,21 @@ const ProfilePage = () => {
                                         onChange={(e) => setTempData({ ...tempData, gender: e.target.value })}
                                         label="Gender"
                                         sx={{
-                                            "& .MuiOutlinedInput-notchedOutline": {
-                                                border: edit ? "none" : "2px solid",
-                                                borderColor: darkMode ? edit ? "transparent" : "#6D28D9" : "#0b6bcb",
+                                            '& .MuiOutlinedInput-notchedOutline': {
+                                                border: edit ? 'none' : '2px solid',
+                                                borderColor: edit
+                                                    ? 'transparent'
+                                                    : darkMode
+                                                        ? '#6D28D9'
+                                                        : '#0b6bcb',
                                             },
-                                            "&:hover .MuiOutlinedInput-notchedOutline": {
-                                                border: edit ? "none" : "2px solid",
-                                                borderColor: darkMode ? edit ? "transparent" : "#8B5CF6" : "#1a73e8",
+                                            '&:hover .MuiOutlinedInput-notchedOutline': {
+                                                border: edit ? 'none' : '2px solid',
+                                                borderColor: edit
+                                                    ? 'transparent'
+                                                    : darkMode
+                                                        ? '#8B5CF6'
+                                                        : '#1a73e8',
                                             },
                                             '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
                                                 borderColor: edit
@@ -280,14 +351,32 @@ const ProfilePage = () => {
                                                         ? '#4C1D95 !important'
                                                         : '#1557b0 !important'
                                             },
-                                            color: edit ? "#000000" : darkMode ? "rgb(233, 213, 255)" : "black",
-                                            "& .MuiSelect-icon": {
-                                                color: edit ? "#000000" : darkMode ? "rgb(233, 213, 255)" : "#0b6bcb",
+                                            color: edit
+                                                ? (darkMode ? "rgb(233, 213, 255)" : "#000000")
+                                                : (darkMode ? "rgb(233, 213, 255)" : "black"),
+                                            '& .MuiSelect-icon': {
+                                                color: edit
+                                                    ? (darkMode ? "rgb(233, 213, 255)" : "#000000")
+                                                    : (darkMode ? "rgb(233, 213, 255)" : "#0b6bcb"),
                                             },
-                                            "& .Mui-disabled": {
-                                                WebkitTextFillColor: "#000000 !important",
-                                            }
-                                            
+                                            '&.Mui-disabled': {
+                                                WebkitTextFillColor: darkMode ? "rgb(233, 213, 255) !important" : "#000000 !important",
+                                                color: darkMode ? "rgb(233, 213, 255) !important" : "#000000 !important",
+                                            },
+                                            '& .MuiSelect-select.Mui-disabled': {
+                                                color: darkMode ? 'rgb(233, 213, 255) !important' : '#000000 !important',
+                                                WebkitTextFillColor: darkMode ? 'rgb(233, 213, 255) !important' : '#000000 !important',
+                                                opacity: 1,
+                                            },
+                                            '& .MuiInputBase-input.Mui-disabled': {
+                                                color: darkMode ? 'rgb(233, 213, 255) !important' : '#000000 !important',
+                                                WebkitTextFillColor: darkMode ? 'rgb(233, 213, 255) !important' : '#000000 !important',
+                                                opacity: 1,
+                                            },
+                                            '&.Mui-disabled': {
+                                                color: darkMode ? 'rgb(233, 213, 255) !important' : '#000000 !important',
+                                                WebkitTextFillColor: darkMode ? 'rgb(233, 213, 255) !important' : '#000000 !important',
+                                            },
                                         }}
                                         MenuProps={{
                                             PaperProps: {
@@ -305,7 +394,7 @@ const ProfilePage = () => {
                                                 },
                                             },
                                         }}
-                                        className={`rounded-lg ${edit ? (darkMode ? 'bg-gray-700' : 'bg-gray-100') : darkMode ? '#374151' : 'bg-white'}`}
+                                        className={`rounded-lg ${edit ? (darkMode ? 'bg-gray-700' : 'bg-gray-200') : (darkMode ? 'bg-gray-800' : 'bg-white')}`}
                                     >
                                         <MenuItem value="male">Male</MenuItem>
                                         <MenuItem value="female">Female</MenuItem>
@@ -383,11 +472,75 @@ const ProfilePage = () => {
                                         </Typography>
                                     </Box>
                                     <ButtonComponent
-                                        btnText={'Change password'}
+                                        btnText={showPasswordFields ? 'Cancel' : 'Change password'}
                                         darkMode={darkMode}
                                         styles={{ width: "fit-content" }}
+                                        handleClick={togglePasswordFields}
                                     />
                                 </div>
+
+                                {/* Password change form */}
+                                {showPasswordFields && (
+                                    <Box className={cn(
+                                        "mt-4 pt-4 border-t",
+                                        darkMode ? "border-gray-600" : "border-gray-200"
+                                    )}>
+                                        {/* Success/Error messages */}
+                                        {passwordMessage.type && (
+                                            <Alert
+                                                severity={passwordMessage.type}
+                                                className="mb-4"
+                                                sx={{
+                                                    backgroundColor: darkMode
+                                                        ? passwordMessage.type === 'success' && 'rgba(46, 125, 50, 0.2)'
+                                                        : passwordMessage.type === 'success' && 'rgba(237, 247, 237, 1)',
+                                                    color: darkMode
+                                                        ? passwordMessage.type === 'success' && '#81c784' 
+                                                        : passwordMessage.type === 'success' && '#2e7d32' 
+                                                }}
+                                            >
+                                                {passwordMessage.text}
+                                            </Alert>
+                                        )}
+
+                                        <div className="grid grid-cols-1 gap-4">
+                                            <InputField
+                                                darkMode={darkMode}
+                                                styles={{ '& .MuiInputBase-root': { height: "40px" } }}
+                                                label="Current Password"
+                                                type="password"
+                                                value={passwordData.oldPassword}
+                                                onChange={(e) => setPasswordData({ ...passwordData, oldPassword: e.target.value })}
+                                            />
+                                            <InputField
+                                                darkMode={darkMode}
+                                                styles={{ '& .MuiInputBase-root': { height: "40px" } }}
+                                                label="New Password"
+                                                type="password"
+                                                value={passwordData.newPassword}
+                                                onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
+                                            />
+
+                                            <div className="flex flex-wrap justify-between items-center gap-4 mt-2">
+                                                <Typography
+                                                    variant="body2"
+                                                    className={`cursor-pointer hover:underline ${darkMode ? 'text-purple-300' : 'text-blue-600'}`}
+                                                    onClick={handleForgotPassword}
+                                                >
+                                                    Forgot Password?
+                                                </Typography>
+
+                                                <ButtonComponent
+                                                    btnText="Update Password"
+                                                    darkMode={darkMode}
+                                                    styles={{ width: "fit-content" }}
+                                                    handleClick={handlePasswordChange}
+                                                    disabled={!passwordData.oldPassword || !passwordData.newPassword}
+                                                />
+                                            </div>
+                                        </div>
+                                    </Box>
+                                )}
                             </Box>
                         </Box>
                     </FormSection>
@@ -418,7 +571,7 @@ const ProfilePage = () => {
                     </FormSection>
 
                     {/* Data Management */}
-                    <FormSection title="Data Management">
+                    {/* <FormSection title="Data Management">
                         <Box className="p-5">
                             <div className="flex flex-wrap gap-4 items-center justify-between">
                                 <Box>
@@ -438,6 +591,7 @@ const ProfilePage = () => {
                             </div>
                         </Box>
                     </FormSection>
+                    */}
                 </Box>
 
                 {/* Footer */}

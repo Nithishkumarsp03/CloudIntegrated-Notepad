@@ -14,7 +14,6 @@ import {
     Divider
 } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
-import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import {
     Email,
     WhatsApp,
@@ -26,6 +25,7 @@ import {
 } from '@mui/icons-material';
 import useEditorStore from "../globalStore";
 import { ButtonComponent } from './button';
+import { CopyIcon } from '../assets/svgs/copy';
 
 const ShareModal = ({ isOpen, onClose, shareLink }) => {
     const { darkMode } = useEditorStore();
@@ -155,10 +155,10 @@ const ShareModal = ({ isOpen, onClose, shareLink }) => {
                                 <InputAdornment position="end">
                                     <Button
                                         onClick={handleCopyLink}
-                                        startIcon={<ContentCopyIcon fontSize="small" />}
+                                        startIcon={<CopyIcon size={18} />}
                                         sx={{
                                             textTransform: 'none',
-                                            color: darkMode ? '#7C3AED' : '#2563EB',
+                                            color: darkMode ? '#8B5CF6' : '#2563EB',
                                             '&:hover': {
                                                 backgroundColor: 'transparent',
                                             }

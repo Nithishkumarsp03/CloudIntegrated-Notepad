@@ -5,6 +5,7 @@ import { useTheme } from "@mui/material/styles";
 import useEditorStore from '../globalStore';
 
 export const ButtonComponent = ({
+  children,
   btnText = "button",
   styles,
   startIcon,
@@ -28,7 +29,6 @@ export const ButtonComponent = ({
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-  // Reset animation state when animation completes
   useEffect(() => {
     let animTimeout;
     if (iconState.animate) {
@@ -39,7 +39,6 @@ export const ButtonComponent = ({
     return () => clearTimeout(animTimeout);
   }, [iconState.animate]);
 
-  // Define theme-specific colors
   const colors = {
     light: {
       primary: "#2563EB",
@@ -57,7 +56,6 @@ export const ButtonComponent = ({
     }
   };
 
-  // Set current theme colors
   const currentColors = darkMode ? colors.dark : colors.light;
 
   function handleOnClick() {
@@ -88,8 +86,8 @@ export const ButtonComponent = ({
         boxShadow: currentColors.shadow,
         transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
         cursor: "pointer",
-        position: "relative", // Ensure relative positioning for absolute children
-        overflow: "hidden", // Important for animations that might go outside boundary
+        position: "relative", 
+        overflow: "hidden", 
 
         "&:hover": {
           backgroundColor: currentColors.hover,
@@ -121,10 +119,10 @@ export const ButtonComponent = ({
           boxShadow: "none",
         },
 
-        ...styles // Allow custom style override
+        ...styles
       }}
       startIcon={startIcon}
-      endIcon={!imgAnim && endIcon ? endIcon : null} // Only show endIcon if not using animation
+      endIcon={!imgAnim && endIcon ? endIcon : null} 
       variant={variant}
       fullWidth={fullWidth}
       onClick={handleOnClick}
@@ -132,10 +130,9 @@ export const ButtonComponent = ({
       onMouseLeave={() => setIconState(prev => ({ ...prev, hover: false, mouseEnter: false }))}
     >
       <span className="relative z-10 font-normal text-nowrap">
-        {btnText}
+        {children ? children : btnText}
       </span>
 
-      {/* Icon Animation */}
       {imgAnim && !isMobile && endIcon && (
         <span
           className={`
@@ -152,7 +149,6 @@ export const ButtonComponent = ({
         </span>
       )}
 
-      {/* Ripple effect for click */}
       {isRipple && (
         <span
           className={`

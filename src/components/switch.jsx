@@ -4,13 +4,12 @@ import useEditorStore from '../globalStore';
 
 // Create a styled switch component with smaller dimensions
 const StyledSwitch = styled(Switch)(({ theme, darkmode }) => ({
-    width: 34,  // Reduced from 42
+    width: 34.5,  // Reduced from 42
     height: 20, // Reduced from 26
     padding: 0,
     '& .MuiSwitch-switchBase': {
-        padding: 0,
-        paddingTop: 1,
-        paddingLeft:1.5,
+        padding: 1.5,
+        paddingTop: 1.3,
         margin: 1, // Reduced from 2
         transitionDuration: '200ms', // Slightly faster transition
         '&.Mui-checked': {
@@ -38,14 +37,16 @@ const StyledSwitch = styled(Switch)(({ theme, darkmode }) => ({
     },
     '& .MuiSwitch-thumb': {
         boxSizing: 'border-box',
-        width: 15.5, // Reduced from 22
+        width: 16, // Reduced from 22
         height: 15.5, // Reduced from 22
         backgroundColor: darkmode ? '#E5E7EB' : '#F9FAFB',
         boxShadow: darkmode
             ? '0 1px 3px 0 rgba(0,0,0,0.5)' // Lighter shadow
             : '0 1px 3px 0 rgba(0,0,0,0.1)',
     },
+
     '& .MuiSwitch-track': {
+        paddingTop:2,
         borderRadius: 20 / 2, // Adjusted for new height
         backgroundColor: darkmode ? '#4B5563' : '#E5E7EB',
         opacity: 1,

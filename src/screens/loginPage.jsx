@@ -1,274 +1,472 @@
-import React, { useState, useEffect } from "react";
-import { InputField } from "../components/inputField";
-import { ButtonComponent } from "../components/button";
-import { Checkbox, FormControlLabel, FormGroup } from "@mui/material";
-import { Link } from "react-router-dom";
-import { Facebook, Brightness4, Brightness7, Send, Mail } from "@mui/icons-material";
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from "react-router-dom";
+import {
+  Box,
+  Typography,
+  IconButton,
+  InputAdornment,
+  FormControlLabel,
+  Checkbox,
+  useMediaQuery,
+} from '@mui/material';
+import {
+  Visibility,
+  VisibilityOff,
+  Login,
+  LockOutlined,
+  Email,
+  GitHub,
+  Google,
+  Person,
+  AppRegistration
+} from '@mui/icons-material';
+import useEditorStore from '../globalStore';
 import { cn } from '../components/cn';
-import WaterDrop from "../assets/svgs/waterDrop";
-
-// Import assets (kept as references)
-import logo from "../assets/logo.png";
-import notePad from "../assets/notepad.png";
-import pencil from "../assets/pencil.png";
-import eraser from "../assets/eraserImage.png";
-import googleIcon from "../assets/googleIcon.png";
-import sendIcon from "../assets/sendIcon.png";
-import useEditorStore from "../globalStore";
+import { ButtonComponent } from '../components/button';
+import { InputField } from '../components/inputField';
+import { SunIcon } from '../assets/svgs/sun';
+import { MoonIcon } from '../assets/svgs/moon';
+import ProfileSwitch from '../components/switch';
+import video from '../assets/noteVideo.mp4';
+import logo from '../assets/logo.png';
 
 const LoginPage = () => {
-  const [isSignUp, setIsSignUp] = useState(false);
-  const { darkMode } = useEditorStore();
-  const [userDetails, setUserDetails] = useState({
-    userName: '',
-    password: '',
+  const navigate = useNavigate();
+  const { darkMode, setDarkMode } = useEditorStore();
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
+  const [isLogin, setIsLogin] = useState(true);
+  const [videoLoaded, setVideoLoaded] = useState(false);
+  const [showLeftPanel, setShowLeftPanel] = useState(true);
+
+  const isMobile = useMediaQuery('(max-width:768px)');
+
+  useEffect(() => {
+    if (isMobile) {
+      const timer = setTimeout(() => {
+        setShowLeftPanel(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    } else {
+      setShowLeftPanel(true);
+    }
+  }, [isMobile]);
+
+  const [formData, setFormData] = useState({
+    name: '',
     email: '',
-    confirmPassword: ''
+    password: '',
+    confirmPassword: '',
   });
 
-  const toggleSignUp = () => setIsSignUp(!isSignUp);
+  const handleTogglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
 
-  const handleInputChange = (e) => {
-    if (e.target) {
-      const { name, value } = e.target;
-      setUserDetails(prev => ({
-        ...prev,
-        [name]: value
-      }));
+  const handleToggleConfirmPasswordVisibility = () => {
+    setShowConfirmPassword(!showConfirmPassword);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    navigate('/profile');
+  };
+
+  const switchAuthMode = (e) => {
+    e.preventDefault();
+    setIsLogin(!isLogin);
+    if (isMobile) setShowLeftPanel(false);
+  };
+
+  const toggleLeftPanel = () => {
+    if (isMobile) {
+      setShowLeftPanel(!showLeftPanel);
     }
   };
 
+  const handleVideoLoad = () => {
+    setVideoLoaded(true);
+  };
+
+  function handleForgotPassword() {
+    navigate('/forgotPassword');
+  }
+
+  function handleLogin(e) {
+    if (e === 'login') {
+      navigate('/texteditor');
+    }
+    else {
+      navigate('/profile')
+    }
+  }
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
   return (
-    <div className={cn(
-      "w-full min-h-screen flex justify-center items-center relative overflow-hidden p-4 transition-colors duration-300",
-      darkMode ? "bg-slate-900" : "bg-[#edf5fd]"
-    )}>
-
-      {/* Decorative water drops with adaptive colors */}
-      <div className="absolute right-10 top-10 sm:right-[250px] rotate-[-125deg] opacity-50">
-        <WaterDrop width={50} height={50} fill={darkMode ? "#4B5563" : "#3B82F6"} /> {/* Bright blue */}
-      </div>
-      <div className="absolute bottom-10 right-20 sm:right-[300px] rotate-[160deg] opacity-50">
-        <WaterDrop width={80} height={80} fill={darkMode ? "#9F1239" : "#EF4444"} /> {/* Vibrant red */}
-      </div>
-      <div className="absolute left-5 bottom-20 rotate-[60deg] opacity-50">
-        <WaterDrop width={90} height={90} fill={darkMode ? "#155E75" : "#06B6D4"} /> {/* Cyan */}
-      </div>
-      <div className="absolute -left-10 top-20 rotate-[30deg] opacity-50">
-        <WaterDrop width={120} height={120} fill={darkMode ? "#B45309" : "#F59E0B"} /> {/* Amber */}
-      </div>
-      <div className="absolute -right-16 bottom-40 rotate-[-45deg] opacity-50">
-        <WaterDrop width={110} height={110} fill={darkMode ? "#065F46" : "#10B981"} /> {/* Emerald */}
-      </div>
-      <div className="absolute -bottom-20 left-1/2 transform -translate-x-1/2 rotate-[15deg] opacity-50">
-        <WaterDrop width={130} height={130} fill={darkMode ? "#9F1239" : "#EC4899"} /> {/* Pink */}
-      </div>
-
-      <div className={cn(
-        "flex flex-col md:flex-row shadow-xl rounded-2xl z-10 w-full max-w-[900px] overflow-hidden transition-colors duration-300",
-        darkMode ? "shadow-slate-700/30" : "shadow-gray-300/70"
-      )}>
-        {/* Left decorative panel */}
-        <div className={cn(
-          "hidden md:flex flex-col text-white w-1/2 rounded-l-2xl p-10 relative transition-colors duration-300",
-          darkMode ? "bg-indigo-900" : "bg-blue-600"
+    <Box className="h-screen w-screen flex flex-col md:flex-row overflow-hidden">
+      {(!isMobile || showLeftPanel) && (
+        <Box className={cn(
+          isMobile ? "w-full h-full absolute z-30" : "w-1/2 relative",
+          darkMode ? "bg-gray-900" : "bg-blue-50"
         )}>
-          {/* Decorative elements */}
-          <div className="absolute w-6 h-6 bg-white opacity-20 rounded-full top-10 left-10"></div>
-          <div className="absolute w-4 h-4 bg-white opacity-20 rounded-full bottom-20 right-14"></div>
-          <div className="absolute w-3 h-3 bg-white opacity-20 rounded-full top-28 right-20"></div>
-          <div className="absolute w-5 h-5 bg-white opacity-20 rounded-full bottom-40 left-20"></div>
-          <div className="absolute w-7 h-7 bg-white opacity-20 rounded-full top-48 left-32"></div>
-
-          {/* App illustrations */}
-          <div className="absolute w-[300px] h-[300px] rotate-[-20deg] bottom-[140px] left-[40px]">
-            <img src={notePad} alt="notepad" className="filter drop-shadow-lg" /> 
-          </div>
-          <div className="absolute w-[70px] h-[70px] rotate-[-35deg] bottom-[280px] right-[30px]">
-            <img src={pencil} alt="pencil" className="filter drop-shadow-md" />
-          </div>
-          <div className="absolute w-[40px] h-[40px] top-[120px]">
-            <img src={eraser} alt="eraser" className="filter drop-shadow-md" />
-          </div>
-
-          <div className="flex items-center mb-6">
-            <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center mr-3">
-              <Mail fontSize="small" className="text-white" />
-            </div>
-            <p className="text-xl font-bold">Online Notepad</p>
-          </div>
-
-          <div className="mt-auto">
-            <p className="text-xl font-bold mb-2">
-              {isSignUp ? "Start Your Journey" : "Welcome Back"}
-            </p>
-            <p className="text-sm opacity-90 pb-8 font-normal">
-              {isSignUp
-                ? "Create your account and join thousands of users organizing their thoughts."
-                : "Your ideas, always within reach. Login to access your notes anywhere."}
-            </p>
-          </div>
-        </div>
-
-        {/* Right form panel */}
-        <div className={cn(
-          "w-full md:w-1/2 sm:p-12 p-8 pb-6 sm:pb-6 rounded-r-2xl flex flex-col transition-colors duration-300",
-          darkMode ? "bg-slate-800 text-white" : "bg-white text-slate-800"
-        )}>
-          <div className="flex justify-center mb-6">
-            <div className="relative">
-              <img src={logo} alt="logo" className="w-[70px] h-12 object-contain" />
-            </div>
-          </div>
-
-          <h1 className="text-center text-xl font-bold mb-1">
-            {isSignUp ? "Create Your Account" : "Welcome Back"}
-          </h1>
-          <p className={cn(
-            "text-center text-sm mb-8 font-medium",
-            darkMode ? "text-gray-400" : "text-gray-600"
-          )}>
-            {isSignUp ? "Get started with your free account" : "Sign in to continue"}
-          </p>
-
-          <div className="flex flex-col gap-5 bg-transparent">
-            {isSignUp && (
-              <div>
-                <InputField
-                  label="Email"
-                  name="email"
-                  type="email"
-                  value={userDetails.email}
-                  onChange={handleInputChange}
-                />
-              </div>
-            )}
-            <div className="bg-transparent">
-              <InputField
-                label="Username"
-                name="userName"
-                type="text"
-                value={userDetails.userName}
-                onChange={handleInputChange}
-              />
-            </div>
-
-            <div className={`bg-transparent ${isSignUp && 'mb-[22px]'}`}>
-              <InputField
-                label="Password"
-                name="password"
-                type="password"
-                value={userDetails.password}
-                onChange={handleInputChange}
-              />
-            </div>
-          </div>
-
-          {!isSignUp && (
-            <div className="flex justify-between items-center mt-5 mb-6">
-              <FormGroup>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      size="small"
-                      sx={{
-                        color: darkMode ? '#6D28D9' : '#2563EB',
-                        '&.Mui-checked': {
-                          color: darkMode ? '#6D28D9' : '#2563EB',
-                        }
-                      }}
-                    />
-                  }
-                  label={<span className={cn(
-                    "text-sm font-medium",
-                    darkMode ? "text-gray-300" : "text-gray-600"
-                  )}>Remember me</span>}
-                />
-              </FormGroup>
-              <p className={cn(
-                "text-sm cursor-pointer hover:underline font-semibold",
-                darkMode ? "text-purple-500" : "text-blue-600"
-              )}>
-                Forgot password?
-              </p>
-            </div>
+          {isMobile && (
+            <button
+              onClick={toggleLeftPanel}
+              className={cn(
+                "absolute top-4 right-4 z-40 px-4 py-2 rounded-full",
+                "backdrop-blur-md text-white font-medium",
+                darkMode ? "bg-purple-900/50" : "bg-blue-700/50"
+              )}
+            >
+              {isLogin ? "Login" : "Sign Up"}
+            </button>
           )}
 
-          <Link to='/profile'>
-          <ButtonComponent
-            btnText={isSignUp ? "Create Account" : "Login"}
-            className={cn(
-              "mt-2 py-3 transition-all transform hover:translate-y-[-2px]",
-              darkMode
-                ? "bg-blue-600 hover:bg-blue-500 text-white"
-                : "bg-blue-600 hover:bg-blue-700 text-white"
-            )}
-            endIcon={<img src={sendIcon} alt="send" width={18} height={18} />}
-          />
-          </Link>
-          <div className="flex items-center my-6">
+          <div className="absolute inset-0 z-0 overflow-hidden">
             <div className={cn(
-              "flex-grow h-px",
-              darkMode ? "bg-gray-700" : "bg-gray-200"
+              "absolute inset-0 transition-opacity duration-700",
+              videoLoaded ? "opacity-0" : "opacity-100",
+              darkMode ? "bg-gray-900" : "bg-blue-800"
             )}></div>
-            <span className={cn(
-              "px-4 text-sm font-medium",
-              darkMode ? "text-gray-400" : "text-gray-500"
-            )}>Or continue with</span>
-            <div className={cn(
-              "flex-grow h-px",
-              darkMode ? "bg-gray-700" : "bg-gray-200"
-            )}></div>
-          </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <Link to="/textEditor/1" className="w-full">
-              <ButtonComponent
-                className={cn(
-                  "w-full transition-all hover:shadow-md active:scale-95",
-                  darkMode
-                    ? "bg-slate-700 hover:bg-slate-600 text-white border border-slate-600"
-                    : "bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 shadow-sm"
-                )}
-                startIcon={<img width={20} height={20} src={googleIcon} alt="Google" />}
-                btnText="Google"
-              />
-            </Link>
-            <Link to="/textEditor/1" className="w-full">
-              <ButtonComponent
-                className={cn(
-                  "w-full transition-all hover:shadow-md active:scale-95",
-                  darkMode
-                    ? "bg-slate-700 hover:bg-slate-600 text-white border border-slate-600"
-                    : "bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 shadow-sm"
-                )}
-                startIcon={<Facebook
-                  className="text-white"
-                  sx={{ fontSize: "14px" }}
-                />}
-                btnText="Facebook"
-              />
-            </Link>
-          </div>
-
-          <p className={cn(
-            "text-center text-sm font-medium mt-8",
-            darkMode ? "text-gray-300" : "text-gray-600"
-          )}>
-            {isSignUp ? "Already have an account?" : "Don't have an account?"}{' '}
-            <span
-              className={cn(
-                "cursor-pointer hover:underline font-semibold",
-                darkMode ? "text-purple-500" : "text-blue-600"
-              )}
-              onClick={toggleSignUp}
+            <video
+              className="w-full h-full object-cover"
+              autoPlay
+              loop
+              muted
+              playsInline
+              onLoadedData={handleVideoLoad}
             >
-              {isSignUp ? "Sign in" : "Sign up"}
-            </span>
-          </p>
-        </div>
-      </div>
-    </div>
+              <source src={video} type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+
+            <div className={cn(
+              "absolute inset-0",
+              darkMode
+                ? "bg-gradient-to-br from-gray-900/70 via-gray-900/50 to-purple-900/30"
+                : "bg-gradient-to-br from-blue-900/30 via-blue-800/20 to-blue-600/20"
+            )}></div>
+          </div>
+
+          <div className="absolute inset-0 flex flex-col items-center justify-center p-6 md:p-12 z-10">
+            <div className={cn(
+              "mb-6 md:mb-8 relative flex items-center justify-center"
+            )}>
+              <div className={cn(
+                "absolute w-36 md:w-56 pl-8 md:pl-14 h-24 md:h-32 rounded-full mb-6",
+              )}><img src={logo} alt='logo' className='w-full h-full cover' /></div>
+            </div>
+
+            <Typography
+              variant="h3"
+              className={cn(
+                "text-white font-bold mb-2 md:mb-4 text-center tracking-wide pt-2",
+                isMobile ? "text-3xl" : "text-4xl md:text-5xl"
+              )}
+              style={{ textShadow: "0 2px 4px rgba(0,0,0,0.3)" }}
+            >
+              NotePad
+            </Typography>
+
+            <Typography
+              variant="h6"
+              className="text-white/90 mb-6 md:mb-10 text-center max-w-md font-light"
+              style={{ textShadow: "0 1px 2px rgba(0,0,0,0.3)" }}
+            >
+              Simple. Elegant. Productive.
+            </Typography>
+
+            <div className="space-y-4 md:space-y-6 text-white/90 text-center max-w-md mt-2 md:mt-4">
+              <div className={cn(
+                "p-4 md:p-5 rounded-lg transition-all duration-300 transform hover:scale-105",
+                "backdrop-blur-md",
+                darkMode
+                  ? "bg-purple-900/30 shadow-lg shadow-purple-900/20"
+                  : "bg-blue-800/30 shadow-lg shadow-blue-800/20"
+              )}>
+                <Typography variant="h6" className="text-white font-medium mb-1 md:mb-2 text-sm md:text-base">
+                  Seamless Experience
+                </Typography>
+                <Typography variant="body2" className="opacity-90 text-xs md:text-sm">
+                  Access your notes from anywhere, anytime with our cloud-synced platform.
+                </Typography>
+              </div>
+
+              {!isMobile && (
+                <>
+                  <div className={cn(
+                    "p-5 rounded-lg transition-all duration-300 transform hover:scale-105",
+                    "backdrop-blur-md",
+                    darkMode
+                      ? "bg-purple-900/30 shadow-lg shadow-purple-900/20"
+                      : "bg-blue-800/30 shadow-lg shadow-blue-800/20"
+                  )}>
+                    <Typography variant="h6" className="text-white font-medium mb-2">
+                      Beautiful Interface
+                    </Typography>
+                    <Typography variant="body1" className="opacity-90">
+                      Enjoy a distraction-free writing environment with customizable themes.
+                    </Typography>
+                  </div>
+
+                  <div className={cn(
+                    "p-5 rounded-lg transition-all duration-300 transform hover:scale-105",
+                    "backdrop-blur-md",
+                    darkMode
+                      ? "bg-purple-900/30 shadow-lg shadow-purple-900/20"
+                      : "bg-blue-800/30 shadow-lg shadow-blue-800/20"
+                  )}>
+                    <Typography variant="h6" className="text-white font-medium mb-2">
+                      Powerful Tools
+                    </Typography>
+                    <Typography variant="body1" className="opacity-90">
+                      From simple notes to complex documents, our editor adapts to your needs.
+                    </Typography>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        </Box>
+      )}
+
+
+      {(!isMobile || !showLeftPanel) && (
+        <Box className={cn(
+          isMobile ? "w-full h-full" : "w-1/2",
+          "flex flex-col relative",
+          darkMode ? "bg-gray-800" : "bg-white"
+        )}>
+          {isMobile && (
+            <button
+              onClick={toggleLeftPanel}
+              className={cn(
+                "absolute top-4 left-4 z-20 px-3 py-1 rounded-full text-sm mt-4 md:mt-0 font-medium",
+                "backdrop-blur-md",
+                darkMode ? "bg-purple-900/50 text-purple-200" : "bg-blue-500 text-white"
+              )}
+            >
+              Promo Video
+            </button>
+          )}
+
+          <div className="absolute top-4 right-4 z-20 cursor-pointer" onClick={setDarkMode}>
+            <div className="flex items-center gap-2 bg-white/10 dark:bg-gray-800/30 backdrop-blur-sm p-2 rounded-full">
+              <ProfileSwitch checked={darkMode} />
+              <SunIcon className={cn("text-gray-400", darkMode ? "hidden" : "block")} />
+              <MoonIcon className={cn("text-gray-400", darkMode ? "block" : "hidden")} />
+            </div>
+          </div>
+
+          <div className="flex-1 flex flex-col justify-center px-6 sm:px-10 lg:px-16">
+            <div className="mb-6 md:mb-8">
+              <Typography variant="h4" className={`font-bold mb-1 md:mb-2 ${darkMode ? 'text-purple-100' : 'text-blue-900'}`}>
+                {isLogin ? 'Welcome Back' : 'Create Account'}
+              </Typography>
+              <Typography variant="body1" className={`${darkMode ? 'text-purple-300' : 'text-blue-600'}`}>
+                {isLogin ? 'Log in to continue to your workspace' : 'Join NotePad to start organizing your thoughts'}
+              </Typography>
+            </div>
+
+            <div className="space-y-4 md:space-y-5">
+              {!isLogin && (
+                <InputField
+                  name="name"
+                  darkMode={darkMode}
+                  label="Full Name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <Person className={darkMode ? "text-purple-300" : "text-blue-600"} />
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+              )}
+
+              <InputField
+                name="email"
+                darkMode={darkMode}
+                label="Email"
+                type="email"
+                value={formData.email}
+                onChange={handleChange}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Email className={darkMode ? "text-purple-300" : "text-blue-600"} />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+
+              <InputField
+                name="password"
+                darkMode={darkMode}
+                label="Password"
+                type={showPassword ? 'text' : 'password'}
+                value={formData.password}
+                onChange={handleChange}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <LockOutlined className={darkMode ? "text-purple-300" : "text-blue-600"} />
+                    </InputAdornment>
+                  ),
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={handleTogglePasswordVisibility}
+                        edge="end"
+                        className={darkMode ? "text-purple-300" : "text-blue-600"}
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+
+              {!isLogin && (
+                <InputField
+                  name="confirmPassword"
+                  darkMode={darkMode}
+                  label="Confirm Password"
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <LockOutlined className={darkMode ? "text-purple-300" : "text-blue-600"} />
+                      </InputAdornment>
+                    ),
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          onClick={handleToggleConfirmPasswordVisibility}
+                          edge="end"
+                          className={darkMode ? "text-purple-300" : "text-blue-600"}
+                        >
+                          {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+              )}
+
+              {isLogin && (
+                <div className="flex items-center justify-between flex-wrap">
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={rememberMe}
+                        onChange={(e) => setRememberMe(e.target.checked)}
+                        sx={{
+                          color: darkMode ? 'rgb(167, 139, 250)' : '#3b82f6',
+                          '&.Mui-checked': {
+                            color: darkMode ? 'rgb(167, 139, 250)' : '#3b82f6',
+                          },
+                        }}
+                        size={isMobile ? "small" : "medium"}
+                      />
+                    }
+                    label={
+                      <Typography variant="body2" className={darkMode ? 'text-purple-300' : 'text-blue-600'}>
+                        Remember me
+                      </Typography>
+                    }
+                  />
+                  <Typography
+                    variant="body2"
+                    className={`cursor-pointer hover:underline ${darkMode ? 'text-purple-300' : 'text-blue-600'}`}
+                    onClick={handleForgotPassword}
+                  >
+                    Forgot password?
+                  </Typography>
+                </div>
+              )}
+
+              <ButtonComponent
+                handleClick={() => handleLogin(isLogin ? 'login' : 'signup')}
+                btnText={isLogin ? 'Log In' : 'Sign Up'}
+                startIcon={isLogin ? <Login /> : <AppRegistration />}
+                darkMode={darkMode}
+                styles={{ width: "100%", marginTop: "16px" }}
+              />
+
+              <div className="flex items-center my-4 md:my-6">
+                <div className={`flex-grow h-px ${darkMode ? 'bg-gray-700' : 'bg-gray-200'}`}></div>
+                <Typography className={`px-2 md:px-4 text-xs md:text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                  or continue with
+                </Typography>
+                <div className={`flex-grow h-px ${darkMode ? 'bg-gray-700' : 'bg-gray-200'}`}></div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 md:gap-4">
+                <ButtonComponent
+                  btnText={'Google'}
+                  startIcon={<Google />}
+                  darkMode={darkMode}
+                  styles={{
+                    width: "100%",
+                    backgroundColor: darkMode ? 'rgba(107, 114, 128, 0.2)' : 'rgba(219, 234, 254, 0.8)',
+                    color: darkMode ? 'rgb(233, 213, 255)' : '#3b82f6',
+                    '&:hover': {
+                      backgroundColor: darkMode ? 'rgba(107, 114, 128, 0.3)' : 'rgba(219, 234, 254, 1)',
+                    }
+                  }}
+                />
+                <ButtonComponent
+                  btnText={'GitHub'}
+                  startIcon={<GitHub />}
+                  darkMode={darkMode}
+                  styles={{
+                    width: "100%",
+                    backgroundColor: darkMode ? 'rgba(107, 114, 128, 0.2)' : 'rgba(219, 234, 254, 0.8)',
+                    color: darkMode ? 'rgb(233, 213, 255)' : '#3b82f6',
+                    '&:hover': {
+                      backgroundColor: darkMode ? 'rgba(107, 114, 128, 0.3)' : 'rgba(219, 234, 254, 1)',
+                    }
+                  }}
+                />
+              </div>
+            </div>
+
+            <Box className="mt-6 md:mt-8 text-center">
+              <Typography className={`${darkMode ? 'text-gray-400' : 'text-gray-600'} flex gap-1 w-full justify-center`} variant="body2">
+                {isLogin ? "Don't have an account?" : "Already have an account?"}
+                <a
+                  href="#toggle"
+                  onClick={switchAuthMode}
+                  className={`font-medium hover:underline ${darkMode ? 'text-purple-300' : 'text-blue-600'}`}
+                >
+                  {isLogin ? 'Sign up' : 'Log in'}
+                </a>
+              </Typography>
+            </Box>
+
+            <Box className="mt-6 md:mt-8 text-center">
+              <Typography variant="caption" className={darkMode ? "text-gray-400" : "text-gray-500"}>
+                © 2025 NotePad App • <span className="cursor-pointer hover:underline">Terms</span> • <span className="cursor-pointer hover:underline">Privacy</span>
+              </Typography>
+            </Box>
+          </div>
+        </Box>
+      )}
+    </Box>
   );
 };
 

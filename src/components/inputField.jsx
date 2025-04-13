@@ -43,14 +43,12 @@ export const InputField = ({
             : (disabled ? '#E5E7EB' : 'white'),
           borderRadius: "6px",
 
-          // Input base (container)
           '& .MuiInputBase-root': {
             height: '40px',
             padding: 0,
             paddingTop:"5px"
           },
 
-          // Input field
           '& .MuiInputBase-input': {
             height: '40px',
             paddingLeft: '10px',
@@ -62,7 +60,6 @@ export const InputField = ({
               : (darkMode ? 'rgb(233, 213, 255)' : 'black'),
           },
 
-          // Label styling
           '& .MuiFormLabel-root': {
             fontSize: '14px',
             paddingLeft: 0,
@@ -74,7 +71,6 @@ export const InputField = ({
               : (darkMode ? 'rgb(233, 213, 255)' : '#0b6bcb')
           },
 
-          // Shrunk label
           '& .MuiInputLabel-shrink': {
             transform: 'translate(14px, -9px) scale(0.85)',
             color: hasError
@@ -82,14 +78,16 @@ export const InputField = ({
               : (darkMode ? 'rgb(233, 213, 255)' : '#0b6bcb')
           },
 
-          // Focused label
+          '&. MuiFormLabel-root.Mui-disabled': {
+            color:"white"
+          },
+
           '& .MuiFormLabel-root.Mui-focused': {
             color: hasError
               ? (darkMode ? '#FCA5A5' : '#DC2626')
               : (darkMode ? 'rgb(233, 213, 255)' : '#0b6bcb')
           },
 
-          // Border styling
           '& .MuiOutlinedInput-root': {
             '& .MuiOutlinedInput-notchedOutline': {
               borderWidth: '2px',
@@ -115,7 +113,6 @@ export const InputField = ({
             }
           },
 
-          // Helper text
           '& .MuiFormHelperText-root': {
             marginLeft: '3px',
             fontSize: '12px',
@@ -124,10 +121,9 @@ export const InputField = ({
             fontWeight: 500
           },
 
-          // Disabled state overrides - using higher specificity
           '& .Mui-disabled': {
-            color: '#000000 !important',
-            WebkitTextFillColor: '#000000 !important',  // This is crucial for overriding MUI's disabled style
+            color: darkMode ? 'rgb(233, 213, 255) !important' : '#000000 !important',
+            WebkitTextFillColor: darkMode ? 'rgb(233, 213, 255) !important' : '#000000 !important',
           },
 
           '& .Mui-disabled .MuiOutlinedInput-notchedOutline': {
@@ -135,13 +131,13 @@ export const InputField = ({
           },
 
           '& .MuiInputLabel-root.Mui-disabled': {
-            color: '#000000 !important',
+            color: darkMode ? 'rgb(233, 213, 255) !important' : '#000000 !important',
           },
 
           '& .MuiInputBase-input.Mui-disabled': {
-            color: '#000000 !important',
-            WebkitTextFillColor: '#000000 !important',  // This is crucial for overriding MUI's disabled style
-            opacity: 1,  // Make sure it doesn't appear faded
+            color: darkMode ? 'rgb(233, 213, 255) !important' : '#000000 !important',
+            WebkitTextFillColor: darkMode ? 'rgb(233, 213, 255) !important' : '#000000 !important',
+            opacity: 1,
           },
 
           ...styles

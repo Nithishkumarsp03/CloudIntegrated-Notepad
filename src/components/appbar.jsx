@@ -6,10 +6,11 @@ import {
     useMediaQuery,
     Menu,
     MenuItem,
-    Typography
+    Typography,
+    Tooltip
 } from "@mui/material";
-import { AccountCircle, Brightness4, Brightness7 } from "@mui/icons-material";
-import { FiMail, FiGithub } from "react-icons/fi";
+import { AccountCircle } from "@mui/icons-material";
+import { FiMail, FiGithub, FiSave } from "react-icons/fi";
 import useEditorStore from "../globalStore";
 import { cn } from "./cn";
 import logo from "../assets/logo.png";
@@ -19,6 +20,10 @@ import { PanelLeftOpenIcon } from "../assets/svgs/leftSidebar";
 import { PanelRightOpenIcon } from "../assets/svgs/rightSidebar";
 import { ShareIcon } from "../assets/svgs/share";
 import ShareModal from "./share";
+import { SunIcon } from "../assets/svgs/sun";
+import { MoonIcon } from "../assets/svgs/moon";
+import SaveModal from "./saveModal";
+import { SaveIcon } from '../assets/svgs/save';
 
 const Appbar = () => {
     const [customerAnchorEl, setCustomerAnchorEl] = useState(null);
@@ -26,6 +31,7 @@ const Appbar = () => {
     const [share, setShare] = useState(false);
     const isMobile = useMediaQuery("(max-width:768px)");
     const searchRef = useRef(null);
+    const [saveModal, setSaveModal] = useState(false);
 
     const toggleDarkMode = () => {
         setDarkMode(!darkMode);
@@ -64,6 +70,10 @@ const Appbar = () => {
         handleCustomerMenuClose();
     };
 
+    const handleSave = () => {
+        console.log("Saving current note...");
+    };
+
     return (
         <AppBar
             position="static"
@@ -75,7 +85,8 @@ const Appbar = () => {
                     ? "linear-gradient(to top, #1f2937, #111827)"
                     : "linear-gradient(to top, #f3f4f6, #e5e7eb)",
                 color: darkMode ? "#ffffff" : "#000000",
-                boxShadow: "none",
+                boxShadow: "0px 1px 3px rgba(0,0,0,0.1)",
+                backdropFilter: "blur(8px)",
             }}
         >
             <Toolbar
@@ -86,17 +97,19 @@ const Appbar = () => {
             >
                 <div className="flex justify-between items-center w-full box-border">
                     {/* Left Section */}
-                    <div className="flex items-center gap-10 min-w-0">
-                        <span
-                            className="cursor-pointer text-gray-500 dark:text-gray-400"
-                            onClick={setIsSideBarOpen}
-                        >
-                            {isSidebarOpen ?
-                                <PanelLeftOpenIcon />
-                                :
-                                <PanelRightOpenIcon />
-                            }
-                        </span>
+                    <div className="flex items-center gap-4 md:gap-10 min-w-0">
+                        <Tooltip title={isSidebarOpen ? "Close Sidebar" : "Open Sidebar"}>
+                            <span
+                                className="cursor-pointer text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
+                                onClick={setIsSideBarOpen}
+                            >
+                                {isSidebarOpen ?
+                                    <PanelLeftOpenIcon />
+                                    :
+                                    <PanelRightOpenIcon />
+                                }
+                            </span>
+                        </Tooltip>
 
                         {/* Search */}
                         <div
@@ -123,7 +136,7 @@ const Appbar = () => {
                                         "bg-white dark:bg-gray-800 border-[1.5px]",
                                         "border-gray-200 dark:border-gray-700 rounded-3xl",
                                         "shadow-sm focus:outline-none text-sm font-normal font-sans",
-                                        "focus:border-blue-500 dark:focus:border-purple-600",
+                                        "focus:border-blue-500 dark:focus:border-purple-600 transition-colors",
                                         {
                                             "text-gray-700": !darkMode,
                                             "text-gray-300": darkMode,
@@ -136,44 +149,139 @@ const Appbar = () => {
                     </div>
 
                     {/* Center Logo */}
-                    <div className="flex justify-center w-full">
-                        <img src={logo} alt="logo" className="w-[90px] h-[50px]" />
+                    <div className="flex justify-center w-full pl-0 md:pl-0">
+                        <img src={logo} alt="logo" className="w-[90px] h-[50px] object-contain" />
                     </div>
 
                     {/* Right Section */}
-                    <div className="flex items-center gap-2 flex-shrink-0">
-                        {isUserLoggedIn &&
-                            <span className="text-black dark:text-white cursor-pointer" onClick={() => setShare(!share)}>
-                                <ShareIcon/>
-                            </span>
-                        }
+                    <div className="flex items-center gap-1 md:gap-3 flex-shrink-0">
+                        {/* Save Button */}
+                        <Tooltip title="Save Note">
+                            <IconButton
+                                onClick={() => setSaveModal(!saveModal)}
+                                sx={{
+                                    color: darkMode ? "#fff" : "#000",
+                                    padding: "6px",
+                                    flexShrink: 0,
+                                    '&:hover': {
+                                        backgroundColor: darkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0)'
+                                    }
+                                }}
+                            >
+                                <SaveIcon size={20} />
+                            </IconButton>
+                            <SaveModal
+                                isOpen={saveModal}
+                                onClose={() => setSaveModal(false)}
+                                onSave={() => console.log("Save")}
+                            />
+                        </Tooltip>
+
+                        {/* Share Button */}
+                        {isUserLoggedIn && (
+                            <Tooltip title="Share">
+                                <IconButton
+                                    onClick={() => setShare(!share)}
+                                    sx={{
+                                        color: darkMode ? "#fff" : "#000",
+                                        padding: "6px",
+                                        flexShrink: 0,
+                                        '&:hover': {
+                                            backgroundColor: darkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0)'
+                                        }
+                                    }}
+                                >
+                                    <ShareIcon size={20} />
+                                </IconButton>
+                            </Tooltip>
+                        )}
+
                         {/* Dark Mode Toggle */}
-                        <IconButton
-                            onClick={toggleDarkMode}
-                            sx={{ color: darkMode ? "#fff" : "#000", padding: "6px", flexShrink: 0 }}
-                        >
-                            {darkMode ?
-                                <Brightness7 fontSize={isMobile ? "small" : "medium"} /> :
-                                <Brightness4 fontSize={isMobile ? "small" : "medium"} />
-                            }
-                        </IconButton>
+                        <Tooltip title={darkMode ? "Light Mode" : "Dark Mode"}>
+                            <IconButton
+                                onClick={toggleDarkMode}
+                                sx={{
+                                    color: darkMode ? "#fff" : "#000",
+                                    padding: "6px",
+                                    flexShrink: 0,
+                                    '&:hover': {
+                                        backgroundColor: darkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)'
+                                    }
+                                }}
+                            >
+                                {darkMode ?
+                                    <SunIcon fontSize={isMobile ? "small" : "medium"} size={20} /> :
+                                    <MoonIcon fontSize={isMobile ? "small" : "medium"} size={20} />
+                                }
+                            </IconButton>
+                        </Tooltip>
 
                         {/* Account Button */}
-                        {isUserLoggedIn &&
-                            <IconButton
-                                sx={{ color: darkMode ? "#fff" : "#000", padding: "6px", flexShrink: 0 }}
-                            >
-                                <AccountCircle fontSize={isMobile ? "small" : "medium"} />
-                            </IconButton>
-                        }
+                        {isUserLoggedIn && (
+                            <Tooltip title="Account">
+                                <IconButton
+                                    sx={{
+                                        color: darkMode ? "#fff" : "#000",
+                                        padding: "6px",
+                                        flexShrink: 0,
+                                        '&:hover': {
+                                            backgroundColor: darkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)'
+                                        }
+                                    }}
+                                >
+                                    <AccountCircle fontSize={isMobile ? "small" : "medium"} />
+                                </IconButton>
+                            </Tooltip>
+                        )}
 
                         {/* Customer Support Button */}
-                        <IconButton
-                            onClick={handleCustomerMenuOpen}
-                            sx={{ color: darkMode ? "#fff" : "#000", padding: "6px", flexShrink: 0 }}
-                        >
-                            <Customer fontSize={isMobile ? "small" : "medium"} />
-                        </IconButton>
+                        <Tooltip title="Contact Support">
+                            <IconButton
+                                onClick={handleCustomerMenuOpen}
+                                sx={{
+                                    color: darkMode ? "#fff" : "#000",
+                                    padding: "6px",
+                                    flexShrink: 0,
+                                    marginLeft: "0",
+                                    '&:hover': {
+                                        backgroundColor: darkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)'
+                                    }
+                                }}
+                            >
+                                <Customer fontSize={isMobile ? "small" : "medium"} />
+                            </IconButton>
+                        </Tooltip>
+                    </div>
+                </div>
+
+                {/* Mobile Search - Visible only on small screens */}
+                <div className="w-full mt-2 md:hidden">
+                    <div className="flex items-center gap-3 min-w-0">
+                        <SearchIcon
+                            className={cn(
+                                "text-gray-700 dark:text-gray-300",
+                                {
+                                    "text-gray-700": !darkMode,
+                                    "text-gray-300": darkMode,
+                                }
+                            )}
+                        />
+                        <input
+                            type="text"
+                            placeholder="Search Notes..."
+                            className={cn(
+                                "w-full h-9 px-3 py-1.5",
+                                "bg-white dark:bg-gray-800 border-[1.5px]",
+                                "border-gray-200 dark:border-gray-700 rounded-3xl",
+                                "shadow-sm focus:outline-none text-sm font-normal font-sans",
+                                "focus:border-blue-500 dark:focus:border-purple-600 transition-colors",
+                                {
+                                    "text-gray-700": !darkMode,
+                                    "text-gray-300": darkMode,
+                                }
+                            )}
+                            onChange={(e) => useEditorStore.getState().setSearch(e.target.value)}
+                        />
                     </div>
                 </div>
             </Toolbar>

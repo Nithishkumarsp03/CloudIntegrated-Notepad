@@ -24,6 +24,55 @@ const useEditorStore = create((set, get) => ({
         set({ data: tabsData });
     },
 
+    addNewTab: (name) => {
+        const today = new Date();
+        const todayDateStr = today.toDateString();
+
+        set((state) => {
+            const existingIndex = state.data.findIndex(tab => {
+                const tabDateStr = new Date(tab.date).toDateString();
+                return tabDateStr === todayDateStr;
+            });
+
+            if (existingIndex !== -1) {
+                const updatedTabs = [...state.data];
+                updatedTabs[existingIndex].data.push({
+                    id: Math.random(),
+                    title: name,
+                    content: ''
+                });
+                return { data: updatedTabs };
+            } else {
+                const newTab = {
+                    id: Math.random(),
+                    date: today.toISOString(), 
+                    data: [
+                        {
+                            id: Math.random(),
+                            title: name,
+                            content: ''
+                        }
+                    ]
+                };
+                return { data: [...state.data, newTab] };
+            }
+        });
+    },
+
+    getHeading: (isoDateString) => {
+        const entryDate = new Date(isoDateString);
+        const today = new Date();
+
+        today.setHours(0, 0, 0, 0);
+        entryDate.setHours(0, 0, 0, 0);
+
+        const diffInDays = Math.round((today - entryDate) / (1000 * 60 * 60 * 24));
+
+        if (diffInDays === 0) return 'Today';
+        if (diffInDays === 1) return 'Yesterday';
+        return `${diffInDays} days ago`;
+    },
+
     deleteData: (timeIndex, itemIndex) => {
         const { data } = get();
         const newData = data.map((timeSlot) => {
@@ -56,7 +105,6 @@ const useEditorStore = create((set, get) => ({
             }
             return timeSlot;
         });
-        console.log(newData,timeIndex,itemIndex)
         set({ data: newData });
     },
 
