@@ -1,20 +1,18 @@
 import { styled } from '@mui/material/styles';
 import Switch from '@mui/material/Switch';
-import useEditorStore from '../globalStore';
+import useEditorStore from '../store/globalStore';
 
-// Create a styled switch component with smaller dimensions
 const StyledSwitch = styled(Switch)(({ theme, darkmode }) => ({
-    width: 34,  // Reduced from 42
-    height: 20, // Reduced from 26
+    width: 34.5,  
+    height: 20,
     padding: 0,
     '& .MuiSwitch-switchBase': {
-        padding: 0,
-        paddingTop: 1,
-        paddingLeft:1.5,
-        margin: 1, // Reduced from 2
-        transitionDuration: '200ms', // Slightly faster transition
+        padding: 1.5,
+        paddingTop: 1.3,
+        margin: 1,
+        transitionDuration: '200ms',
         '&.Mui-checked': {
-            transform: 'translateX(14px)', // Adjusted for new width
+            transform: 'translateX(14px)',
             color: '#fff',
             '& + .MuiSwitch-track': {
                 backgroundColor: darkmode ? '#7C3AED' : '#2563EB',
@@ -27,7 +25,7 @@ const StyledSwitch = styled(Switch)(({ theme, darkmode }) => ({
         },
         '&.Mui-focusVisible .MuiSwitch-thumb': {
             color: darkmode ? '#8B5CF6' : '#3B82F6',
-            border: '4px solid #fff', // Reduced border size
+            border: '4px solid #fff',
         },
         '&.Mui-disabled .MuiSwitch-thumb': {
             color: darkmode ? '#4B5563' : '#E5E7EB',
@@ -38,24 +36,25 @@ const StyledSwitch = styled(Switch)(({ theme, darkmode }) => ({
     },
     '& .MuiSwitch-thumb': {
         boxSizing: 'border-box',
-        width: 15.5, // Reduced from 22
-        height: 15.5, // Reduced from 22
+        width: 16, 
+        height: 15.5,
         backgroundColor: darkmode ? '#E5E7EB' : '#F9FAFB',
         boxShadow: darkmode
-            ? '0 1px 3px 0 rgba(0,0,0,0.5)' // Lighter shadow
+            ? '0 1px 3px 0 rgba(0,0,0,0.5)' 
             : '0 1px 3px 0 rgba(0,0,0,0.1)',
     },
+
     '& .MuiSwitch-track': {
-        borderRadius: 20 / 2, // Adjusted for new height
+        paddingTop:2,
+        borderRadius: 20 / 2,
         backgroundColor: darkmode ? '#4B5563' : '#E5E7EB',
         opacity: 1,
         transition: theme.transitions.create(['background-color'], {
-            duration: 300, // Slightly faster transition
+            duration: 300,
         }),
     },
 }));
 
-// Main component that consumes the store
 const ProfileSwitch = ({ checked, onChange, ...props }) => {
     const { darkMode } = useEditorStore();
 

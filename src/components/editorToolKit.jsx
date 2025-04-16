@@ -9,7 +9,7 @@ import RightAlign from "../assets/svgs/rightAlign";
 import CenterAlign from "../assets/svgs/centerAlign";
 import StrikeThrough from "../assets/svgs/strikeThrough";
 import LinkIcon from "../assets/svgs/link";
-import useEditorStore from "../globalStore";
+import useEditorStore from "../store/globalStore";
 import Undo from "../assets/svgs/undo";
 import Redo from "../assets/svgs/redo";
 import BulletList from "../assets/svgs/bulletList";
@@ -48,9 +48,12 @@ const EditorToolKit = ({ handleClick, fontStyle }) => {
             family: DEFAULT_FONT_FAMILY,
             fontWeight: 'normal'
         };
-
-        fontStyle(family);
-        handleClick({ fontSize: DEFAULT_FONT_SIZE });
+         if (fontSize) {
+             fontStyle(family);
+         }
+         if (handleClick) {
+             handleClick({ fontSize: DEFAULT_FONT_SIZE });
+         }
     }, []);
 
     const handleFont = (e) => {
@@ -202,7 +205,6 @@ const EditorToolKit = ({ handleClick, fontStyle }) => {
 
     return (
         <div className={`p-2 rounded-2xl overflow-hidden flex justify-between shadow-md ${darkMode ? "bg-gray-800" : "bg-gray-100"}`}>
-            {/* desktop display */}
             <div className="hidden md:flex gap-5">
                 <Select
                     classes={{ root: "h-full max-h-11 w-full min-w-40 max-w-40 shadow-sm" }}

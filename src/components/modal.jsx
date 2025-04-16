@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Button, TextField, useMediaQuery } from "@mui/material";
-import useEditorStore from "../globalStore";
+import useEditorStore from "../store/globalStore";
 
 const Modal = ({ isOpen, onClose, onInsertLink,content,isContent }) => {
     const { darkMode } = useEditorStore();
@@ -52,6 +52,7 @@ const Modal = ({ isOpen, onClose, onInsertLink,content,isContent }) => {
                                 Link Text (optional)
                             </label>
                             <TextField
+                                autoFocus
                                 id="link-text"
                                 type="text"
                                 value={linkText}
@@ -64,13 +65,17 @@ const Modal = ({ isOpen, onClose, onInsertLink,content,isContent }) => {
                                         backgroundColor: darkMode ? "#374151" : "white",
                                     },
                                     '& .MuiOutlinedInput-root': {
-                                        '& fieldset': {
-                                            borderColor: darkMode ? "#4B5563" : "#D1D5DB",
+                                        '& .MuiOutlinedInput-notchedOutline': {
+                                            borderWidth: '2px',
+                                            borderColor: darkMode ? '#6D28D9' : '#0b6bcb'
                                         },
-                                        '&:hover fieldset': {
-                                            borderColor: darkMode ? "#6B7280" : "#9CA3AF",
+                                        '&:hover .MuiOutlinedInput-notchedOutline': {
+                                            borderColor: darkMode ? '#8B5CF6 !important' : '#1a73e8 !important'
                                         },
-                                    },
+                                        '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                            borderColor: darkMode ? '#4C1D95 !important' : '#1557b0 !important'
+                                        }
+                                    }
                                 }}
                                 placeholder="Display text"
                             />
@@ -97,13 +102,17 @@ const Modal = ({ isOpen, onClose, onInsertLink,content,isContent }) => {
                                         backgroundColor: darkMode ? "#374151" : "white",
                                     },
                                     '& .MuiOutlinedInput-root': {
-                                        '& fieldset': {
-                                            borderColor: darkMode ? "#4B5563" : "#D1D5DB",
+                                        '& .MuiOutlinedInput-notchedOutline': {
+                                            borderWidth: '2px',
+                                            borderColor: darkMode ? '#6D28D9' : '#0b6bcb'
                                         },
-                                        '&:hover fieldset': {
-                                            borderColor: darkMode ? "#6B7280" : "#9CA3AF",
+                                        '&:hover .MuiOutlinedInput-notchedOutline': {
+                                            borderColor: darkMode ? '#8B5CF6 !important' : '#1a73e8 !important'
                                         },
-                                    },
+                                        '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                            borderColor: darkMode ? '#4C1D95 !important' : '#1557b0 !important'
+                                        }
+                                    }
                                 }}
                                 placeholder="https://example.com"
                             />

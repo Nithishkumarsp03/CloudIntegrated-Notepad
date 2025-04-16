@@ -1,10 +1,10 @@
 import React from 'react'
-import useEditorStore from '../globalStore';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 import LoginPage from '../screens/loginPage';
+import { useLoginStore } from '../store/loginStore';
 
 const Protect = () => {
-    const { isUserLoggedIn } = useEditorStore();
+    const { isUserLoggedIn } = useLoginStore();
     return isUserLoggedIn ? <Outlet /> : <LoginPage />;
 }
 

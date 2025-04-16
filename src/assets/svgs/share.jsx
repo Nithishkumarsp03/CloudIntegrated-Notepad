@@ -1,19 +1,141 @@
-import * as React from "react"
-const SvgComponent = (props) => (
-    <svg
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        width={'1.5em'}
-        height={'1.5em'}
-        {...props}
-    >
-        <path
-            fill="currentColor"
-            fillRule="evenodd"
-            d="M20 5.5a3.5 3.5 0 0 1-5.845 2.598l-5.269 3.513a3.506 3.506 0 0 1 0 1.778l4.718 3.145A3.5 3.5 0 1 1 13 18.535l-5.155-3.437a3.5 3.5 0 1 1 0-5.197l5.269-3.512A3.5 3.5 0 1 1 20 5.5ZM16.5 7a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Zm-11 7a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3ZM18 18.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z"
-            clipRule="evenodd"
-        />
-    </svg>
-)
-export default SvgComponent
+'use client';
+
+import { motion, useAnimation } from 'framer-motion';
+import { forwardRef, useCallback, useImperativeHandle, useRef } from 'react';
+import { cn } from '../../components/cn';
+
+const variants = {
+    normal: {
+        pathLength: 1,
+        opacity: 1,
+    },
+    animate: (custom) => ({
+        pathLength: [0, 1],
+        opacity: [0, 1],
+        transition: {
+            delay: 0.15 * custom,
+            opacity: { delay: 0.1 * custom },
+        },
+    }),
+};
+
+const ShareIcon = forwardRef(({
+    onMouseEnter,
+    onMouseLeave,
+    className,
+    size = 28,
+    ...props
+}, ref) => {
+    const controls = useAnimation();
+    const isControlledRef = useRef(false);
+
+    useImperativeHandle(ref, () => {
+        isControlledRef.current = true;
+
+        return {
+            startAnimation: () => controls.start('animate'),
+            stopAnimation: () => controls.start('normal'),
+        };
+    });
+
+    const handleMouseEnter = useCallback(
+        (e) => {
+            if (!isControlledRef.current) {
+                controls.start('animate');
+            } else {
+                onMouseEnter?.(e);
+            }
+        },
+        [controls, onMouseEnter]
+    );
+
+    const handleMouseLeave = useCallback(
+        (e) => {
+            if (!isControlledRef.current) {
+                controls.start('normal');
+            } else {
+                onMouseLeave?.(e);
+            }
+        },
+        [controls, onMouseLeave]
+    );
+
+    return (
+        <div
+            className={cn(
+                `cursor-pointer select-none p-2 hover:bg-accent rounded-md transition-colors duration-200 flex items-center justify-center`,
+                className
+            )}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+            {...props}
+        >
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width={size}
+                height={size}
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+            >
+                <motion.circle
+                    cx="12"
+                    cy="4.5"
+                    r="2.5"
+                    variants={variants}
+                    animate={controls}
+                    custom={0}
+                />
+                <motion.path
+                    d="m10.2 6.3-3.9 3.9"
+                    variants={variants}
+                    animate={controls}
+                    custom={1}
+                />
+                <motion.circle
+                    cx="4.5"
+                    cy="12"
+                    r="2.5"
+                    variants={variants}
+                    animate={controls}
+                    custom={0}
+                />
+                <motion.path
+                    d="M7 12h10"
+                    variants={variants}
+                    animate={controls}
+                    custom={2}
+                />
+                <motion.circle
+                    cx="19.5"
+                    cy="12"
+                    r="2.5"
+                    variants={variants}
+                    animate={controls}
+                    custom={0}
+                />
+                <motion.path
+                    d="m13.8 17.7 3.9-3.9"
+                    variants={variants}
+                    animate={controls}
+                    custom={3}
+                />
+                <motion.circle
+                    cx="12"
+                    cy="19.5"
+                    r="2.5"
+                    variants={variants}
+                    animate={controls}
+                    custom={0}
+                />
+            </svg>
+        </div>
+    );
+});
+
+ShareIcon.displayName = 'ShareIcon';
+
+export { ShareIcon };

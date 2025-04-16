@@ -2,16 +2,14 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import NotePad from "../assets/svgs/notePad";
 import { cn } from "./cn";
-import useEditorStore from "../globalStore";
+import useEditorStore from "../store/globalStore";
 import StyledTooltip from "./tooltop";
 import { BsThreeDots } from "react-icons/bs";
-import { FiSearch } from "react-icons/fi";
 import { Menu, MenuItem, useMediaQuery } from "@mui/material";
 import RenameModal from "./renameModel";
 import NoTabsFound from "./noTabs";
 import { ButtonComponent } from "./button";
-import { Add, Save } from "@mui/icons-material";
-import SaveModal from "./saveModal";
+import { Add } from "@mui/icons-material";
 
 const Navbar = () => {
     const [id, setId] = useState({
@@ -19,20 +17,26 @@ const Navbar = () => {
         tabId: -1,
     });
 
-    const { isSidebarOpen, search, setSearch, deleteData, data, renameData, addNewTab, darkMode } = useEditorStore();
+    const { isSidebarOpen, search, setSearch, deleteData, data, renameData, darkMode, getHeading,addNewTab } = useEditorStore();
     const [filter, setFilter] = useState(data);
     const navigate = useNavigate();
     const [anchorEl, setAnchorEl] = useState(null);
     const [selectedItem, setSelectedItem] = useState({ timeIndex: -1, itemIndex: -1 });
-    const [openRenameModal, setOpenRenameModal] = useState(false);
+    const [openRenameModal, setOpenRenameModal] = useState({ state: false, value: '' });
     const [localSearch, setLocalSearch] = useState("");
     const open = Boolean(anchorEl);
     const isMobile = useMediaQuery('(max-width: 768px)');
     const [newNote, setNewNote] = useState(false);
-    const [saveModal, setSaveModal] = useState(false);
+
 
     useEffect(() => {
-        setFilter(data);
+        if (data && data.length) {
+            setFilter(data);
+            if (id.dayId == -1 && id.tabId == -1) {
+                setId({ dayId: data[0].id, tabId: data[0].data[0].id })
+            }
+            navigate(`/textEditor/${data[0].id}`)
+        }
     }, [data]);
 
     useEffect(() => {
@@ -62,28 +66,35 @@ const Navbar = () => {
 
     const handleRenameSave = (newName) => {
         renameData(selectedItem.timeIndex, selectedItem.itemIndex, newName);
-        setOpenRenameModal(false);
-        setSelectedItem({ timeIndex: -1, itemIndex: -1 });
+        setOpenRenameModal({
+            state: false,
+            value: ''
+        });
+        setSelectedItem({ timeIndex: -1, itemIndex: -1});
     };
 
-    const handleMenuClick = (event, timeIndex, itemIndex) => {
+    const handleMenuClick = (event, timeIndex, itemIndex,value) => {
         setAnchorEl(event.currentTarget);
-        setSelectedItem({ timeIndex, itemIndex });
+        setSelectedItem({ timeIndex, itemIndex, value });
+        setOpenRenameModal({state:false,value})
     };
 
     const handleMenuClose = () => {
         setAnchorEl(null);
     };
 
-    const handleRename = (timeIndex, itemIndex) => {
-        setOpenRenameModal(true);
-        setSelectedItem({ timeIndex, itemIndex });
+    const handleRename = (timeIndex, itemIndex,value) => {
+        setOpenRenameModal({
+            state: true,
+            value
+        });
+        setSelectedItem({ timeIndex, itemIndex});
         handleMenuClose();
     };
 
     const handleClick = (dayId, tabId) => {
         setId((p) => ({ ...p, dayId, tabId }));
-        navigate(`/textEditor/${tabId}`);
+        navigate(`/textEditor/${dayId}`);
         if (isMobile) {
             useEditorStore.setState({ isSidebarOpen: true });
         }
@@ -92,13 +103,7 @@ const Navbar = () => {
     const handleDelete = (timeIndex, itemIndex) => {
         deleteData(timeIndex, itemIndex);
         handleMenuClose();
-        setSelectedItem({ timeIndex: -1, itemIndex: -1 });
-    };
-
-    const handleAddNewTab = () => {
-        const newTabId = Date.now();
-        addNewTab(newTabId);
-        navigate(`/textEditor/${newTabId}`);
+        setSelectedItem({ timeIndex: -1, itemIndex: -1, value:'' });
     };
 
     return (
@@ -142,12 +147,9 @@ const Navbar = () => {
                         </div>
                     )}
 
-                    {/* Search Bar */}
+
                     <div className="px-4 pt-4 pb-6 md:hidden">
                         <div className="relative">
-                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <FiSearch className="h-4 w-4 text-gray-400 dark:text-gray-500" />
-                            </div>
                             <input
                                 type="text"
                                 placeholder="Search notes..."
@@ -156,7 +158,7 @@ const Navbar = () => {
                                 className={cn(
                                     "block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg",
                                     "bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-200",
-                                    "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500",
+                                    "focus:outline-none focus:ring-[0.5px] focus:ring-blue-500 focus:border-blue-500",
                                     "dark:focus:ring-purple-500 dark:focus:border-purple-500",
                                     "placeholder-gray-400 dark:placeholder-gray-500 text-sm md:"
                                 )}
@@ -179,14 +181,14 @@ const Navbar = () => {
                         </div>
                     </div>
 
-                    {/* Add New Tab Button */}
+
                     <div className="px-4 pb-6 flex gap-4">
                         <ButtonComponent
                             btnText="New Note"
                             startIcon={<Add />}
                             handleClick={() => setNewNote(!newNote)}
                             styles={{
-                                width: "130px",
+                                // width: "130px",
                                 height: "40px",
                                 backgroundColor: darkMode ? "#7C3AED" : "#2563EB", 
                                 color: "white",
@@ -209,37 +211,9 @@ const Navbar = () => {
                                 }
                             }}
                         />
-                        <ButtonComponent
-                            btnText="Save"
-                            startIcon={<Save />}
-                            handleClick={() => setSaveModal(!saveModal)}
-                            styles={{
-                                width: "100px",
-                                height: "40px",
-                                backgroundColor: darkMode ? "#7C3AED" : "#2563EB",
-                                color: "white",
-                                borderRadius: "8px",
-                                textTransform: "none",
-                                fontWeight: 500,
-                                fontSize: "0.875rem",
-                                "&:hover": {
-                                    backgroundColor: darkMode ? "#6D28D9" : "#3B82F6",
-                                    boxShadow: darkMode ? "0 2px 4px rgba(0,0,0,0.3)" : "0 2px 4px rgba(0,0,0,0.1)"
-                                },
-                                "&:active": {
-                                    backgroundColor: darkMode ? "#5B21B6" : " #1D4ED8"
-                                },
-                                "& .MuiButton-startIcon": {
-                                    marginRight: "8px",
-                                    "& svg": {
-                                        fontSize: "20px" 
-                                    }
-                                }
-                            }}
-                        />
                     </div>
 
-                    <div className="flex-1 overflow-hidden flex flex-col">
+                    <div className="md:h-[calc(100%-113px)] h-[calc(100%-200px)] flex flex-col">
                         {filter.length === 0 ? (
                             <div className="flex-1 flex items-center justify-center p-4">
                                 <NoTabsFound />
@@ -253,7 +227,7 @@ const Navbar = () => {
                                     {filter.map((tab) => (
                                         <div key={tab.id}>
                                             <p className="text-xs z-10 font-semibold rounded-md dark:rounded-sm pl-1.5 bg-blue-50 dark:bg-gray-900 dark:pt-0.5 min-h-[20px] text-blue-700 mb-3 uppercase tracking-wider sticky top-0">
-                                                {tab.date}
+                                                {getHeading(tab.date)}
                                             </p>
                                             <div className="space-y-1">
                                                 {tab.data.map((data) => (
@@ -308,7 +282,7 @@ const Navbar = () => {
                                                             onClick={(e) => e.stopPropagation()}
                                                         >
                                                             <BsThreeDots
-                                                                onClick={(e) => handleMenuClick(e, tab.id, data.id)}
+                                                                onClick={(e) => handleMenuClick(e, tab.id, data.id,data.title)}
                                                                 className={cn("cursor-pointer", {
                                                                     "text-base": !isMobile,
                                                                     "text-sm": isMobile,
@@ -380,23 +354,19 @@ const Navbar = () => {
         
 
                 <RenameModal
-                    open={openRenameModal}
+                    open={openRenameModal.state}
                     onClose={() => setOpenRenameModal(false)}
                     onRename={handleRenameSave}
                     mobile={isMobile}
+                    value={openRenameModal.value}
                 />
             </div>
             <RenameModal
                 open={newNote}
-                onClose={() => setNewNote(!newNote)}
+                onClose={() => setNewNote(false)}
                 heading="New Note"
                 placeholder="Enter Note Name"
-                onRename={(e) => console.log(e)}
-            />
-            <SaveModal
-                isOpen={saveModal}
-                onClose={() => setSaveModal(false)}
-                onSave={() => console.log("Save")}
+                onRename={(e) => { addNewTab(e)}}
             />
         </>
     );

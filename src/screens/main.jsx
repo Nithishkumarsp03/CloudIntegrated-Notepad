@@ -4,14 +4,15 @@ import Appbar from "../components/appbar";
 import Tiptap from "../components/textEditor";
 import EditorToolKit from "../components/editorToolKit";
 import { useMediaQuery } from "@mui/material";
-import useEditorStore from "../globalStore";
+import useEditorStore from "../store/globalStore";
 import { cn } from "../components/cn";
+import NotePad from "../assets/svgs/notePad";
 
 const Main = () => {
   const [active, setActive] = useState('');
   const [fontStyle, setFontStyle] = useState('');
   const isMobile = useMediaQuery('(max-width: 768px)');
-  const { isSidebarOpen } = useEditorStore();
+  const { isSidebarOpen, data, darkMode } = useEditorStore();
   const [color, setColor] = useState('#000000');
 
   useEffect(() => {
@@ -21,9 +22,8 @@ const Main = () => {
   }, [isMobile]);
 
   return (
-    <div className="flex flex-col h-screen dark:bg-gray-900 w-full overflow-hidden">
+    <div className="flex flex-col h-screen dark:bg-gray-900 w-full overflow-hidden relative">
       <Appbar />
-
       <div className="flex flex-1 overflow-hidden relative">
         <div className={cn(
           "h-full transition-all duration-300",
@@ -49,7 +49,7 @@ const Main = () => {
           <Tiptap action={active} fontStyle={fontStyle} color={color} />
           <EditorToolKit
             handleClick={e => setActive(e)}
-            fontStyle={setFontStyle}
+            fontStyle={e => setFontStyle(e)}
             handleColorClick={e => setColor(e)}
           />
         </div>

@@ -1,59 +1,60 @@
- export const tabsData = [
-        {
-            id: 1,
-            date: "Today",
-            data: [
-                { id: 1, title: "Meeting Notes ccccccccccccccccccccccccccccccccccccccccccccccc", content: "Tab 1" },
-                { id: 2, title: "Project Ideas", content: "Tab 2" },
-                { id: 3, title: "To-Do List", content: "Tab 3" },
-            ],
-        },
-        {
-            id: 2,
-            date: "Yesterday",
-            data: [
-                { id: 1, title: "Brainstorming", content: "Tab 1" },
-                { id: 2, title: "Research", content: "Tab 2" },
-                { id: 3, title: "Daily Journal", content: "Tab 3" },
-            ],
-        },
-        {
-            id: 3,
-            date: "Today",
-            data: [
-                { id: 1, title: "Meeting Notes", content: "Tab 1" },
-                { id: 2, title: "Project Ideas", content: "Tab 2" },
-                { id: 3, title: "To-Do List", content: "Tab 3" },
-            ],
-        },
-        {
-            id: 4,
-            date: "Yesterday",
-            data: [
-                { id: 1, title: "Brainstorming", content: "Tab 1" },
-                { id: 2, title: "Research", content: "Tab 2" },
-                { id: 3, title: "Daily Journal", content: "Tab 3" },
-            ],
-        },
-        {
-            id: 5,
-            date: "Today",
-            data: [
-                { id: 1, title: "Meeting Notes", content: "Tab 1" },
-                { id: 2, title: "Project Ideas", content: "Tab 2" },
-                { id: 3, title: "To-Do List", content: "Tab 3" },
-            ],
-        },
-        {
-            id: 6,
-            date: "Yesterday",
-            data: [
-                { id: 1, title: "Brainstorming", content: "Tab 1" },
-                { id: 2, title: "Research", content: "Tab 2" },
-                { id: 3, title: "Daily Journal", content: "Tab 3" },
-            ],
-        }
+export const tabsData = [
+    {
+        id: 1,
+        date: "2025-04-12",
+        data: [
+            { id: 1, title: "Meeting Notes", content: "Tab 1" },
+            { id: 2, title: "Project Ideas", content: "Tab 2" },
+            { id: 3, title: "To-Do List", content: "Tab 3" },
+        ],
+    },
+    {
+        id: 2,
+        date: "2025-04-11",
+        data: [
+            { id: 1, title: "Brainstorming", content: "Tab 1" },
+            { id: 2, title: "Research", content: "Tab 2" },
+            { id: 3, title: "Daily Journal", content: "Tab 3" },
+        ],
+    },
+    {
+        id: 3,
+        date: "2025-04-9",
+        data: [
+            { id: 1, title: "Meeting Notes", content: "Tab 1" },
+            { id: 2, title: "Project Ideas", content: "Tab 2" },
+            { id: 3, title: "To-Do List", content: "Tab 3" },
+        ],
+    },
+    {
+        id: 4,
+        date: "2025-04-8",
+        data: [
+            { id: 1, title: "Brainstorming", content: "Tab 1" },
+            { id: 2, title: "Research", content: "Tab 2" },
+            { id: 3, title: "Daily Journal", content: "Tab 3" },
+        ],
+    },
+    {
+        id: 5,
+        date: "2025-04-5",
+        data: [
+            { id: 1, title: "Meeting Notes", content: "Tab 1" },
+            { id: 2, title: "Project Ideas", content: "Tab 2" },
+            { id: 3, title: "To-Do List", content: "Tab 3" },
+        ],
+    },
+    {
+        id: 6,
+        date: "2025-03-2",
+        data: [
+            { id: 1, title: "Brainstorming", content: "Tab 1" },
+            { id: 2, title: "Research", content: "Tab 2" },
+            { id: 3, title: "Daily Journal", content: "Tab 3" },
+        ],
+    }
 ];
+
     
 export const fontFamilyOptions = [
     {

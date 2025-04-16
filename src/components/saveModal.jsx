@@ -8,35 +8,62 @@ import {
     IconButton,
     Typography,
     useTheme,
-    useMediaQuery
+    useMediaQuery,
+    RadioGroup,
+    FormControlLabel,
+    Radio,
+    Divider,
+    Tooltip
 } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
-import useEditorStore from "../globalStore";
+import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
+import DownloadOutlinedIcon from '@mui/icons-material/DownloadOutlined';
+import useEditorStore from "../store/globalStore";
 import { ButtonComponent } from './button';
+import { InputField } from './inputField';
+
+const SAVE_OPTIONS = {
+    ONLINE: 'online',
+    DOWNLOAD: 'download'
+};
 
 const SaveModal = ({ isOpen, onClose, onSave, onSaveAs, currentFileName }) => {
     const { darkMode } = useEditorStore();
     const theme = useTheme();
     const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
     const [fileName, setFileName] = useState(currentFileName || '');
-    const [isSaveAs, setIsSaveAs] = useState(false);
+    const [saveOption, setSaveOption] = useState(SAVE_OPTIONS.ONLINE);
+    const [fileFormat, setFileFormat] = useState('pdf');
 
     useEffect(() => {
         if (isOpen) {
             setFileName(currentFileName || '');
-            setIsSaveAs(false);
+            setSaveOption(SAVE_OPTIONS.ONLINE);
+            setFileFormat('pdf');
         }
     }, [isOpen, currentFileName]);
 
     const handleSubmit = (e) => {
-        e.preventDefault();
-        if (isSaveAs && !fileName.trim()) return;
+        if (!fileName.trim()) return;
 
-        if (isSaveAs) {
-            onSaveAs(fileName.trim());
+        if (saveOption === SAVE_OPTIONS.DOWNLOAD) {
+            // Handle download logic
+            console.log(`Downloading file: ${fileName} as ${fileFormat}`);
+            // Example implementation for PDF download
+            if (fileFormat === 'pdf') {
+                // This is where you would implement the actual PDF generation/download
+                // For example, using a library like jsPDF or a server endpoint
+                alert(`Downloading ${fileName}.${fileFormat}`);
+            } else {
+                // Handle other file formats
+                alert(`Downloading ${fileName}.${fileFormat}`);
+            }
         } else {
+            // Handle online save
             onSave();
+            console.log(`Saving file online: ${fileName}`);
         }
+
         onClose();
     };
 
@@ -48,8 +75,8 @@ const SaveModal = ({ isOpen, onClose, onSave, onSaveAs, currentFileName }) => {
             maxWidth="sm"
             sx={{
                 '& .MuiDialog-container': {
-                    alignItems: 'center', // Always center vertically
-                    justifyContent: 'center', // Center horizontally
+                    alignItems: 'center',
+                    justifyContent: 'center',
                 },
                 '& .MuiPaper-root': {
                     margin: '20px',
@@ -79,7 +106,7 @@ const SaveModal = ({ isOpen, onClose, onSave, onSaveAs, currentFileName }) => {
                     fontWeight: 'bold',
                     color: darkMode ? 'grey.100' : 'grey.800'
                 }}>
-                    {isSaveAs ? 'Save As' : 'Save Document'}
+                    Save Document
                 </Typography>
                 <IconButton
                     onClick={onClose}
@@ -97,54 +124,218 @@ const SaveModal = ({ isOpen, onClose, onSave, onSaveAs, currentFileName }) => {
             </DialogTitle>
 
             <DialogContent sx={{ p: 0 }}>
-                <form onSubmit={handleSubmit}>
-                    {isSaveAs && (
+                <div>
+                    <Box mb={3}>
+                        <Typography variant="body2" sx={{
+                            mb: 1,
+                            color: darkMode ? 'grey.300' : 'grey.600',
+                            fontWeight: 'medium'
+                        }}>
+                            File Name*
+                        </Typography>
+                        <InputField
+                            autoFocus
+                            fullWidth
+                            size="small"
+                            styles={{ backgroundColor:"transparent"}}
+                            value={fileName}
+                            onChange={(e) => setFileName(e.target.value)}
+                            placeholder="Enter file name"
+                        />
+                    </Box>
+
+                    <Box mt={3} mb={3}>
+                        <Typography variant="body2" sx={{
+                            mb: 1,
+                            color: darkMode ? 'grey.300' : 'grey.600',
+                            fontWeight: 'medium'
+                        }}>
+                            Save Options
+                        </Typography>
+
+                        <RadioGroup
+                            value={saveOption}
+                            onChange={(e) => setSaveOption(e.target.value)}
+                            sx={{ '& .MuiRadio-root': { color: darkMode ? 'grey.400' : 'grey.500' } }}
+                        >
+                            <Box
+                                sx={{
+                                    display: 'grid',
+                                    gridTemplateColumns: isSmallScreen ? '1fr' : 'repeat(2, 1fr)',
+                                    gap: 2,
+                                    mt: 1
+                                }}
+                            >
+                                <FormControlLabel
+                                    value={SAVE_OPTIONS.ONLINE}
+                                    control={<Radio
+                                        sx={{
+                                            '&.Mui-checked': {
+                                                color: darkMode ? '#60A5FA' : '#2563EB',
+                                            }
+                                        }}
+                                    />}
+                                    label={
+                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                            <DescriptionOutlinedIcon sx={{
+                                                color: darkMode ? '#60A5FA' : '#2563EB',
+                                                fontSize: '1.25rem'
+                                            }} />
+                                            <Typography variant="body2" sx={{ fontWeight: 'medium', color: darkMode ? 'white' : 'black' }}>
+                                                Save Online
+                                            </Typography>
+                                        </Box>
+                                    }
+                                    sx={{
+                                        margin: 0,
+                                        padding: '8px 12px',
+                                        borderRadius: '8px',
+                                        border: '1px solid',
+                                        borderColor: saveOption === SAVE_OPTIONS.ONLINE
+                                            ? (darkMode ? '#6D28D9' : '#3B82F6')
+                                            : (darkMode ? '#4B5563' : '#E5E7EB'),
+                                        bgcolor: saveOption === SAVE_OPTIONS.ONLINE
+                                            ? (darkMode ? 'rgba(109, 40, 217, 0.1)' : 'rgba(59, 130, 246, 0.05)')
+                                            : 'transparent',
+                                        transition: 'all 0.2s',
+                                        '&:hover': {
+                                            borderColor: darkMode ? '#7C3AED' : '#60A5FA',
+                                            bgcolor: darkMode
+                                                ? 'rgba(124, 58, 237, 0.05)'
+                                                : 'rgba(96, 165, 250, 0.05)'
+                                        }
+                                    }}
+                                />
+
+                                <FormControlLabel
+                                    value={SAVE_OPTIONS.DOWNLOAD}
+                                    control={<Radio sx={{
+                                        '&.Mui-checked': {
+                                            color: darkMode ? '#86EFAC' : '#10B981'
+                                        }
+                                    }} />}
+                                    label={
+                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                            <DownloadOutlinedIcon sx={{
+                                                color: darkMode ? '#86EFAC' : '#10B981',
+                                                fontSize: '1.25rem'
+                                            }} />
+                                            <Typography variant="body2" sx={{ fontWeight: 'medium', color: darkMode ? 'white' : 'black' }}>
+                                                Download File
+                                            </Typography>
+                                        </Box>
+                                    }
+                                    sx={{
+                                        margin: 0,
+                                        padding: '8px 12px',
+                                        borderRadius: '8px',
+                                        border: '1px solid',
+                                        borderColor: saveOption === SAVE_OPTIONS.DOWNLOAD
+                                            ? (darkMode ? '#059669' : '#059669')
+                                            : (darkMode ? '#4B5563' : '#E5E7EB'),
+                                        bgcolor: saveOption === SAVE_OPTIONS.DOWNLOAD
+                                            ? (darkMode ? 'rgba(5, 150, 105, 0.1)' : 'rgba(5, 150, 105, 0.05)')
+                                            : 'transparent',
+                                        transition: 'all 0.2s',
+                                        '&:hover': {
+                                            borderColor: darkMode ? '#34D399' : '#10B981',
+                                            bgcolor: darkMode
+                                                ? 'rgba(52, 211, 153, 0.05)'
+                                                : 'rgba(16, 185, 129, 0.05)'
+                                        }
+                                    }}
+                                />
+                            </Box>
+                        </RadioGroup>
+                    </Box>
+
+                    {saveOption === SAVE_OPTIONS.DOWNLOAD && (
                         <Box mb={3}>
                             <Typography variant="body2" sx={{
                                 mb: 1,
                                 color: darkMode ? 'grey.300' : 'grey.600',
                                 fontWeight: 'medium'
                             }}>
-                                File Name*
+                                File Format
                             </Typography>
-                            <TextField
-                                autoFocus
-                                fullWidth
-                                variant="outlined"
-                                size="small"
-                                value={fileName}
-                                onChange={(e) => setFileName(e.target.value)}
-                                required
-                                InputProps={{
-                                    sx: {
-                                        color: darkMode ? 'grey.100' : 'grey.900',
-                                        bgcolor: darkMode ? 'grey.800' : 'grey.50',
-                                        borderRadius: '8px',
-                                        '& fieldset': {
-                                            borderColor: darkMode ? 'grey.700' : 'grey.300',
-                                        },
-                                        '&:hover fieldset': {
-                                            borderColor: darkMode ? 'grey.600' : 'grey.400',
-                                        },
-                                    }
-                                }}
-                                placeholder="Enter file name"
-                            />
+                            <RadioGroup
+                                row
+                                value={fileFormat}
+                                onChange={(e) => setFileFormat(e.target.value)}
+                                sx={{ '& .MuiRadio-root': { color: darkMode ? 'grey.400' : 'grey.500' } }}
+                            >
+                                <FormControlLabel
+                                    value="pdf"
+                                    control={<Radio
+                                        sx={{
+                                            color: darkMode ? '#86EFAC' : '#10B981',
+                                            '&.Mui-checked': {
+                                                color: darkMode ? '#86EFAC' : '#10B981'
+                                            }
+                                        }}
+                                    />}
+                                    label="PDF" 
+                                    sx={{
+                                        '& .MuiFormControlLabel-label': {
+                                            color: darkMode ? 'grey.300' : 'grey.800'
+                                        }
+                                    }}
+                                />
+                                <FormControlLabel
+                                    value="Docx"
+                                    control={<Radio
+                                        sx={{
+                                            color: darkMode ? '#86EFAC' : '#10B981',
+                                            '&.Mui-checked': {
+                                                color: darkMode ? '#86EFAC' : '#10B981'
+                                            }
+                                        }}
+                                    />}
+                                    label="DOCX"
+                                    sx={{
+                                        '& .MuiFormControlLabel-label': {
+                                            color: darkMode ? 'grey.300' : 'grey.800'
+                                        }
+                                    }}
+                                />
+                                <FormControlLabel
+                                    value="txt"
+                                    control={<Radio
+                                        sx={{
+                                            color: darkMode ? '#86EFAC' : '#10B981',
+                                            '&.Mui-checked': {
+                                                color: darkMode ? '#86EFAC' : '#10B981'
+                                            }
+                                        }}
+                                    />}
+                                    label="TXT"
+                                    sx={{
+                                        '& .MuiFormControlLabel-label': {
+                                            color: darkMode ? 'grey.300' : 'grey.800'
+                                        }
+                                    }}
+                                />
+                            </RadioGroup>
                         </Box>
                     )}
 
+                    <Divider sx={{
+                        my: 3,
+                        borderColor: darkMode ? 'rgba(75, 85, 99, 0.5)' : 'rgba(209, 213, 219, 0.5)'
+                    }} />
+
                     <Box sx={{
                         display: 'flex',
-                        justifyContent: 'space-between',
+                        justifyContent: 'flex-end',
                         alignItems: 'center',
-                        mt: 3,
+                        mt: 2,
                         gap: 2
                     }}>
                         <ButtonComponent
-                            btnText={isSaveAs ? '← Regular Save' : 'Save As'}
-                            handleClick={() => setIsSaveAs(!isSaveAs)}
+                            btnText="Cancel"
+                            handleClick={onClose}
                             styles={{
-                                minWidth: '120px',
+                                minWidth: '100px',
                                 height: '40px',
                                 backgroundColor: darkMode ? '#374151' : '#E5E7EB',
                                 color: darkMode ? '#F3F4F6' : '#111827',
@@ -159,55 +350,38 @@ const SaveModal = ({ isOpen, onClose, onSave, onSaveAs, currentFileName }) => {
                             }}
                         />
 
-                        <Box sx={{ display: 'flex', gap: 2 }}>
-                            {!isSmallScreen && ( // Only show Cancel button on larger screens
-                                <ButtonComponent
-                                    btnText="Cancel"
-                                    handleClick={onClose}
-                                    styles={{
-                                        minWidth: '100px',
-                                        height: '40px',
-                                        backgroundColor: darkMode ? '#374151' : '#E5E7EB',
-                                        color: darkMode ? '#F3F4F6' : '#111827',
-                                        borderRadius: '8px',
-                                        textTransform: 'none',
-                                        fontWeight: 500,
-                                        fontSize: '0.875rem',
-                                        '&:hover': {
-                                            backgroundColor: darkMode ? '#4B5563' : '#D1D5DB',
-                                            boxShadow: 'none'
-                                        }
-                                    }}
-                                />
-                            )}
-                            <ButtonComponent
-                                type="submit"
-                                btnText={isSaveAs ? 'Save As' : 'Save'}
-                                handleClick={onClose}
-                                styles={{
-                                    minWidth: '100px',
-                                    height: '40px',
-                                    backgroundColor: darkMode ? '#7C3AED' : '#2563EB',
-                                    color: 'white',
-                                    borderRadius: '8px',
-                                    textTransform: 'none',
-                                    fontWeight: 500,
-                                    fontSize: '0.875rem',
-                                    '&:hover': {
-                                        backgroundColor: darkMode ? '#6D28D9' : '#3B82F6',
-                                        boxShadow: darkMode ? '0 2px 4px rgba(0,0,0,0.3)' : '0 2px 4px rgba(0,0,0,0.1)'
-                                    },
-                                    '&:active': {
-                                        backgroundColor: darkMode ? '#5B21B6' : '#1D4ED8'
-                                    }
-                                }}
-                            />
-                        </Box>
+                        <ButtonComponent
+                            btnText={saveOption === SAVE_OPTIONS.DOWNLOAD ? `Download` : 'Save Online'}
+                            handleClick={handleSubmit}
+                            styles={{
+                                minWidth: '150px',
+                                height: '40px',
+                                backgroundColor: saveOption === SAVE_OPTIONS.DOWNLOAD
+                                    ? (darkMode ? '#059669' : '#10B981')
+                                    : (darkMode ? '#7C3AED' : '#2563EB'),
+                                color: 'white',
+                                borderRadius: '8px',
+                                textTransform: 'none',
+                                fontWeight: 500,
+                                fontSize: '0.875rem',
+                                '&:hover': {
+                                    backgroundColor: saveOption === SAVE_OPTIONS.DOWNLOAD
+                                        ? (darkMode ? '#047857' : '#059669')
+                                        : (darkMode ? '#6D28D9' : '#3B82F6'),
+                                    boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                                },
+                                '&:active': {
+                                    backgroundColor: saveOption === SAVE_OPTIONS.DOWNLOAD
+                                        ? (darkMode ? '#065F46' : '#047857')
+                                        : (darkMode ? '#5B21B6' : '#1D4ED8')
+                                }
+                            }}
+                        />
                     </Box>
-                </form>
+                </div>
             </DialogContent>
         </Dialog>
     );
 };
 
-export default SaveModal;   
+export default SaveModal;
