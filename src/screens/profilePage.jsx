@@ -12,7 +12,7 @@ import {
     Alert,
 } from '@mui/material';
 import { Check, Notifications, Security, Edit, AddAPhoto } from '@mui/icons-material';
-import useEditorStore from '../globalStore';
+import useEditorStore from '../store/globalStore';
 import NotePad from "../assets/svgs/notePad";
 import { cn } from '../components/cn';
 import { ButtonComponent } from '../components/button';
@@ -156,9 +156,8 @@ const ProfilePage = () => {
             </div>
             <BackgroundPattern />
 
-            {/* Main content */}
+
             <Box className="relative z-10 max-w-4xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                {/* Header with profile name */}
                 <Box className={cn(
                     "mb-6 p-4 sm:p-6 rounded-xl shadow-lg flex items-center justify-between",
                     darkMode ? "border border-gray-700 bg-gradient-to-r from-gray-900 to-gray-800" : "border border-blue-100 bg-gradient-to-r from-blue-50 to-purple-50"
@@ -182,9 +181,9 @@ const ProfilePage = () => {
                         />
                 </Box>
 
-                {/* Main profile content */}
+
                 <Box className="space-y-8">
-                    {/* Profile card with avatar */}
+
                     <Box className={cn(
                         "p-6 rounded-xl shadow-lg relative overflow-hidden",
                         darkMode ? "bg-gray-800 border border-gray-700" : "bg-white border border-gray-100"
@@ -194,7 +193,7 @@ const ProfilePage = () => {
 
                         <Box className="relative z-10 flex flex-col md:flex-row items-center md:items-start gap-6">
                             <Box className="relative h-full">
-                                {/* Hidden file input */}
+
                                 <input
                                     type="file"
                                     ref={fileInputRef}
@@ -203,7 +202,7 @@ const ProfilePage = () => {
                                     style={{ display: 'none' }}
                                 />
 
-                                {/* Avatar with click handler */}
+
                                 <div className="relative cursor-pointer group" onClick={handleAvatarClick}>
                                     <Avatar
                                         src={previewImage}
@@ -216,7 +215,7 @@ const ProfilePage = () => {
                                         )}
                                     />
 
-                                    {/* Overlay on hover */}
+
                                     <div className={cn(
                                         "absolute inset-0 flex items-center justify-center rounded-full opacity-0 group-hover:opacity-80 transition-opacity",
                                         darkMode ? "bg-gray-900" : "bg-blue-900"
@@ -224,7 +223,7 @@ const ProfilePage = () => {
                                         <AddAPhoto className={darkMode ? "text-purple-300" : "text-blue-100"} />
                                     </div>
 
-                                    {/* Text hint */}
+
                                     <Typography className={cn(
                                         "absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity",
                                         darkMode ? "text-purple-300" : "text-blue-600"
@@ -266,7 +265,7 @@ const ProfilePage = () => {
                         </Box>
                     </Box>
 
-                    {/* Personal Information */}
+
                     <FormSection title="Personal Information">
                         <Box className="p-5">
                             <div className='flex justify-end mb-4'>
@@ -407,7 +406,7 @@ const ProfilePage = () => {
                         </Box>
                     </FormSection>
 
-                    {/* Security Settings */}
+
                     <FormSection title="Security Settings">
                         <Box className="p-5">
                             <Box className={cn(
@@ -481,13 +480,13 @@ const ProfilePage = () => {
                                     />
                                 </div>
 
-                                {/* Password change form */}
+
                                 {showPasswordFields && (
                                     <Box className={cn(
                                         "mt-4 pt-4 border-t",
                                         darkMode ? "border-gray-600" : "border-gray-200"
                                     )}>
-                                        {/* Success/Error messages */}
+
                                         {passwordMessage.type && (
                                             <Alert
                                                 severity={passwordMessage.type}
@@ -547,7 +546,7 @@ const ProfilePage = () => {
                         </Box>
                     </FormSection>
 
-                    {/* Notification Settings */}
+
                     <FormSection title="Notification Preferences">
                         <Box className="p-5">
                             <FormControlLabel
@@ -596,7 +595,6 @@ const ProfilePage = () => {
                     */}
                 </Box>
 
-                {/* Footer */}
                 <Box className="mt-8 pt-6 border-t text-center">
                     <Typography variant="body2" className={darkMode ? "text-gray-400" : "text-gray-500"}>
                         © 2025 NotePad App • <span className="cursor-pointer hover:underline">Terms</span> • <span className="cursor-pointer hover:underline">Privacy</span>

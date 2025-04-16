@@ -9,7 +9,7 @@ import RightAlign from "../assets/svgs/rightAlign";
 import CenterAlign from "../assets/svgs/centerAlign";
 import StrikeThrough from "../assets/svgs/strikeThrough";
 import LinkIcon from "../assets/svgs/link";
-import useEditorStore from "../globalStore";
+import useEditorStore from "../store/globalStore";
 import Undo from "../assets/svgs/undo";
 import Redo from "../assets/svgs/redo";
 import BulletList from "../assets/svgs/bulletList";
@@ -36,12 +36,9 @@ const EditorToolKit = ({ handleClick, fontStyle }) => {
         leftAlign: false,
         rightAlign: false,
         centerAlign: false,
-        bulletList: false,  
+        bulletList: false,
     });
     const [textColor, setTextColor] = useState(darkMode ? 'white' : 'black');
-    useEffect(() => {
-        setTextColor(darkMode ? 'white' : 'black');
-    },[darkMode])
 
      useEffect(() => {
         setFontFamily(DEFAULT_FONT_FAMILY);
@@ -51,9 +48,12 @@ const EditorToolKit = ({ handleClick, fontStyle }) => {
             family: DEFAULT_FONT_FAMILY,
             fontWeight: 'normal'
         };
-
-        fontStyle(family);
-        handleClick({ fontSize: DEFAULT_FONT_SIZE });
+         if (fontSize) {
+             fontStyle(family);
+         }
+         if (handleClick) {
+             handleClick({ fontSize: DEFAULT_FONT_SIZE });
+         }
     }, []);
 
     const handleFont = (e) => {

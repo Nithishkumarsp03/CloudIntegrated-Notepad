@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Button, TextField, useMediaQuery } from "@mui/material";
-import useEditorStore from "../globalStore";
+import useEditorStore from "../store/globalStore";
 
 const Modal = ({ isOpen, onClose, onInsertLink,content,isContent }) => {
     const { darkMode } = useEditorStore();

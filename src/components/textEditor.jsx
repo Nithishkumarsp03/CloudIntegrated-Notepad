@@ -2,7 +2,7 @@
         import StarterKit from '@tiptap/starter-kit';
         import CharacterCount from '@tiptap/extension-character-count';
         import TextAlign from '@tiptap/extension-text-align';
-        import useEditorStore from '../globalStore';
+import useEditorStore from '../store/globalStore';
         import { useEffect, useState, useMemo, useCallback, useRef } from 'react';
         import Underline from '@tiptap/extension-underline';
         import TextStyle from '@tiptap/extension-text-style';
@@ -26,12 +26,16 @@
         };
 
         const Tiptap = React.memo(({ action, fontStyle = fontFamilyOptions[0].family, color }) => {
-            const { isSidebarOpen, setCharacterCount } = useEditorStore();
+            const { isSidebarOpen, setCharacterCount, isLoading, getNote } = useEditorStore();
             const [width, setWidth] = useState('');
             const [content, setContent] = useState('<p></p>');
             const [editorAction, setEditorAction] = useState(null);
             const [isTyping, setIsTyping] = useState(false);
             const editorRef = useRef(null);
+
+            useEffect(() => {
+                getNote();
+            },[]);
 
             const calculateWidth = useCallback(() => {
                 if (window.innerWidth < 768) return 'w-full';
@@ -96,7 +100,7 @@
                         validate: href => /^https?:\/\//.test(href),
                     }),
                 ],
-                content,
+                content: '<p>This is a demo text for Notepad</p>',
                 editorProps: {
                     attributes: {
                         class: `h-[90%] dark:text-white outline-none ${width} p-4 overflow-auto min-h-[300px]`,
@@ -227,12 +231,24 @@
                 }
             }, [editor]);
 
+
             return (
                 <div
                     className="h-full overflow-auto overflow-x-hidden scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100 dark:scrollbar-thumb-purple-600 dark:scrollbar-track-gray-800 dark:bg-gray-800 bg-gray-50 border border-gray-300 dark:border-gray-800 rounded-lg cursor-text flex-1"
                     onClick={handleFocus}
                 >
-                    <EditorContent editor={editor} />
+                    {isLoading ? (
+                        <div className="h-[500px] p-4 space-y-3">
+                            <div className="h-6 rounded shimmer w-3/4"></div>
+                            <div className="h-6 rounded shimmer w-5/6"></div>
+                            <div className="h-6 rounded shimmer w-2/3"></div>
+                            <div className="h-6 rounded shimmer w-full"></div>
+                            <div className="h-6 rounded shimmer w-3/4"></div>
+                            <div className="h-6 rounded shimmer w-5/6"></div>
+                        </div>
+                    ) : (
+                        <EditorContent editor={editor} />
+                    )}
                 </div>
             );
         });

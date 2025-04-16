@@ -1,24 +1,21 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowBack } from "@mui/icons-material";
-import useEditorStore from "../store/globalStore";
-import { InputField } from "../components/inputField";
-import { ButtonComponent } from "../components/button";
 import { cn } from "../components/cn";
-import NotePad from "../assets/svgs/notePad";
 import ProfileSwitch from "../components/switch";
 import { SunIcon } from "../assets/svgs/sun";
 import { MoonIcon } from "../assets/svgs/moon";
+import { ButtonComponent } from "../components/button";
+import useEditorStore from "../store/globalStore";
+import NotePad from "../assets/svgs/notePad";
 
-const ForgotPassword = () => {
-    const [email, setEmail] = useState("");
+const TwoStepAuthentication = () => {
     const [verificationCode, setVerificationCode] = useState(["", "", "", "", "", ""]);
-    const [newPassword, setNewPassword] = useState("");
-    const [confirmPassword, setConfirmPassword] = useState("");
-    const [currentStage, setCurrentStage] = useState("email");
+    const [currentStage, setCurrentStage] = useState("verification");
     const [errorMessage, setErrorMessage] = useState("");
     const [secondsRemaining, setSecondsRemaining] = useState(60);
-    const [isTimerRunning, setIsTimerRunning] = useState(false);
+    const [isTimerRunning, setIsTimerRunning] = useState(true);
+    const [authenticatedEmail, setAuthenticatedEmail] = useState("user@example.com");
     const { darkMode, setDarkMode } = useEditorStore();
     const navigate = useNavigate();
     const inputRefs = useRef(Array(6).fill(null));
@@ -41,8 +38,7 @@ const ForgotPassword = () => {
                     </div>
                 </div>
 
-
-                <div className="absolute inset-0">                    
+                <div className="absolute inset-0">
                     <div className={`absolute top-1/4 left-1/4 w-24 h-24 rounded-full ${darkMode ? 'border-2 border-purple-500 opacity-10' : 'border-2 border-blue-400 opacity-15'} animate-float-slow`}></div>
                     <div className={`absolute top-2/3 right-1/3 w-16 h-16 rounded-full ${darkMode ? 'border border-blue-400 opacity-10' : 'border border-purple-400 opacity-15'} animate-float-slower`}></div>
                     <div className={`absolute top-1/3 right-1/4 w-20 h-20 ${darkMode ? 'border border-purple-400 opacity-10' : 'border border-blue-400 opacity-15'} transform rotate-45 animate-float-medium`}></div>
@@ -72,18 +68,6 @@ const ForgotPassword = () => {
             setIsTimerRunning(false);
         }
     }, [isTimerRunning, secondsRemaining]);
-
-    const handleEmailSubmit = (e) => {
-        e.preventDefault();
-        if (!email || !/\S+@\S+\.\S+/.test(email)) {
-            setErrorMessage("Please enter a valid email address");
-            return;
-        }
-        setCurrentStage("verification");
-        setErrorMessage("");
-        setSecondsRemaining(60);
-        setIsTimerRunning(true);
-    };
 
     const handleCodeChange = (index, value) => {
         if (!/^\d*$/.test(value)) return;
@@ -126,7 +110,8 @@ const ForgotPassword = () => {
             setErrorMessage("Verification code has expired. Please request a new one.");
             return;
         }
-        setCurrentStage("newPassword");
+
+        setCurrentStage("success");
         setErrorMessage("");
     };
 
@@ -134,37 +119,21 @@ const ForgotPassword = () => {
         setSecondsRemaining(60);
         setIsTimerRunning(true);
         setErrorMessage("");
-    };
-
-    const handlePasswordSubmit = (e) => {
-        e.preventDefault();
-        if (newPassword.length < 8) {
-            setErrorMessage("Password must be at least 8 characters long");
-            return;
-        }
-        if (newPassword !== confirmPassword) {
-            setErrorMessage("Passwords do not match");
-            return;
-        }
-        navigate("/");
-    };
-
-    const formatTime = (seconds) => {
-        const mins = Math.floor(seconds / 60);
-        const secs = seconds % 60;
-        return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        setVerificationCode(["", "", "", "", "", ""]);
     };
 
     const handleBackToLogin = () => {
         navigate("/");
     };
 
-    const handleGoBack = () => {
-        if (currentStage === "verification") {
-            setCurrentStage("email");
-        } else if (currentStage === "newPassword") {
-            setCurrentStage("verification");
-        }
+    const handleContinue = () => {
+        navigate("/dashboard");
+    };
+
+    const formatTime = (seconds) => {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     };
 
     return (
@@ -174,16 +143,18 @@ const ForgotPassword = () => {
                 ? "bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900"
                 : "bg-gradient-to-br from-blue-50 via-white to-purple-50",
         )}>
-            <div className="absolute top-4 right-4 z-20 cursor-pointer" onClick={setDarkMode} >
-                            <div className="flex items-center gap-2 bg-white/10 dark:bg-gray-800/30 backdrop-blur-sm p-2 rounded-full">
-                                <ProfileSwitch
-                                    checked={darkMode}
-                                />
-                                <SunIcon className={cn("text-gray-400", darkMode ? "hidden" : "block")} />
-                                <MoonIcon className={cn("text-gray-400", darkMode ? "block" : "hidden")} />
-                            </div>
-                        </div>
+            <div className="absolute top-4 right-4 z-20 cursor-pointer" onClick={setDarkMode}>
+                <div className="flex items-center gap-2 bg-white/10 dark:bg-gray-800/30 backdrop-blur-sm p-2 rounded-full">
+                    <ProfileSwitch
+                        checked={darkMode}
+                    />
+                    <SunIcon className={cn("text-gray-400", darkMode ? "hidden" : "block")} />
+                    <MoonIcon className={cn("text-gray-400", darkMode ? "block" : "hidden")} />
+                </div>
+            </div>
+
             <WaveBackground />
+
             <div className={cn(
                 "absolute z-0 w-full max-w-md h-full max-h-96 rounded-xl",
                 darkMode ? "bg-purple-900 opacity-20" : "bg-blue-300 opacity-10",
@@ -200,7 +171,7 @@ const ForgotPassword = () => {
                     "absolute top-0 left-0 right-0 h-1 rounded-t-xl",
                     darkMode ? "bg-gradient-to-r from-purple-500 to-blue-500" : "bg-gradient-to-r from-blue-400 to-purple-400"
                 )}></div>
-                {currentStage === "email" && (
+                {currentStage === "verification" && (
                     <>
                         <div className="flex items-center mb-6">
                             <button onClick={handleBackToLogin} className={cn(
@@ -215,88 +186,27 @@ const ForgotPassword = () => {
                                 "text-2xl font-semibold",
                                 "text-blue-700 dark:text-purple-300",
                             )}>
-                                Reset Password
+                                Two-Step Verification
                             </h2>
                         </div>
 
-                        <p className={cn(
-                            "mb-6 text-sm",
-                            "text-gray-600 dark:text-gray-300"
-                        )}>
-                            Enter your email address and we'll send you a verification code to reset your password.
-                        </p>
-
-                        <form onSubmit={handleEmailSubmit} className="space-y-6">
-                            <div>
-                                <label htmlFor="email" className={cn(
-                                    "block mb-2 text-sm font-medium",
-                                    "text-gray-700 dark:text-gray-300"
-                                )}>
-                                    Email
-                                </label>
-                                <InputField
-                                    id="email"
-                                    type="email"
-                                    placeholder="your@email.com"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    required
-                                />
-                                {errorMessage && (
-                                    <p className="mt-2 text-sm text-red-600 dark:text-red-400">
-                                        {errorMessage}
-                                    </p>
-                                )}
+                        <div className="flex justify-center mb-4">
+                            <div className={cn(
+                                "p-3 rounded-full",
+                                darkMode ? "bg-gray-700" : "bg-blue-100"
+                            )}>
+                                <NotePad className={cn(
+                                    "w-8 h-8",
+                                    darkMode ? "text-purple-400" : "text-blue-600"
+                                )} />
                             </div>
-
-                            <ButtonComponent
-                                btnText="Send Verification Code"
-                                type="submit"
-                                styles={{
-                                    width: "100%",
-                                    height: "48px",
-                                    backgroundColor: darkMode ? "#7C3AED" : "#2563EB",
-                                    color: "white",
-                                    borderRadius: "8px",
-                                    textTransform: "none",
-                                    fontWeight: 500,
-                                    fontSize: "0.95rem",
-                                    "&:hover": {
-                                        backgroundColor: darkMode ? "#6D28D9" : "#3B82F6",
-                                        boxShadow: darkMode ? "0 2px 4px rgba(0,0,0,0.3)" : "0 2px 4px rgba(0,0,0,0.1)"
-                                    },
-                                    "&:active": {
-                                        backgroundColor: darkMode ? "#5B21B6" : "#1D4ED8"
-                                    }
-                                }}
-                            />
-                        </form>
-                    </>
-                )}
-                {currentStage === "verification" && (
-                    <>
-                        <div className="flex items-center mb-6">
-                            <button onClick={handleGoBack} className={cn(
-                                "p-1 rounded-full mr-2",
-                                "text-gray-600 dark:text-gray-300",
-                                "hover:bg-gray-100 dark:hover:bg-gray-700",
-                                "transition-colors duration-200"
-                            )}>
-                                <ArrowBack fontSize="small" />
-                            </button>
-                            <h2 className={cn(
-                                "text-2xl font-semibold",
-                                "text-blue-700 dark:text-purple-300",
-                            )}>
-                                Verify Email
-                            </h2>
                         </div>
 
                         <p className={cn(
-                            "mb-4 text-sm",
+                            "mb-4 text-sm text-center",
                             "text-gray-600 dark:text-gray-300"
                         )}>
-                            Enter the 6-digit verification code sent to <span className="font-medium text-blue-600 dark:text-purple-400">{email}</span>
+                            For your security, we sent a verification code to <span className="font-medium text-blue-600 dark:text-purple-400">{authenticatedEmail}</span>
                         </p>
 
                         <div className={cn(
@@ -345,7 +255,7 @@ const ForgotPassword = () => {
                             )}
 
                             <ButtonComponent
-                                btnText="Verify Code"
+                                btnText="Verify"
                                 type="submit"
                                 styles={{
                                     width: "100%",
@@ -384,76 +294,38 @@ const ForgotPassword = () => {
                         </form>
                     </>
                 )}
-                {currentStage === "newPassword" && (
+
+                {/* Success Stage */}
+                {currentStage === "success" && (
                     <>
-                        <div className="flex items-center mb-6">
-                            <button onClick={handleGoBack} className={cn(
-                                "p-1 rounded-full mr-2",
-                                "text-gray-600 dark:text-gray-300",
-                                "hover:bg-gray-100 dark:hover:bg-gray-700",
-                                "transition-colors duration-200"
+                        <div className="flex flex-col items-center justify-center py-4">
+                            <div className={cn(
+                                "p-4 mb-4 rounded-full",
+                                darkMode ? "bg-gray-700" : "bg-blue-100"
                             )}>
-                                <ArrowBack fontSize="small" />
-                            </button>
+                                <NotePad className={cn(
+                                    "w-12 h-12",
+                                    darkMode ? "text-purple-400" : "text-blue-600"
+                                )} />
+                            </div>
+
                             <h2 className={cn(
-                                "text-2xl font-semibold",
+                                "text-2xl font-semibold mb-2",
                                 "text-blue-700 dark:text-purple-300",
                             )}>
-                                Create New Password
+                                Verification Successful
                             </h2>
-                        </div>
 
-                        <p className={cn(
-                            "mb-6 text-sm",
-                            "text-gray-600 dark:text-gray-300"
-                        )}>
-                            Your email has been verified. Please create a new password.
-                        </p>
-
-                        <form onSubmit={handlePasswordSubmit} className="space-y-6">
-                            <div>
-                                <label htmlFor="newPassword" className={cn(
-                                    "block mb-2 text-sm font-medium",
-                                    "text-gray-700 dark:text-gray-300"
-                                )}>
-                                    New Password
-                                </label>
-                                <InputField
-                                    id="newPassword"
-                                    type="password"
-                                    placeholder="••••••••"
-                                    value={newPassword}
-                                    onChange={(e) => setNewPassword(e.target.value)}
-                                    required
-                                />
-                            </div>
-
-                            <div>
-                                <label htmlFor="confirmPassword" className={cn(
-                                    "block mb-2 text-sm font-medium",
-                                    "text-gray-700 dark:text-gray-300"
-                                )}>
-                                    Confirm Password
-                                </label>
-                                <InputField
-                                    id="confirmPassword"
-                                    type="password"
-                                    placeholder="••••••••"
-                                    value={confirmPassword}
-                                    onChange={(e) => setConfirmPassword(e.target.value)}
-                                    required
-                                />
-
-                                {errorMessage && (
-                                    <p className="mt-2 text-sm text-red-600 dark:text-red-400">
-                                        {errorMessage}
-                                    </p>
-                                )}
-                            </div>
+                            <p className={cn(
+                                "mb-8 text-sm text-center",
+                                "text-gray-600 dark:text-gray-300"
+                            )}>
+                                Your identity has been verified. You now have access to your account.
+                            </p>
 
                             <ButtonComponent
-                                btnText="Reset Password"
-                                type="submit"
+                                btnText="Continue to Your Account"
+                                onClick={handleContinue}
                                 styles={{
                                     width: "100%",
                                     height: "48px",
@@ -472,7 +344,7 @@ const ForgotPassword = () => {
                                     }
                                 }}
                             />
-                        </form>
+                        </div>
                     </>
                 )}
             </div>
@@ -480,6 +352,4 @@ const ForgotPassword = () => {
     );
 };
 
-
-
-export default ForgotPassword;
+export default TwoStepAuthentication;

@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
 import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline';
-import useEditorStore from "../globalStore";
+import useEditorStore from "../store/globalStore";
 import { ButtonComponent } from "./button";
 
 const RenameModal = ({ open, onClose, onRename, placeholder = "Enter new file name", heading = "Rename File", value = '' }) => {

@@ -23,7 +23,7 @@ import {
     Telegram,
     Reddit
 } from '@mui/icons-material';
-import useEditorStore from "../globalStore";
+import useEditorStore from "../store/globalStore";
 import { ButtonComponent } from './button';
 import { CopyIcon } from '../assets/svgs/copy';
 

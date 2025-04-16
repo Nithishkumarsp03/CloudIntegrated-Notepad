@@ -20,10 +20,9 @@ import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
 import DraftsOutlinedIcon from '@mui/icons-material/DraftsOutlined';
 import NoteOutlinedIcon from '@mui/icons-material/NoteOutlined';
 import DownloadOutlinedIcon from '@mui/icons-material/DownloadOutlined';
-import useEditorStore from "../globalStore";
+import useEditorStore from "../store/globalStore";
 import { ButtonComponent } from './button';
 
-// Save option types
 const SAVE_OPTIONS = {
     REGULAR: 'regular',
     DRAFT: 'draft',
@@ -398,7 +397,6 @@ const SaveModal = ({ isOpen, onClose, onSave, onSaveAs, currentFileName }) => {
                             </Tooltip>
                         )}
 
-                        {/* Empty div for spacing when save as button is not shown */}
                         {saveOption !== SAVE_OPTIONS.REGULAR && <div></div>}
 
                         <Box sx={{ display: 'flex', gap: 2, ml: 'auto' }}>

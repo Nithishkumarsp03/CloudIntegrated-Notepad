@@ -7,6 +7,8 @@ import ProfilePage from './screens/profilePage';
 import ForgotPassword from './screens/forgotPassword';
 import OnboardingFlow from './screens/onBoardingFlow';
 import EmptyStatePage from './screens/emptyPage';
+import Tiptap from './demo/texteditor';
+import TwoStepAuthentication from './screens/twoStepAuth';
 
 function App() {
   return (
@@ -19,6 +21,7 @@ function App() {
           <Route path='/profile' element={<ProfilePage />} />
             <Route path='/onBoarding-flow' element={<OnboardingFlow />} />
             <Route path='/textEditor' element={<EmptyStatePage/>}/>
+            <Route path='/auth' element={<TwoStepAuthentication/>} />
             <Route path='/textEditor/:id' element={<Main />} />
           </Route>
       </Routes>

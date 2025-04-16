@@ -1,6 +1,6 @@
 import React from 'react';
 import { ButtonComponent } from './button';
-import useEditorStore from '../globalStore';
+import useEditorStore from '../store/globalStore';
 
 const EditorButton = ({ handleClick, btnText, isActive, classes }) => {
   const { darkMode } = useEditorStore();

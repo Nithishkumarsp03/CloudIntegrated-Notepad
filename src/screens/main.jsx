@@ -4,7 +4,7 @@ import Appbar from "../components/appbar";
 import Tiptap from "../components/textEditor";
 import EditorToolKit from "../components/editorToolKit";
 import { useMediaQuery } from "@mui/material";
-import useEditorStore from "../globalStore";
+import useEditorStore from "../store/globalStore";
 import { cn } from "../components/cn";
 import NotePad from "../assets/svgs/notePad";
 
@@ -23,9 +23,6 @@ const Main = () => {
 
   return (
     <div className="flex flex-col h-screen dark:bg-gray-900 w-full overflow-hidden relative">
-      <div className={`absolute top-8 left-72 z-40 transform rotate-12 opacity-5 ${darkMode ? 'text-purple-400' : 'text-gray-900'}`}>
-        <NotePad className="w-20 h-20 pointer-events-none" />
-      </div>
       <Appbar />
       <div className="flex flex-1 overflow-hidden relative">
         <div className={cn(
@@ -52,7 +49,7 @@ const Main = () => {
           <Tiptap action={active} fontStyle={fontStyle} color={color} />
           <EditorToolKit
             handleClick={e => setActive(e)}
-            fontStyle={setFontStyle}
+            fontStyle={e => setFontStyle(e)}
             handleColorClick={e => setColor(e)}
           />
         </div>

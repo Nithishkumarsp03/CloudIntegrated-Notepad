@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { tabsData } from "./utils";
+import { tabsData } from "../utils";
 
 const useEditorStore = create((set, get) => ({
     isUserLoggedIn: true,
@@ -9,6 +9,14 @@ const useEditorStore = create((set, get) => ({
     search: "", 
     darkMode: true,
     charactersTotalCount: 0,
+    isLoading: false,
+    
+    getNote: () => {
+        set({ isLoading: true });
+        setTimeout(() => {
+            set({isLoading:false})
+        },3000)
+    },
     
     setCharacterCount: (value) => {
         set({ charactersTotalCount: value });

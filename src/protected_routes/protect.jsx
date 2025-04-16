@@ -1,5 +1,5 @@
 import React from 'react'
-import useEditorStore from '../globalStore';
+import useEditorStore from '../store/globalStore';
 import { Outlet } from 'react-router-dom';
 import LoginPage from '../screens/loginPage';
 

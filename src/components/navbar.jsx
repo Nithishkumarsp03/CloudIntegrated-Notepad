@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import NotePad from "../assets/svgs/notePad";
 import { cn } from "./cn";
-import useEditorStore from "../globalStore";
+import useEditorStore from "../store/globalStore";
 import StyledTooltip from "./tooltop";
 import { BsThreeDots } from "react-icons/bs";
 import { Menu, MenuItem, useMediaQuery } from "@mui/material";
@@ -147,7 +147,7 @@ const Navbar = () => {
                         </div>
                     )}
 
-                    {/* Search  */}
+
                     <div className="px-4 pt-4 pb-6 md:hidden">
                         <div className="relative">
                             <input
@@ -181,7 +181,7 @@ const Navbar = () => {
                         </div>
                     </div>
 
-                    {/* Add New Tab Button */}
+
                     <div className="px-4 pb-6 flex gap-4">
                         <ButtonComponent
                             btnText="New Note"

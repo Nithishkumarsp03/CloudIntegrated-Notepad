@@ -13,14 +13,11 @@ import {
   Visibility,
   VisibilityOff,
   Login,
-  LockOutlined,
-  Email,
-  GitHub,
   Google,
-  Person,
-  AppRegistration
+  AppRegistration,
+  Facebook
 } from '@mui/icons-material';
-import useEditorStore from '../globalStore';
+import useEditorStore from '../store/globalStore';
 import { cn } from '../components/cn';
 import { ButtonComponent } from '../components/button';
 import { InputField } from '../components/inputField';
@@ -29,10 +26,12 @@ import { MoonIcon } from '../assets/svgs/moon';
 import ProfileSwitch from '../components/switch';
 import video from '../assets/noteVideo.mp4';
 import logo from '../assets/logo.png';
+import { useLoginStore } from '../store/loginStore';
 
 const LoginPage = () => {
   const navigate = useNavigate();
   const { darkMode, setDarkMode } = useEditorStore();
+  const { userName, email, password, twoFa, categoryId, onChange, confirmPassword } = useLoginStore();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
@@ -53,24 +52,12 @@ const LoginPage = () => {
     }
   }, [isMobile]);
 
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-  });
-
   const handleTogglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
 
   const handleToggleConfirmPasswordVisibility = () => {
     setShowConfirmPassword(!showConfirmPassword);
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    navigate('/profile');
   };
 
   const switchAuthMode = (e) => {
@@ -95,19 +82,11 @@ const LoginPage = () => {
 
   function handleLogin(e) {
     if (e === 'login') {
-      navigate('/texteditor');
+      navigate('/texteditor/1');
     }
     else {
-      navigate('/profile')
+      navigate('/onBoarding-flow')
     }
-  }
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
   };
 
   return (
@@ -239,7 +218,6 @@ const LoginPage = () => {
         </Box>
       )}
 
-
       {(!isMobile || !showLeftPanel) && (
         <Box className={cn(
           isMobile ? "w-full h-full" : "w-1/2",
@@ -281,49 +259,27 @@ const LoginPage = () => {
               {!isLogin && (
                 <InputField
                   name="name"
-                  darkMode={darkMode}
                   label="Full Name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <Person className={darkMode ? "text-purple-300" : "text-blue-600"} />
-                      </InputAdornment>
-                    ),
-                  }}
+                  value={userName}
+                  onChange={e => onChange("userName", e.target.value)}
                 />
               )}
 
               <InputField
                 name="email"
-                darkMode={darkMode}
                 label="Email"
                 type="email"
-                value={formData.email}
-                onChange={handleChange}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <Email className={darkMode ? "text-purple-300" : "text-blue-600"} />
-                    </InputAdornment>
-                  ),
-                }}
+                value={email}
+                onChange={e => onChange("email", e.target.value)}
               />
 
               <InputField
                 name="password"
-                darkMode={darkMode}
                 label="Password"
                 type={showPassword ? 'text' : 'password'}
-                value={formData.password}
-                onChange={handleChange}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <LockOutlined className={darkMode ? "text-purple-300" : "text-blue-600"} />
-                    </InputAdornment>
-                  ),
+                value={password}
+                onChange={e => onChange("password", e.target.value)}
+                inputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
                       <IconButton
@@ -331,7 +287,9 @@ const LoginPage = () => {
                         edge="end"
                         className={darkMode ? "text-purple-300" : "text-blue-600"}
                       >
-                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                        <div className='pr-4 pb-1'>
+                          {showPassword ? <VisibilityOff sx={{ color: darkMode ? 'rgb(233, 213, 255)' : '#0b6bcb' }} /> : <Visibility sx={{ color: darkMode ? 'rgb(233, 213, 255)' : '#0b6bcb' }} />}
+                        </div>
                       </IconButton>
                     </InputAdornment>
                   ),
@@ -341,17 +299,11 @@ const LoginPage = () => {
               {!isLogin && (
                 <InputField
                   name="confirmPassword"
-                  darkMode={darkMode}
                   label="Confirm Password"
                   type={showConfirmPassword ? 'text' : 'password'}
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <LockOutlined className={darkMode ? "text-purple-300" : "text-blue-600"} />
-                      </InputAdornment>
-                    ),
+                  value={confirmPassword}
+                  onChange={e => onChange("confirmPassword", e.target.value)}
+                  inputProps={{
                     endAdornment: (
                       <InputAdornment position="end">
                         <IconButton
@@ -359,7 +311,9 @@ const LoginPage = () => {
                           edge="end"
                           className={darkMode ? "text-purple-300" : "text-blue-600"}
                         >
-                          {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                          <div className='pr-4 pb-1'>
+                            {showPassword ? <VisibilityOff sx={{ color: darkMode ? 'rgb(233, 213, 255)' : '#0b6bcb' }} /> : <Visibility sx={{ color: darkMode ? 'rgb(233, 213, 255)' : '#0b6bcb' }} />}
+                          </div>
                         </IconButton>
                       </InputAdornment>
                     ),
@@ -384,7 +338,7 @@ const LoginPage = () => {
                       />
                     }
                     label={
-                      <Typography variant="body2" className={darkMode ? 'text-purple-300' : 'text-blue-600'}>
+                      <Typography variant="body2" className={`${darkMode ? 'text-purple-300' : 'text-blue-600'} pt-0.5`}>
                         Remember me
                       </Typography>
                     }
@@ -401,7 +355,7 @@ const LoginPage = () => {
 
               <ButtonComponent
                 handleClick={() => handleLogin(isLogin ? 'login' : 'signup')}
-                btnText={isLogin ? 'Log In' : 'Sign Up'}
+                btnText={isLogin ? 'Log In' : 'Continue to Sign Up'}
                 startIcon={isLogin ? <Login /> : <AppRegistration />}
                 darkMode={darkMode}
                 styles={{ width: "100%", marginTop: "16px" }}
@@ -419,6 +373,7 @@ const LoginPage = () => {
                 <ButtonComponent
                   btnText={'Google'}
                   startIcon={<Google />}
+                  handleClick={() => handleLogin(isLogin ? 'login' : 'signup')}
                   darkMode={darkMode}
                   styles={{
                     width: "100%",
@@ -430,8 +385,9 @@ const LoginPage = () => {
                   }}
                 />
                 <ButtonComponent
-                  btnText={'GitHub'}
-                  startIcon={<GitHub />}
+                  btnText={'FaceBook'}
+                  startIcon={<Facebook />}
+                  handleClick={() => handleLogin(isLogin ? 'login' : 'signup')}
                   darkMode={darkMode}
                   styles={{
                     width: "100%",

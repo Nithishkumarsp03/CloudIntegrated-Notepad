@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import { AccountCircle, MoreVert } from "@mui/icons-material";
 import { FiMail, FiGithub } from "react-icons/fi";
-import useEditorStore from "../globalStore";
+import useEditorStore from "../store/globalStore";
 import { cn } from "./cn";
 import logo from "../assets/logo.png";
 import Customer from "../assets/svgs/customerIcon";
