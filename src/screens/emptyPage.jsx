@@ -1,25 +1,45 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useRef, useEffect } from 'react';
 import { Add } from '@mui/icons-material';
 import useEditorStore from '../store/globalStore';
-import RenameModal from '../components/renameModel';
 import { cn } from '../components/cn';
 import { ButtonComponent } from '../components/button';
 import NotePad from '../assets/svgs/notePad';
 import { useNavigate } from 'react-router-dom';
 
 const EmptyStatePage = () => {
-    const [newNoteModal, setNewNoteModal] = React.useState(false);
+    const [noteName, setNoteName] = useState('');
+    const [showInput, setShowInput] = useState(false);
     const { darkMode, addNewTab } = useEditorStore();
     const navigate = useNavigate();
+    const inputRef = useRef(null);
 
-    const handleCreateNote = (noteName) => {
+    const handleCreateNote = () => {
         if (noteName && noteName.trim() !== '') {
             addNewTab(noteName);
-            setNewNoteModal(false);
-            navigate('/texteditor/1')
+            setNoteName('');
+            setShowInput(false);
+            navigate('/texteditor/1');
         }
     };
 
+    const handleKeyPress = (e) => {
+        if (e.key === 'Enter') {
+            handleCreateNote();
+        } else if (e.key === 'Escape') {
+            setShowInput(false);
+        }
+    };
+
+    const toggleInputField = () => {
+        setShowInput(true);
+    };
+
+    // Focus input when it appears
+    useEffect(() => {
+        if (showInput && inputRef.current) {
+            inputRef.current.focus();
+        }
+    }, [showInput]);
 
     const BackgroundPattern = useMemo(() => {
         return () => (
@@ -70,28 +90,71 @@ const EmptyStatePage = () => {
                     </p>
                 </div>
 
-                <ButtonComponent
-                    btnText="Create New Note"
-                    startIcon={<Add />}
-                    handleClick={() => setNewNoteModal(true)}
-                    styles={{
-                        width: "fit-content",
-                        height: "44px",
-                        backgroundColor: darkMode ? "#7C3AED" : "#2563EB",
-                        color: "white",
-                        borderRadius: "8px",
-                        textTransform: "none",
-                        fontWeight: 500,
-                        fontSize: "0.875rem",
-                        "&:hover": {
-                            backgroundColor: darkMode ? "#6D28D9" : "#3B82F6",
-                            boxShadow: "0 4px 12px rgba(79, 70, 229, 0.2)"
-                        },
-                        "&:active": {
-                            backgroundColor: darkMode ? "#5B21B6" : "#1D4ED8"
-                        }
-                    }}
-                />
+                {showInput ? (
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-6 animate-fadeIn">
+                        <input
+                            ref={inputRef}
+                            type="text"
+                            placeholder="Enter Note Name"
+                            value={noteName}
+                            onChange={(e) => setNoteName(e.target.value)}
+                            onKeyDown={handleKeyPress}
+                            className={cn(
+                                "px-4 py-2 rounded-lg border w-full sm:w-64",
+                                "bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600",
+                                "text-gray-800 dark:text-gray-200",
+                                "focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-purple-400",
+                                "transition-all duration-200"
+                            )}
+                        />
+
+                        <ButtonComponent
+                            btnText="Create"
+                            startIcon={<Add />}
+                            handleClick={handleCreateNote}
+                            styles={{
+                                width: "fit-content",
+                                height: "42px",
+                                backgroundColor: darkMode ? "#7C3AED" : "#2563EB",
+                                color: "white",
+                                borderRadius: "8px",
+                                textTransform: "none",
+                                fontWeight: 500,
+                                fontSize: "0.875rem",
+                                "&:hover": {
+                                    backgroundColor: darkMode ? "#6D28D9" : "#3B82F6",
+                                    boxShadow: "0 4px 12px rgba(79, 70, 229, 0.2)"
+                                },
+                                "&:active": {
+                                    backgroundColor: darkMode ? "#5B21B6" : "#1D4ED8"
+                                }
+                            }}
+                        />
+                    </div>
+                ) : (
+                    <ButtonComponent
+                        btnText="Create New Note"
+                        startIcon={<Add />}
+                        handleClick={toggleInputField}
+                        styles={{
+                            width: "fit-content",
+                            height: "44px",
+                            backgroundColor: darkMode ? "#7C3AED" : "#2563EB",
+                            color: "white",
+                            borderRadius: "8px",
+                            textTransform: "none",
+                            fontWeight: 500,
+                            fontSize: "0.875rem",
+                            "&:hover": {
+                                backgroundColor: darkMode ? "#6D28D9" : "#3B82F6",
+                                boxShadow: "0 4px 12px rgba(79, 70, 229, 0.2)"
+                            },
+                            "&:active": {
+                                backgroundColor: darkMode ? "#5B21B6" : "#1D4ED8"
+                            }
+                        }}
+                    />
+                )}
 
                 <div className="mt-12 px-4">
                     <div className={cn(
@@ -117,13 +180,6 @@ const EmptyStatePage = () => {
             </div>
             <div className="absolute bottom-0 left-0 w-full h-4 bg-gradient-to-r from-blue-300/20 via-purple-300/20 to-blue-300/20 dark:from-blue-800/10 dark:via-purple-700/10 dark:to-blue-800/10"></div>
             <div className="absolute top-0 left-0 w-full h-4 bg-gradient-to-r from-purple-300/20 via-blue-300/20 to-purple-300/20 dark:from-purple-700/10 dark:via-blue-800/10 dark:to-purple-700/10"></div>
-            <RenameModal
-                open={newNoteModal}
-                onClose={() => setNewNoteModal(false)}
-                heading="Create New Note"
-                placeholder="Enter Note Name"
-                onRename={handleCreateNote}
-            />
         </div>
     );
 };

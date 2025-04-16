@@ -12,6 +12,7 @@ import useEditorStore from '../store/globalStore';
         import Link from '@tiptap/extension-link';
         import Color from '@tiptap/extension-color';
         import React from 'react';
+import { Skeleton } from '@mui/material';
 
         const debounce = (func, wait) => {
             let timeout;
@@ -239,12 +240,15 @@ import useEditorStore from '../store/globalStore';
                 >
                     {isLoading ? (
                         <div className="h-[500px] p-4 space-y-3">
-                            <div className="h-6 rounded shimmer w-3/4"></div>
-                            <div className="h-6 rounded shimmer w-5/6"></div>
-                            <div className="h-6 rounded shimmer w-2/3"></div>
-                            <div className="h-6 rounded shimmer w-full"></div>
-                            <div className="h-6 rounded shimmer w-3/4"></div>
-                            <div className="h-6 rounded shimmer w-5/6"></div>
+                            <div className="h-[500px] p-4 space-y-4">
+                                <Skeleton variant="text" width="100%" height={24} />
+                                <Skeleton variant="text" width="90%" height={24} />
+                                <Skeleton variant="text" width="95%" height={24} />
+                                <Skeleton variant="rectangular" width="100%" height={120} />
+                                <Skeleton variant="text" width="80%" height={24} />
+                                <Skeleton variant="text" width="85%" height={24} />
+                                <Skeleton variant="text" width="70%" height={24} />
+                            </div>
                         </div>
                     ) : (
                         <EditorContent editor={editor} />

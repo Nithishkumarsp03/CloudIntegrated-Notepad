@@ -23,15 +23,17 @@ import { MoonIcon } from "../assets/svgs/moon";
 import { SaveIcon } from '../assets/svgs/save';
 import SaveModal from '../components/saveModal';
 import { SearchIcon } from '../assets/svgs/searchIcon';
+import { useNavigate } from "react-router-dom";
 
 const Appbar = () => {
     const [customerAnchorEl, setCustomerAnchorEl] = useState(null);
     const [mobileMenuAnchorEl, setMobileMenuAnchorEl] = useState(null);
     const [saveModal, setSaveModal] = useState(false);
-    const { setIsSideBarOpen, darkMode, setDarkMode, isUserLoggedIn, isSidebarOpen } = useEditorStore();
+    const { setIsSideBarOpen, darkMode, setDarkMode, isSidebarOpen } = useEditorStore();
     const [share, setShare] = useState(false);
     const isMobile = useMediaQuery("(max-width:768px)");
     const searchRef = useRef(null);
+    const navigate = useNavigate();
 
     const toggleDarkMode = () => {
         setDarkMode(!darkMode);
@@ -94,6 +96,10 @@ const Appbar = () => {
         handleMobileMenuClose();
     };
 
+    const handleProfile = () => {
+        navigate('/profile');
+    };
+
     return (
         <AppBar
             position="static"
@@ -115,7 +121,6 @@ const Appbar = () => {
                 )}
             >
                 <div className="flex justify-between items-center w-full box-border">
-                    {/* Left Section */}
                     <div className="flex items-center gap-10 min-w-0">
                         <span
                             className="cursor-pointer text-gray-500 dark:text-gray-400"
@@ -164,14 +169,10 @@ const Appbar = () => {
 
                     </div>
 
-                    {/* Center Logo */}
                     <div className="flex justify-center absolute left-1/2 transform -translate-x-1/2">
                         <img src={logo} alt="logo" className="w-[90px] h-[50px]" />
                     </div>
-
-                    {/* Right Section */}
                     <div className="flex items-center gap-0 md:gap-2 flex-shrink-0">
-                        {/* Mobile Menu Icon - only visible on mobile */}
                         {isMobile && (
                             <>
                                 <IconButton
@@ -181,15 +182,12 @@ const Appbar = () => {
                                     <MoreVert fontSize="medium" />
                                 </IconButton>
 
-                                {/* Account Button */}
-                                {isUserLoggedIn &&
-                                    <IconButton
+                                <IconButton
+                                    onClick={handleProfile}
                                         sx={{ color: darkMode ? "#fff" : "#000", padding: "6px", flexShrink: 0 }}
                                     >
                                         <AccountCircle fontSize={isMobile ? "small" : "medium"} />
                                     </IconButton>
-                                }
-                                {/* Customer Support - always visible */}
                                 <IconButton
                                     onClick={handleCustomerMenuOpen}
                                     sx={{ color: darkMode ? "#fff" : "#000", padding: "6px", flexShrink: 0, marginLeft: "4px" }}
@@ -198,11 +196,8 @@ const Appbar = () => {
                                 </IconButton>
                             </>
                         )}
-
-                        {/* Desktop-only visible items */}
                         {!isMobile && (
                             <>
-                                {/* Dark Mode Toggle - only on desktop */}
                                 <IconButton
                                     onClick={toggleDarkMode}
                                     sx={{ color: darkMode ? "#fff" : "#000", padding: "6px", flexShrink: 0 }}
@@ -213,12 +208,9 @@ const Appbar = () => {
                                     }
                                 </IconButton>
 
-                                {isUserLoggedIn &&
                                     <span className="text-black dark:text-white cursor-pointer" onClick={() => setShare(!share)}>
                                         <ShareIcon size={20} />
                                     </span>
-                                }
-                                {isUserLoggedIn &&
                                     <IconButton
                                         onClick={() => setSaveModal(!saveModal)}
                                         sx={{
@@ -232,28 +224,24 @@ const Appbar = () => {
                                     >
                                         <SaveIcon size={20} />
                                     </IconButton>
-                                }
-                                {/* Account Button */}
-                                {isUserLoggedIn &&
                                     <IconButton
-                                        sx={{ color: darkMode ? "#fff" : "#000", padding: "6px", flexShrink: 0 }}
+                                    sx={{ color: darkMode ? "#fff" : "#000", padding: "6px", flexShrink: 0 }}
+                                    onClick={handleProfile}
                                     >
                                         <AccountCircle fontSize={isMobile ? "small" : "medium"} />
                                     </IconButton>
-                                }
-                                            <IconButton
-                                                onClick={handleCustomerMenuOpen}
-                                                sx={{ color: darkMode ? "#fff" : "#000", padding: "6px", flexShrink: 0, marginLeft: "7px" }}
-                                            >
-                                                <Customer fontSize="medium" />
-                                            </IconButton>
+                                <IconButton
+                                    onClick={handleCustomerMenuOpen}
+                                    sx={{ color: darkMode ? "#fff" : "#000", padding: "6px", flexShrink: 0, marginLeft: "7px" }}
+                                >
+                                    <Customer fontSize="medium" />
+                                </IconButton>
                             </>
                         )}
                     </div>
                 </div>
             </Toolbar>
 
-            {/* Mobile Menu */}
             <Menu
                 anchorEl={mobileMenuAnchorEl}
                 open={Boolean(mobileMenuAnchorEl)}
@@ -273,7 +261,6 @@ const Appbar = () => {
                 transformOrigin={{ vertical: 'top', horizontal: 'right' }}
                 anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
             >
-                {/* Dark Mode Toggle - moved to menu for mobile */}
                 <MenuItem onClick={toggleDarkMode} sx={{ minHeight: 'auto', padding: '8px 16px' }}>
                     <div className="flex items-center gap-2">
                         {darkMode ?
@@ -284,7 +271,6 @@ const Appbar = () => {
                     </div>
                 </MenuItem>
 
-                {isUserLoggedIn && (
                     <>
                         <MenuItem onClick={handleShareClick} sx={{ minHeight: 'auto', padding: '8px 16px' }}>
                             <div className="flex items-center gap-2">
@@ -300,10 +286,8 @@ const Appbar = () => {
                             </div>
                         </MenuItem>
                     </>
-                )}
             </Menu>
 
-            {/* Customer Support Menu */}
             <Menu
                 anchorEl={customerAnchorEl}
                 open={Boolean(customerAnchorEl)}

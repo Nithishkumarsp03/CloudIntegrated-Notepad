@@ -3,14 +3,12 @@ import {
     Dialog,
     DialogTitle,
     DialogContent,
-    TextField,
     Box,
     IconButton,
     Typography,
     useTheme,
     useMediaQuery,
     Button,
-    InputAdornment,
     Divider
 } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
@@ -26,8 +24,9 @@ import {
 import useEditorStore from "../store/globalStore";
 import { ButtonComponent } from './button';
 import { CopyIcon } from '../assets/svgs/copy';
+import { InputField } from './inputField';
 
-const ShareModal = ({ isOpen, onClose, shareLink }) => {
+const ShareModal = ({ isOpen, onClose, shareLink = "https://in.search.yahoo.com/search?fr=mcafee&type=E211IN1589G0&p=link+notepad" }) => {
     const { darkMode } = useEditorStore();
     const theme = useTheme();
     const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
@@ -144,39 +143,23 @@ const ShareModal = ({ isOpen, onClose, shareLink }) => {
                     }}>
                         Shareable Link
                     </Typography>
-                    <TextField
+                    <InputField
                         fullWidth
                         variant="outlined"
                         size="small"
                         value={shareLink}
-                        InputProps={{
-                            readOnly: true,
-                            endAdornment: (
-                                <InputAdornment position="end">
-                                    <Button
-                                        onClick={handleCopyLink}
-                                        startIcon={<CopyIcon size={18} />}
-                                        sx={{
-                                            textTransform: 'none',
-                                            color: darkMode ? '#8B5CF6' : '#2563EB',
-                                            '&:hover': {
-                                                backgroundColor: 'transparent',
-                                            }
-                                        }}
-                                    >
-                                        {copied ? 'Copied!' : 'Copy'}
-                                    </Button>
-                                </InputAdornment>
-                            ),
-                            sx: {
-                                color: darkMode ? 'grey.100' : 'grey.900',
-                                bgcolor: darkMode ? 'grey.800' : 'grey.50',
-                                borderRadius: '8px',
-                                '& fieldset': {
-                                    borderColor: darkMode ? 'grey.700' : 'grey.300',
-                                },
-                            }
-                        }}
+                        endIcon={<Button
+                            onClick={handleCopyLink}
+                            startIcon={<CopyIcon size={18} />}
+                            sx={{
+                                textTransform: 'none',
+                                color: darkMode ? '#8B5CF6' : '#2563EB',
+                                '&:hover': {
+                                    backgroundColor: 'transparent',
+                                }
+                            }}
+                        >
+                            {copied ? 'Copied!' : 'Copy'}</Button>}
                     />
                 </Box>
 

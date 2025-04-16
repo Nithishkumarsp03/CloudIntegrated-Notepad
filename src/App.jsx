@@ -21,7 +21,7 @@ function App() {
           <Route path='/profile' element={<ProfilePage />} />
             <Route path='/onBoarding-flow' element={<OnboardingFlow />} />
             <Route path='/textEditor' element={<EmptyStatePage/>}/>
-            <Route path='/auth' element={<TwoStepAuthentication/>} />
+            <Route path='/twoStepAuth' element={<TwoStepAuthentication/>} />
             <Route path='/textEditor/:id' element={<Main />} />
           </Route>
       </Routes>

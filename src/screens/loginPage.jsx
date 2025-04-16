@@ -8,6 +8,9 @@ import {
   FormControlLabel,
   Checkbox,
   useMediaQuery,
+  Snackbar,
+  Alert,
+  Grow,
 } from '@mui/material';
 import {
   Visibility,
@@ -31,15 +34,19 @@ import { useLoginStore } from '../store/loginStore';
 const LoginPage = () => {
   const navigate = useNavigate();
   const { darkMode, setDarkMode } = useEditorStore();
-  const { userName, email, password, twoFa, categoryId, onChange, confirmPassword } = useLoginStore();
+  const { userName, email, password, twoFa, categoryId, onChange, confirmPassword, checkUser, isUserLoggedIn } = useLoginStore();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [isLogin, setIsLogin] = useState(true);
   const [videoLoaded, setVideoLoaded] = useState(false);
   const [showLeftPanel, setShowLeftPanel] = useState(true);
-
   const isMobile = useMediaQuery('(max-width:768px)');
+  const [open, setOpen] = useState({
+    state: false,
+    message: "",
+    type:""
+  });
 
   useEffect(() => {
     if (isMobile) {
@@ -80,17 +87,45 @@ const LoginPage = () => {
     navigate('/forgotPassword');
   }
 
-  function handleLogin(e) {
-    if (e === 'login') {
-      navigate('/texteditor/1');
+  async function handleLogin(e) {
+    const response = await checkUser();
+    if (!response.state) {
+      setOpen(p => ({...p,type:"error"}))
     }
     else {
-      navigate('/onBoarding-flow')
+      setOpen(p => ({ ...p, type: "success" }))
+    }
+      setOpen(p => ({...p,
+        state: true,
+        message: response.message,
+      }))
+
+    if (e === 'login') {
+      if (response.state) {
+        navigate('/texteditor/1');
+      }
+    }
+    else {
+      checkUser();
+      if (response.state) {
+        navigate('/onBoarding-flow')
+      }
     }
   };
 
   return (
     <Box className="h-screen w-screen flex flex-col md:flex-row overflow-hidden">
+        <Snackbar
+          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+          open={open.state}
+        autoHideDuration={5000}
+        onClose={() => setOpen({ state: false })}
+        TransitionComponent={Grow}
+      >
+        <Alert variant="filled" severity={open.type}>
+          {open.message}
+        </Alert>
+        </Snackbar>
       {(!isMobile || showLeftPanel) && (
         <Box className={cn(
           isMobile ? "w-full h-full absolute z-30" : "w-1/2 relative",
@@ -255,6 +290,7 @@ const LoginPage = () => {
               </Typography>
             </div>
 
+            <form onSubmit={handleLogin}>
             <div className="space-y-4 md:space-y-5">
               {!isLogin && (
                 <InputField
@@ -266,6 +302,7 @@ const LoginPage = () => {
               )}
 
               <InputField
+                autofocus
                 name="email"
                 label="Email"
                 type="email"
@@ -278,22 +315,9 @@ const LoginPage = () => {
                 label="Password"
                 type={showPassword ? 'text' : 'password'}
                 value={password}
-                onChange={e => onChange("password", e.target.value)}
-                inputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        onClick={handleTogglePasswordVisibility}
-                        edge="end"
-                        className={darkMode ? "text-purple-300" : "text-blue-600"}
-                      >
-                        <div className='pr-4 pb-1'>
-                          {showPassword ? <VisibilityOff sx={{ color: darkMode ? 'rgb(233, 213, 255)' : '#0b6bcb' }} /> : <Visibility sx={{ color: darkMode ? 'rgb(233, 213, 255)' : '#0b6bcb' }} />}
-                        </div>
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
+                  onChange={e => onChange("password", e.target.value)}
+                  endIcon={<div onClick={handleTogglePasswordVisibility} className='cursor-pointer pr-2 pb-0.5'
+>{showPassword ? <VisibilityOff sx={{ color: darkMode ? 'rgb(233, 213, 255)' : '#0b6bcb' }} /> : <Visibility sx={{ color: darkMode ? 'rgb(233, 213, 255)' : '#0b6bcb' }} />}</div>}
               />
 
               {!isLogin && (
@@ -303,21 +327,8 @@ const LoginPage = () => {
                   type={showConfirmPassword ? 'text' : 'password'}
                   value={confirmPassword}
                   onChange={e => onChange("confirmPassword", e.target.value)}
-                  inputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton
-                          onClick={handleToggleConfirmPasswordVisibility}
-                          edge="end"
-                          className={darkMode ? "text-purple-300" : "text-blue-600"}
-                        >
-                          <div className='pr-4 pb-1'>
-                            {showPassword ? <VisibilityOff sx={{ color: darkMode ? 'rgb(233, 213, 255)' : '#0b6bcb' }} /> : <Visibility sx={{ color: darkMode ? 'rgb(233, 213, 255)' : '#0b6bcb' }} />}
-                          </div>
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                  }}
+                    endIcon={<div onClick={handleToggleConfirmPasswordVisibility} className='cursor-pointer pr-2 pb-0.5'
+                    >{showPassword ? <VisibilityOff sx={{ color: darkMode ? 'rgb(233, 213, 255)' : '#0b6bcb' }} /> : <Visibility sx={{ color: darkMode ? 'rgb(233, 213, 255)' : '#0b6bcb' }} />}</div>}
                 />
               )}
 
@@ -399,7 +410,8 @@ const LoginPage = () => {
                   }}
                 />
               </div>
-            </div>
+              </div>
+            </form>
 
             <Box className="mt-6 md:mt-8 text-center">
               <Typography className={`${darkMode ? 'text-gray-400' : 'text-gray-600'} flex gap-1 w-full justify-center`} variant="body2">

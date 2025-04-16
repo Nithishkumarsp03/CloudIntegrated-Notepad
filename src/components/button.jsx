@@ -18,6 +18,7 @@ export const ButtonComponent = ({
   variant = "contained",
   fullWidth = true,
   disabled = false,
+  onKey,
 }) => {
   const [iconState, setIconState] = useState({
     hover: false,
@@ -73,6 +74,9 @@ export const ButtonComponent = ({
     <Button
       type={type}
       disableRipple={!isRipple}
+      onKeyDown={(e) => {
+        if (onKey) onKey(e);
+      }}
       focusRipple
       className={`relative ${className}`}
       disabled={disabled}

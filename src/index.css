@@ -3,7 +3,6 @@
 @tailwind utilities;
 
 @layer utilities {
-  /* Remove scrollbar arrows for WebKit browsers */
   .scrollbar-none::-webkit-scrollbar-button {
     display: none;
   }
@@ -13,7 +12,6 @@
     width: 0;
 }
 
-  /* Customize scrollbar */
   .scrollbar-thin::-webkit-scrollbar {
     width: 8px;
   }
@@ -45,37 +43,4 @@
     list-style-type: circle;
     padding-left: 1.5rem;
 }
-
-@keyframes shimmer {
-  0% {
-    background-position: -1000px 0;
-  }
-  100% {
-    background-position: 1000px 0;
-  }
-}
-
-.shimmer {
-  background-image: linear-gradient(
-    to right,
-    var(--shimmer-start),
-    var(--shimmer-mid),
-    var(--shimmer-end)
-  );
-  background-size: 1000px 100%;
-  animation: shimmer 1.6s infinite linear;
-}
-
-:root {
-  --shimmer-start: #e5e7eb;
-  --shimmer-mid: #f3f4f6;
-  --shimmer-end: #e5e7eb;
-}
-
-.dark {
-  --shimmer-start: #1e2530;  
-  --shimmer-mid: #2a313d;    
-  --shimmer-end: #1e2530;    
-}
-
 
