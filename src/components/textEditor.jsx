@@ -1,118 +1,197 @@
-import React, { useEffect, useState } from "react";
-import { EditorContent, useEditor } from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
-import Bold from "@tiptap/extension-bold";
-import Italic from "@tiptap/extension-italic";
-import Underline from "@tiptap/extension-underline";
-import BulletList from "@tiptap/extension-bullet-list";
-import OrderedList from "@tiptap/extension-ordered-list";
-import ListItem from "@tiptap/extension-list-item";
-import CodeBlock from "@tiptap/extension-code-block";
-import Image from "@tiptap/extension-image";
-import { FiBold, FiItalic, FiUnderline, FiList, FiImage, FiCode } from "react-icons/fi";
-import useEditorStore from "../globalStore";
-import '../textEditor.css';
+import { useEditor, EditorContent } from '@tiptap/react';
+import StarterKit from '@tiptap/starter-kit';
+import CharacterCount from '@tiptap/extension-character-count';
+import TextAlign from '@tiptap/extension-text-align';
+import useEditorStore from '../globalStore';
+import { useEffect, useState, useMemo, useCallback, useRef } from 'react';
+import Underline from '@tiptap/extension-underline';
+import TextStyle from '@tiptap/extension-text-style';
+import FontFamily from '@tiptap/extension-font-family';
+import { fontFamilyOptions } from '../utils';
+import Link from '@tiptap/extension-link';
+import React from 'react';
 
-const TextEditor = ({ id }) => {
-    const { tabs, updateTabContent } = useEditorStore();
-    const [tabContent, setTabContent] = useState("");
-
-    useEffect(() => {
-        const content = tabs.find(val => val.id === id)?.content || "";
-        setTabContent(content);
-    }, [id, tabs]);
-
-    const editor = useEditor({
-        extensions: [
-            StarterKit,
-            Bold,
-            Italic,
-            Underline,
-            BulletList,
-            OrderedList,
-            ListItem,
-            CodeBlock,
-            Image.configure({ allowBase64: true }) // Ensure base64 images are allowed
-        ],
-        content: tabContent,
-        onUpdate: ({ editor }) => {
-            updateTabContent(id, editor.getHTML());
-        },
-    });
-
-    useEffect(() => {
-        if (editor && tabContent) {
-            editor.commands.setContent(tabContent);
-        }
-    }, [tabContent, editor]);
-
-    const handleImageUpload = (event) => {
-        const file = event.target.files[0];
-        if (!file) return;
-
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            if (editor) {
-                editor.chain().focus().insertContent(
-                    `<img src="${e.target.result}" alt="uploaded image" style="max-width: 200px; height: auto;" />`
-                ).run();
-            }
+const debounce = (func, wait) => {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
         };
-        reader.readAsDataURL(file);
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
     };
-
-
-
-
-    if (!editor) {
-        return null;
-    }
-
-    return (
-        <div className="w-full flex flex-col items-center transition-all duration-300 h-[610px] overflow-scroll scrollbar-hide">
-            {/* Editor Content */}
-            <div className="w-full h-full overflow-y-auto bg-white shadow-lg p-4">
-                <EditorContent editor={editor} key={id} className="min-h-[200px] tiptap" />
-            </div>
-
-            {/* Formatting Toolbar */}
-            <div className="w-full bg-white shadow-lg p-2 flex flex-wrap justify-start gap-2 mb-4">
-                <button onClick={() => editor.chain().focus().toggleBold().run()} className={`p-2 hover:bg-gray-200 rounded ${editor.isActive("bold") ? "bg-gray-300" : ""}`}>
-                    <FiBold size={20} />
-                </button>
-                <button onClick={() => editor.chain().focus().toggleItalic().run()} className={`p-2 hover:bg-gray-200 rounded ${editor.isActive("italic") ? "bg-gray-300" : ""}`}>
-                    <FiItalic size={20} />
-                </button>
-                <button onClick={() => editor.chain().focus().toggleUnderline().run()} className={`p-2 hover:bg-gray-200 rounded ${editor.isActive("underline") ? "bg-gray-300" : ""}`}>
-                    <FiUnderline size={20} />
-                </button>
-                <button onClick={() => editor.chain().focus().toggleBulletList().run()} className={`p-2 hover:bg-gray-200 rounded ${editor.isActive("bulletList") ? "bg-gray-300" : ""}`}>
-                    <FiList size={20} />
-                </button>
-                <button onClick={() => editor.chain().focus().toggleOrderedList().run()} className={`p-2 hover:bg-gray-200 rounded ${editor.isActive("orderedList") ? "bg-gray-300" : ""}`}>
-                    <FiList size={20} />
-                </button>
-                <button onClick={() => editor.chain().focus().toggleCodeBlock().run()} className={`p-2 hover:bg-gray-200 rounded ${editor.isActive("codeBlock") ? "bg-gray-300" : ""}`}>
-                    <FiCode size={20} />
-                </button>
-
-                {/* Image Upload Button */}
-                <label className="p-2 cursor-pointer hover:bg-gray-200 rounded">
-                    <FiImage size={20} />
-                    <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
-                </label>
-            </div>
-
-            {/* Inline CSS to Remove Outline */}
-            <style>
-                {`
-                    .ProseMirror:focus {
-                        outline: none !important;
-                    }
-                `}
-            </style>
-        </div>
-    );
 };
 
-export default TextEditor;
+const Tiptap = React.memo(({ action, fontStyle = fontFamilyOptions[0].family }) => {
+    const { isSidebarOpen, setCharacterCount } = useEditorStore();
+    const [width, setWidth] = useState('');
+    const [content, setContent] = useState('<p>Hello World</p>');
+    const [editorAction, setEditorAction] = useState(null);
+    const [isTyping, setIsTyping] = useState(false);
+    const editorRef = useRef(null);
+
+    const calculateWidth = useCallback(() => {
+        if (window.innerWidth < 768) return 'w-full';
+        if (window.innerWidth < 1024) return isSidebarOpen ? 'w-[calc(100vw-80px)]' : 'w-[calc(100vw-300px)]';
+        return isSidebarOpen ? 'w-[1505px]' : 'w-[1225px]';
+    }, [isSidebarOpen]);
+
+    useEffect(() => {
+        setWidth(calculateWidth());
+        const handleResize = debounce(() => setWidth(calculateWidth()), 100);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, [calculateWidth]);
+
+    const debouncedUpdate = useMemo(() => debounce((editor) => {
+        setContent(editor.getHTML());
+        const count = editor.storage.characterCount.words();
+        setCharacterCount(count);
+    }, 300), [setCharacterCount]);
+
+    const handleKeyDown = useCallback((event) => {
+        // Handle Ctrl+A (Select All)
+        if (event.ctrlKey && event.key === 'a') {
+            event.preventDefault();
+            if (editorRef.current) {
+                editorRef.current.commands.selectAll();
+            }
+            return;
+        }
+    }, []);
+
+    const editorConfig = useMemo(() => ({
+        extensions: [
+            StarterKit.configure({
+                bulletList: {
+                    HTMLAttributes: {
+                        class: 'list-disc pl-5',
+                    },
+                },
+            }),
+            Underline,
+            CharacterCount,
+            TextAlign.configure({
+                types: ['heading', 'paragraph'],
+                alignments: ['left', 'center', 'right'],
+                defaultAlignment: 'left',
+            }),
+            TextStyle,
+            FontFamily.configure({
+                types: ['textStyle', 'paragraph'],
+            }),
+            Link.configure({
+                openOnClick: false,
+                HTMLAttributes: {
+                    class: 'text-blue-600 dark:text-blue-400 underline',
+                    rel: 'noopener noreferrer',
+                    target: '_blank',
+                },
+            }),
+        ],
+        content,
+        editorProps: {
+            attributes: {
+                class: `h-[90%] dark:text-white outline-none ${width} p-4 overflow-auto min-h-[300px]`,
+                style: `font-family: ${fontStyle}`,
+            },
+            handleKeyDown: handleKeyDown,
+        },
+        onUpdate: ({ editor }) => {
+            setIsTyping(true);
+            debouncedUpdate(editor);
+            debounce(() => setIsTyping(false), 500)();
+        },
+        onSelectionUpdate: () => {
+            if (!isTyping) {
+                const count = editorRef.current?.storage.characterCount.words();
+                if (count !== undefined) setCharacterCount(count);
+            }
+        }
+    }), [width, fontStyle, content, debouncedUpdate, isTyping, setCharacterCount, handleKeyDown]);
+
+    const editor = useEditor(editorConfig);
+    editorRef.current = editor;
+
+    useEffect(() => {
+        if (!editor || !fontStyle) return;
+        editor.chain().focus().setFontFamily(fontStyle).run();
+    }, [fontStyle, editor]);
+
+    useEffect(() => {
+        if (!editor) return;
+        setEditorAction(action);
+    }, [action]);
+
+    useEffect(() => {
+        if (!editor || !editorAction) return;
+
+        if (editorAction.startsWith('link:')) {
+            const url = editorAction.replace('link:', '');
+            if (url) {
+                editor.chain().focus().toggleLink({ href: url }).run();
+            } else {
+                editor.chain().focus().unsetLink().run();
+            }
+            return;
+        }
+
+        switch (editorAction) {
+            case 'bulletList':
+                editor.chain().focus().toggleBulletList().run();
+                break;
+            case 'bulletListClose':
+                editor.chain().focus().toggleBulletList().run();
+                break;
+            case 'undo':
+                editor.commands.undo();
+                break;
+            case 'redo':
+                editor.commands.redo();
+                break;
+            case 'bold':
+                editor.chain().focus().toggleBold().run();
+                break;
+            case 'italic':
+                editor.chain().focus().toggleItalic().run();
+                break;
+            case 'underline':
+                editor.chain().focus().toggleUnderline().run();
+                break;
+            case 'strikethrough':
+                editor.chain().focus().toggleStrike().run();
+                break;
+            case 'leftAlign':
+                editor.chain().focus().setTextAlign('left').run();
+                break;
+            case 'rightAlign':
+                editor.chain().focus().setTextAlign('right').run();
+                break;
+            case 'centerAlign':
+                editor.chain().focus().setTextAlign('center').run();
+                break;
+            default:
+                break;
+        }
+
+        handleFocus();
+    }, [editorAction, editor]);
+
+    const handleFocus = useCallback(() => {
+        if (editor) {
+            editor.commands.focus();
+        }
+    }, [editor]);
+
+    return (
+        <div
+            className="h-full overflow-auto overflow-x-hidden scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100 dark:scrollbar-thumb-purple-600 dark:scrollbar-track-gray-800 dark:bg-gray-800 bg-gray-50 border border-gray-300 dark:border-gray-800 rounded-lg cursor-text flex-1"
+            onClick={handleFocus}
+        >
+            <EditorContent editor={editor} />
+        </div>
+    );
+});
+
+export default Tiptap;

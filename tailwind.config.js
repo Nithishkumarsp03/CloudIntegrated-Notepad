@@ -1,8 +1,18 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
+  darkMode: "class",
   theme: {
     extend: {
+      colors: {
+        custom: {
+          100: "#242839",
+          200: "#e8e8e8",
+          300:"#ececec"
+        },
+      },
+      boxShadow: {
+      },
       keyframes: {
         iconHover: {
           "0%": { right: "-20px", opacity: "0.8" },
@@ -29,5 +39,8 @@ module.exports = {
       },
     },
   },
-  plugins: [require("tailwind-scrollbar-hide")],
+  plugins: [
+    require("tailwind-scrollbar"),
+    require("tailwind-scrollbar-hide"), 
+  ],
 };

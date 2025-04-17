@@ -20,29 +20,39 @@ export const InputField = ({
         type={type}
         value={value}
         sx={{
-          '& .MuiInputBase-root': { height: '40px', padding: 0 },
-          '& .MuiInputBase-input': { height: '40px', paddingLeft: '10px', margin: 0, fontSize: '14px' },
+          '& .MuiInputBase-root': {
+            height: '40px',
+            padding: 0
+          },
+          '& .MuiInputBase-input': {
+            height: '40px',
+            paddingLeft: '10px',
+            margin: 0,
+            fontSize: '14px',
+            color: '#0b6bcb', 
+          },
           '& .MuiFormLabel-root': {
             fontSize: '14px',
             paddingLeft: 0,
             paddingTop: '3px',
             margin: 0,
-            transform: 'translate(14px, 5px) scale(1)'
+            transform: 'translate(14px, 5px) scale(1)',
+            color: '#0b6bcb',
           },
           '& .MuiInputLabel-shrink': {
             transform: 'translate(14px, -9px) scale(0.85)',
-            color: "#4b4751"
+            color: '#0b6bcb',
           },
           '& .MuiOutlinedInput-root': {
             '& .MuiOutlinedInput-notchedOutline': {
-              borderWidth: '2px', // Ensure only one border is applied
-              borderColor: '#0b6bcb' // Default border color
+              borderWidth: '2px', 
+              borderColor: '#0b6bcb', 
             },
             '&:hover .MuiOutlinedInput-notchedOutline': {
-              borderColor: '#094f99 !important' // Hover effect
+              borderColor: '#1a73e8 !important',
             },
             '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-              borderColor: '#063a73 !important' // Focus border color
+              borderColor: '#1557b0 !important',
             }
           },
           ...styles
@@ -52,5 +62,5 @@ export const InputField = ({
         onChange={(e) => onChange(e.target.value)}
       />
     </div>
-  )
-}
+  );
+};
