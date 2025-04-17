@@ -35,7 +35,6 @@ const Navbar = () => {
             if (id.dayId == -1 && id.tabId == -1) {
                 setId({ dayId: data[0].id, tabId: data[0].data[0].id })
             }
-            navigate(`/textEditor/${data[0].id}`)
         }
     }, [data]);
 

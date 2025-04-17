@@ -45,19 +45,8 @@ const LoginPage = () => {
   const [open, setOpen] = useState({
     state: false,
     message: "",
-    type:""
+    type: ""
   });
-
-  useEffect(() => {
-    if (isMobile) {
-      const timer = setTimeout(() => {
-        setShowLeftPanel(false);
-      }, 3000);
-      return () => clearTimeout(timer);
-    } else {
-      setShowLeftPanel(true);
-    }
-  }, [isMobile]);
 
   const handleTogglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -87,37 +76,34 @@ const LoginPage = () => {
     navigate('/forgotPassword');
   }
 
-  async function handleLogin(e) {
-    const response = await checkUser();
-    if (!response.state) {
-      setOpen(p => ({...p,type:"error"}))
-    }
-    else {
-      setOpen(p => ({ ...p, type: "success" }))
-    }
-      setOpen(p => ({...p,
-        state: true,
-        message: response.message,
-      }))
+  async function handleFormSubmit(e) {
+    e.preventDefault();
+    await handleAuth(isLogin ? 'login' : 'signup');
+  }
 
-    if (e === 'login') {
-      if (response.state) {
-        navigate('/texteditor/1');
+  async function handleAuth(authType) {
+    const response = await checkUser();
+
+    setOpen({
+      state: true,
+      message: response.message,
+      type: response.state ? "success" : "error"
+    });
+
+    if (response.state) {
+      if (authType === 'login') {
+        navigate('/note-pad/1');
+      } else {
+        navigate('/onBoarding-flow');
       }
     }
-    else {
-      checkUser();
-      if (response.state) {
-        navigate('/onBoarding-flow')
-      }
-    }
-  };
+  }
 
   return (
     <Box className="h-screen w-screen flex flex-col md:flex-row overflow-hidden">
-        <Snackbar
-          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-          open={open.state}
+      <Snackbar
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        open={open.state}
         autoHideDuration={5000}
         onClose={() => setOpen({ state: false })}
         TransitionComponent={Grow}
@@ -125,10 +111,10 @@ const LoginPage = () => {
         <Alert variant="filled" severity={open.type}>
           {open.message}
         </Alert>
-        </Snackbar>
+      </Snackbar>
       {(!isMobile || showLeftPanel) && (
         <Box className={cn(
-          isMobile ? "w-full h-full absolute z-30" : "w-1/2 relative",
+          isMobile ? "fixed top-0 left-0 w-full h-full z-30" : "w-1/2 relative",
           darkMode ? "bg-gray-900" : "bg-blue-50"
         )}>
           {isMobile && (
@@ -158,6 +144,7 @@ const LoginPage = () => {
               muted
               playsInline
               onLoadedData={handleVideoLoad}
+              style={{ minHeight: "100%", minWidth: "100%" }}
             >
               <source src={video} type="video/mp4" />
               Your browser does not support the video tag.
@@ -176,7 +163,7 @@ const LoginPage = () => {
               "mb-6 md:mb-8 relative flex items-center justify-center"
             )}>
               <div className={cn(
-                "absolute w-36 md:w-56 pl-8 md:pl-14 h-24 md:h-32 rounded-full mb-6",
+                "absolute w-32 md:w-56 pl-8 md:pl-14 h-20 md:h-32 rounded-full mb-6",
               )}><img src={logo} alt='logo' className='w-full h-full cover' /></div>
             </div>
 
@@ -290,126 +277,126 @@ const LoginPage = () => {
               </Typography>
             </div>
 
-            <form onSubmit={handleLogin}>
-            <div className="space-y-4 md:space-y-5">
-              {!isLogin && (
+            <form onSubmit={handleFormSubmit}>
+              <div className="space-y-4 md:space-y-5">
+                {!isLogin && (
+                  <InputField
+                    name="name"
+                    label="Full Name"
+                    value={userName}
+                    onChange={e => onChange("userName", e.target.value)}
+                  />
+                )}
+
                 <InputField
-                  name="name"
-                  label="Full Name"
-                  value={userName}
-                  onChange={e => onChange("userName", e.target.value)}
+                  autofocus
+                  name="email"
+                  label="Email"
+                  type="email"
+                  value={email}
+                  onChange={e => onChange("email", e.target.value)}
                 />
-              )}
 
-              <InputField
-                autofocus
-                name="email"
-                label="Email"
-                type="email"
-                value={email}
-                onChange={e => onChange("email", e.target.value)}
-              />
-
-              <InputField
-                name="password"
-                label="Password"
-                type={showPassword ? 'text' : 'password'}
-                value={password}
+                <InputField
+                  name="password"
+                  label="Password"
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
                   onChange={e => onChange("password", e.target.value)}
                   endIcon={<div onClick={handleTogglePasswordVisibility} className='cursor-pointer pr-2 pb-0.5'
->{showPassword ? <VisibilityOff sx={{ color: darkMode ? 'rgb(233, 213, 255)' : '#0b6bcb' }} /> : <Visibility sx={{ color: darkMode ? 'rgb(233, 213, 255)' : '#0b6bcb' }} />}</div>}
-              />
+                  >{showPassword ? <VisibilityOff sx={{ color: darkMode ? 'rgb(233, 213, 255)' : '#0b6bcb' }} /> : <Visibility sx={{ color: darkMode ? 'rgb(233, 213, 255)' : '#0b6bcb' }} />}</div>}
+                />
 
-              {!isLogin && (
-                <InputField
-                  name="confirmPassword"
-                  label="Confirm Password"
-                  type={showConfirmPassword ? 'text' : 'password'}
-                  value={confirmPassword}
-                  onChange={e => onChange("confirmPassword", e.target.value)}
+                {!isLogin && (
+                  <InputField
+                    name="confirmPassword"
+                    label="Confirm Password"
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    value={confirmPassword}
+                    onChange={e => onChange("confirmPassword", e.target.value)}
                     endIcon={<div onClick={handleToggleConfirmPasswordVisibility} className='cursor-pointer pr-2 pb-0.5'
-                    >{showPassword ? <VisibilityOff sx={{ color: darkMode ? 'rgb(233, 213, 255)' : '#0b6bcb' }} /> : <Visibility sx={{ color: darkMode ? 'rgb(233, 213, 255)' : '#0b6bcb' }} />}</div>}
-                />
-              )}
-
-              {isLogin && (
-                <div className="flex items-center justify-between flex-wrap">
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={rememberMe}
-                        onChange={(e) => setRememberMe(e.target.checked)}
-                        sx={{
-                          color: darkMode ? 'rgb(167, 139, 250)' : '#3b82f6',
-                          '&.Mui-checked': {
-                            color: darkMode ? 'rgb(167, 139, 250)' : '#3b82f6',
-                          },
-                        }}
-                        size={isMobile ? "small" : "medium"}
-                      />
-                    }
-                    label={
-                      <Typography variant="body2" className={`${darkMode ? 'text-purple-300' : 'text-blue-600'} pt-0.5`}>
-                        Remember me
-                      </Typography>
-                    }
+                    >{showConfirmPassword ? <VisibilityOff sx={{ color: darkMode ? 'rgb(233, 213, 255)' : '#0b6bcb' }} /> : <Visibility sx={{ color: darkMode ? 'rgb(233, 213, 255)' : '#0b6bcb' }} />}</div>}
                   />
-                  <Typography
-                    variant="body2"
-                    className={`cursor-pointer hover:underline ${darkMode ? 'text-purple-300' : 'text-blue-600'}`}
-                    onClick={handleForgotPassword}
-                  >
-                    Forgot password?
+                )}
+
+                {isLogin && (
+                  <div className="flex items-center justify-between flex-wrap">
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={rememberMe}
+                          onChange={(e) => setRememberMe(e.target.checked)}
+                          sx={{
+                            color: darkMode ? 'rgb(167, 139, 250)' : '#3b82f6',
+                            '&.Mui-checked': {
+                              color: darkMode ? 'rgb(167, 139, 250)' : '#3b82f6',
+                            },
+                          }}
+                          size={isMobile ? "small" : "medium"}
+                        />
+                      }
+                      label={
+                        <Typography variant="body2" className={`${darkMode ? 'text-purple-300' : 'text-blue-600'} pt-0.5`}>
+                          Remember me
+                        </Typography>
+                      }
+                    />
+                    <Typography
+                      variant="body2"
+                      className={`cursor-pointer hover:underline ${darkMode ? 'text-purple-300' : 'text-blue-600'}`}
+                      onClick={handleForgotPassword}
+                    >
+                      Forgot password?
+                    </Typography>
+                  </div>
+                )}
+
+                <ButtonComponent
+                  type="submit"
+                  btnText={isLogin ? 'Log In' : 'Continue to Sign Up'}
+                  startIcon={isLogin ? <Login /> : <AppRegistration />}
+                  darkMode={darkMode}
+                  styles={{ width: "100%", marginTop: "16px" }}
+                />
+
+                <div className="flex items-center my-4 md:my-6">
+                  <div className={`flex-grow h-px ${darkMode ? 'bg-gray-700' : 'bg-gray-200'}`}></div>
+                  <Typography className={`px-2 md:px-4 text-xs md:text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                    or continue with
                   </Typography>
+                  <div className={`flex-grow h-px ${darkMode ? 'bg-gray-700' : 'bg-gray-200'}`}></div>
                 </div>
-              )}
 
-              <ButtonComponent
-                handleClick={() => handleLogin(isLogin ? 'login' : 'signup')}
-                btnText={isLogin ? 'Log In' : 'Continue to Sign Up'}
-                startIcon={isLogin ? <Login /> : <AppRegistration />}
-                darkMode={darkMode}
-                styles={{ width: "100%", marginTop: "16px" }}
-              />
-
-              <div className="flex items-center my-4 md:my-6">
-                <div className={`flex-grow h-px ${darkMode ? 'bg-gray-700' : 'bg-gray-200'}`}></div>
-                <Typography className={`px-2 md:px-4 text-xs md:text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                  or continue with
-                </Typography>
-                <div className={`flex-grow h-px ${darkMode ? 'bg-gray-700' : 'bg-gray-200'}`}></div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3 md:gap-4">
-                <ButtonComponent
-                  btnText={'Google'}
-                  startIcon={<Google />}
-                  handleClick={() => handleLogin(isLogin ? 'login' : 'signup')}
-                  darkMode={darkMode}
-                  styles={{
-                    width: "100%",
-                    backgroundColor: darkMode ? 'rgba(107, 114, 128, 0.2)' : 'rgba(219, 234, 254, 0.8)',
-                    color: darkMode ? 'rgb(233, 213, 255)' : '#3b82f6',
-                    '&:hover': {
-                      backgroundColor: darkMode ? 'rgba(107, 114, 128, 0.3)' : 'rgba(219, 234, 254, 1)',
-                    }
-                  }}
-                />
-                <ButtonComponent
-                  btnText={'FaceBook'}
-                  startIcon={<Facebook />}
-                  handleClick={() => handleLogin(isLogin ? 'login' : 'signup')}
-                  darkMode={darkMode}
-                  styles={{
-                    width: "100%",
-                    backgroundColor: darkMode ? 'rgba(107, 114, 128, 0.2)' : 'rgba(219, 234, 254, 0.8)',
-                    color: darkMode ? 'rgb(233, 213, 255)' : '#3b82f6',
-                    '&:hover': {
-                      backgroundColor: darkMode ? 'rgba(107, 114, 128, 0.3)' : 'rgba(219, 234, 254, 1)',
-                    }
-                  }}
-                />
-              </div>
+                <div className="grid grid-cols-2 gap-3 md:gap-4">
+                  <ButtonComponent
+                    btnText={'Google'}
+                    startIcon={<Google />}
+                    handleClick={() => handleAuth(isLogin ? 'login' : 'signup')}
+                    darkMode={darkMode}
+                    styles={{
+                      width: "100%",
+                      backgroundColor: darkMode ? 'rgba(107, 114, 128, 0.2)' : 'rgba(219, 234, 254, 0.8)',
+                      color: darkMode ? 'rgb(233, 213, 255)' : '#3b82f6',
+                      '&:hover': {
+                        backgroundColor: darkMode ? 'rgba(107, 114, 128, 0.3)' : 'rgba(219, 234, 254, 1)',
+                      }
+                    }}
+                  />
+                  <ButtonComponent
+                    btnText={'Facebook'}
+                    startIcon={<Facebook />}
+                    handleClick={() => handleAuth(isLogin ? 'login' : 'signup')}
+                    darkMode={darkMode}
+                    styles={{
+                      width: "100%",
+                      backgroundColor: darkMode ? 'rgba(107, 114, 128, 0.2)' : 'rgba(219, 234, 254, 0.8)',
+                      color: darkMode ? 'rgb(233, 213, 255)' : '#3b82f6',
+                      '&:hover': {
+                        backgroundColor: darkMode ? 'rgba(107, 114, 128, 0.3)' : 'rgba(219, 234, 254, 1)',
+                      }
+                    }}
+                  />
+                </div>
               </div>
             </form>
 

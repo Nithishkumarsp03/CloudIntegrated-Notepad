@@ -91,6 +91,10 @@ const ProfilePage = () => {
         setEdit(!edit);
     }
 
+    const handleBack = () => {
+        navigate(-1);
+    }
+
     const handleSave = () => {
         navigate('/onBoarding-flow')
     };
@@ -163,9 +167,9 @@ const ProfilePage = () => {
                     darkMode ? "border border-gray-700 bg-gradient-to-r from-gray-900 to-gray-800" : "border border-blue-100 bg-gradient-to-r from-blue-50 to-purple-50"
                 )}>
                     <Box className="flex items-center gap-4">
-                        <span className={cn('text-white', {
+                        <span className={cn('text-white cursor-pointer', {
                             'text-black': !darkMode
-                        })}>
+                        })} onClick={handleBack}>
                             <BackArrow />
                         </span>
                         <Typography variant="h5" className={`font-bold ${darkMode ? 'text-purple-100' : 'text-blue-800'}`}>
@@ -322,85 +326,85 @@ const ProfilePage = () => {
                                         Gender
                                     </InputLabel>
 
-                                    <Select
-                                        disabled={edit}
-                                        labelId="gender-label"
-                                        value={tempData.gender}
-                                        onChange={(e) => setTempData({ ...tempData, gender: e.target.value })}
-                                        label="Gender"
-                                        sx={{
-                                            '& .MuiOutlinedInput-notchedOutline': {
-                                                border: edit ? 'none' : '2px solid',
-                                                borderColor: edit
-                                                    ? 'transparent'
-                                                    : darkMode
-                                                        ? '#6D28D9'
-                                                        : '#0b6bcb',
-                                            },
-                                            '&:hover .MuiOutlinedInput-notchedOutline': {
-                                                border: edit ? 'none' : '2px solid',
-                                                borderColor: edit
-                                                    ? 'transparent'
-                                                    : darkMode
-                                                        ? '#8B5CF6'
-                                                        : '#1a73e8',
-                                            },
-                                            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                                borderColor: edit
-                                                    ? 'transparent !important'
-                                                    : darkMode
-                                                        ? '#4C1D95 !important'
-                                                        : '#1557b0 !important'
-                                            },
-                                            color: edit
-                                                ? (darkMode ? "rgb(233, 213, 255)" : "#000000")
-                                                : (darkMode ? "rgb(233, 213, 255)" : "black"),
-                                            '& .MuiSelect-icon': {
+                                        <Select
+                                            disabled={edit}
+                                            labelId="gender-label"
+                                            value={tempData.gender}
+                                            onChange={(e) => setTempData({ ...tempData, gender: e.target.value })}
+                                            label="Gender"
+                                            sx={{
+                                                '& .MuiOutlinedInput-notchedOutline': {
+                                                    border: edit ? 'none' : '2px solid',
+                                                    backgroundColor: "transparent !important",
+                                                    borderColor: edit
+                                                        ? 'transparent'
+                                                        : darkMode
+                                                            ? '#6D28D9'
+                                                            : '#0b6bcb',
+                                                },
+                                                '&:hover .MuiOutlinedInput-notchedOutline': {
+                                                    border: edit ? 'none' : '2px solid',
+                                                    borderColor: edit
+                                                        ? 'transparent'
+                                                        : darkMode
+                                                            ? '#8B5CF6'
+                                                            : '#1a73e8',
+                                                },
+                                                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                    borderColor: edit
+                                                        ? 'transparent !important'
+                                                        : darkMode
+                                                            ? '#4C1D95 !important'
+                                                            : '#1557b0 !important'
+                                                },
                                                 color: edit
                                                     ? (darkMode ? "rgb(233, 213, 255)" : "#000000")
-                                                    : (darkMode ? "rgb(233, 213, 255)" : "#0b6bcb"),
-                                            },
-                                            '&.Mui-disabled': {
-                                                WebkitTextFillColor: darkMode ? "rgb(233, 213, 255) !important" : "#000000 !important",
-                                                color: darkMode ? "rgb(233, 213, 255) !important" : "#000000 !important",
-                                            },
-                                            '& .MuiSelect-select.Mui-disabled': {
-                                                color: darkMode ? 'rgb(233, 213, 255) !important' : '#000000 !important',
-                                                WebkitTextFillColor: darkMode ? 'rgb(233, 213, 255) !important' : '#000000 !important',
-                                                opacity: 1,
-                                            },
-                                            '& .MuiInputBase-input.Mui-disabled': {
-                                                color: darkMode ? 'rgb(233, 213, 255) !important' : '#000000 !important',
-                                                WebkitTextFillColor: darkMode ? 'rgb(233, 213, 255) !important' : '#000000 !important',
-                                                opacity: 1,
-                                            },
-                                            '&.Mui-disabled': {
-                                                color: darkMode ? 'rgb(233, 213, 255) !important' : '#000000 !important',
-                                                WebkitTextFillColor: darkMode ? 'rgb(233, 213, 255) !important' : '#000000 !important',
-                                            },
-                                        }}
-                                        MenuProps={{
-                                            PaperProps: {
-                                                sx: {
-                                                    backgroundColor: darkMode ? "#374151" : "white",
-                                                    borderRadius: "7px",
-                                                    border: darkMode ? "1px solid #4B5563" : "1px solid #D1D5DB",
-                                                    mt: "4px",
-                                                    color: darkMode ? "rgb(233, 213, 255)" : "black"
+                                                    : (darkMode ? "rgb(233, 213, 255)" : "black"),
+                                                '& .MuiSelect-icon': {
+                                                    color: edit
+                                                        ? (darkMode ? "rgb(233, 213, 255)" : "#000000")
+                                                        : (darkMode ? "rgb(233, 213, 255)" : "#0b6bcb"),
                                                 },
-                                            },
-                                            MenuListProps: {
-                                                sx: {
-                                                    padding: 0,
+                                                '&.Mui-disabled': {
+                                                    WebkitTextFillColor: darkMode ? "rgb(233, 213, 255) !important" : "#000000 !important",
+                                                    color: darkMode ? "rgb(233, 213, 255) !important" : "#000000 !important",
+                                                    backgroundColor:"transparent !important"
                                                 },
-                                            },
-                                        }}
-                                        className={`rounded-lg ${edit ? (darkMode ? 'bg-gray-700' : 'bg-gray-200') : (darkMode ? 'bg-gray-800' : 'bg-white')}`}
-                                    >
-                                        <MenuItem value="male">Male</MenuItem>
-                                        <MenuItem value="female">Female</MenuItem>
-                                        <MenuItem value="other">Rather not say</MenuItem>
-                                    </Select>
+                                                '& .MuiSelect-select.Mui-disabled': {
+                                                    color: darkMode ? 'rgb(233, 213, 255) !important' : '#000000 !important',
+                                                    WebkitTextFillColor: darkMode ? 'rgb(233, 213, 255) !important' : '#000000 !important',
+                                                    opacity: 1,
+                                                    backgroundColor: "transparent !important"
+                                                },
+                                                '& .MuiInputBase-input.Mui-disabled': {
+                                                    color: darkMode ? 'rgb(233, 213, 255) !important' : '#000000 !important',
+                                                    WebkitTextFillColor: darkMode ? 'rgb(233, 213, 255) !important' : '#000000 !important',
+                                                    opacity: 1,
+                                                    backgroundColor: "transparent !important"
+                                                },
+                                            }}
+                                            MenuProps={{
+                                                PaperProps: {
+                                                    sx: {
+                                                        backgroundColor: darkMode ? "#374151" : "white",
+                                                        borderRadius: "7px",
+                                                        border: darkMode ? "1px solid #4B5563" : "1px solid #D1D5DB",
+                                                        mt: "4px",
+                                                        color: darkMode ? "rgb(233, 213, 255)" : "black"
+                                                    },
+                                                },
+                                                MenuListProps: {
+                                                    sx: {
+                                                        padding: 0,
+                                                    },
+                                                },
+                                            }}
+                                            className={`rounded-lg ${edit ? (darkMode ? 'bg-gray-700' : 'bg-gray-200') :'bg-transparent'}`}
+                                        >
+                                            <MenuItem value="male">Male</MenuItem>
+                                            <MenuItem value="female">Female</MenuItem>
+                                            <MenuItem value="other">Rather not say</MenuItem>
+                                        </Select>
                                 </FormControl>
                             </div>
                         </Box>
@@ -467,9 +471,6 @@ const ProfilePage = () => {
                                     <Box>
                                         <Typography className={`font-medium ${darkMode ? 'text-purple-100' : 'text-blue-800'}`}>
                                             Password
-                                        </Typography>
-                                        <Typography variant="body2" className={darkMode ? 'text-purple-300' : 'text-blue-600'}>
-                                            Last updated 3 months ago
                                         </Typography>
                                     </Box>
                                     <ButtonComponent
