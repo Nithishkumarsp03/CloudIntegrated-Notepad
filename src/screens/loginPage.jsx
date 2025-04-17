@@ -76,14 +76,11 @@ const LoginPage = () => {
     navigate('/forgotPassword');
   }
 
-  // Form submission handler
   async function handleFormSubmit(e) {
     e.preventDefault();
-    // Now call the appropriate auth function based on isLogin state
     await handleAuth(isLogin ? 'login' : 'signup');
   }
 
-  // Actual authentication logic
   async function handleAuth(authType) {
     const response = await checkUser();
 
@@ -95,7 +92,7 @@ const LoginPage = () => {
 
     if (response.state) {
       if (authType === 'login') {
-        navigate('/texteditor/1');
+        navigate('/note-pad/1');
       } else {
         navigate('/onBoarding-flow');
       }
@@ -166,7 +163,7 @@ const LoginPage = () => {
               "mb-6 md:mb-8 relative flex items-center justify-center"
             )}>
               <div className={cn(
-                "absolute w-36 md:w-56 pl-8 md:pl-14 h-24 md:h-32 rounded-full mb-6",
+                "absolute w-32 md:w-56 pl-8 md:pl-14 h-20 md:h-32 rounded-full mb-6",
               )}><img src={logo} alt='logo' className='w-full h-full cover' /></div>
             </div>
 

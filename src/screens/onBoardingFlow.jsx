@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
 import {
   Box,
@@ -7,6 +7,7 @@ import {
   MenuItem,
   Select,
   FormControlLabel,
+  Skeleton
 } from '@mui/material';
 import {
   School,
@@ -35,39 +36,59 @@ const OnboardingFlow = () => {
   const [gender, setGender] = useState('');
   const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
   const isMobile = useMediaQuery('(max-width:768px)');
+  const [personas, setPersonas] = useState([]);
+  const [isFlowLoading, setIsFlowLoading] = useState(true);
 
-  const personas = [
-    {
-      id: 'student',
-      title: 'Student',
-      description: 'Class notes, study schedules, assignments, revision checklists',
-      icon: <School fontSize="large" />,
-    },
-    {
-      id: 'professional',
-      title: 'Professional',
-      description: 'Meeting minutes, tasklists, project ideas, to-do lists',
-      icon: <Business fontSize="large" />,
-    },
-    {
-      id: 'creative',
-      title: 'Writer & Creative',
-      description: 'Drafts, brainstorms, character/world-building notes, quotes',
-      icon: <Create fontSize="large" />,
-    },
-    {
-      id: 'planner',
-      title: 'Planner & Organizer',
-      description: 'Daily journaling, life goals, bullet journals, meal or habit tracking',
-      icon: <EventNote fontSize="large" />,
-    },
-    {
-      id: 'thinker',
-      title: 'Thinker & Idea Dumper',
-      description: 'Random thoughts, shower ideas, book notes, dream journal',
-      icon: <Psychology fontSize="large" />,
-    }
-  ];
+  useEffect(() => {
+    const fetchPersonas = async () => {
+      setIsFlowLoading(true);
+      try {
+    
+        await new Promise(resolve => setTimeout(resolve, 1500));
+
+        const personaData = [
+          {
+            id: 'student',
+            title: 'Student',
+            description: 'Class notes, study schedules, assignments, revision checklists',
+            icon: <School fontSize="large" />,
+          },
+          {
+            id: 'professional',
+            title: 'Professional',
+            description: 'Meeting minutes, tasklists, project ideas, to-do lists',
+            icon: <Business fontSize="large" />,
+          },
+          {
+            id: 'creative',
+            title: 'Writer & Creative',
+            description: 'Drafts, brainstorms, character/world-building notes, quotes',
+            icon: <Create fontSize="large" />,
+          },
+          {
+            id: 'planner',
+            title: 'Planner & Organizer',
+            description: 'Daily journaling, life goals, bullet journals, meal or habit tracking',
+            icon: <EventNote fontSize="large" />,
+          },
+          {
+            id: 'thinker',
+            title: 'Thinker & Idea Dumper',
+            description: 'Random thoughts, shower ideas, book notes, dream journal',
+            icon: <Psychology fontSize="large" />,
+          }
+        ];
+
+        setPersonas(personaData);
+      } catch (error) {
+        console.error('Error fetching personas:', error);
+      } finally {
+        setIsFlowLoading(false);
+      }
+    };
+
+    fetchPersonas();
+  }, []);
 
   const steps = [
     {
@@ -99,7 +120,7 @@ const OnboardingFlow = () => {
       }
       setStep(step + 1);
     } else {
-      navigate('/texteditor');
+      navigate('/notes');
     }
   };
 
@@ -176,7 +197,63 @@ const OnboardingFlow = () => {
     );
   };
 
+  const renderPersonaSkeleton = () => {
+    const skeletonCount = isMobile ? 3 : 4;
+
+    return (
+      <div className={cn(
+        isMobile && "max-h-[40vh] overflow-y-auto overflow-x-hidden pb-2 -mx-2 px-2"
+      )}>
+        <div className={cn(
+          "grid gap-3",
+          isMobile ? "grid-cols-1" : "grid-cols-1 md:grid-cols-2"
+        )}>
+          {Array(skeletonCount).fill(0).map((_, index) => (
+            <div
+              key={`skeleton-${index}`}
+              className={cn(
+                "p-3 md:p-5 rounded-lg transition-all duration-300",
+                "backdrop-blur-md flex items-center gap-3 md:gap-4",
+                darkMode
+                  ? "bg-gray-800/60 border border-gray-700"
+                  : "bg-white border border-gray-200"
+              )}
+            >
+              <Skeleton
+                variant="circular"
+                width={isMobile ? 40 : 56}
+                height={isMobile ? 40 : 56}
+                animation="wave"
+                className={darkMode ? "bg-gray-700" : "bg-gray-200"}
+              />
+              <div className="flex-1">
+                <Skeleton
+                  variant="text"
+                  width="60%"
+                  height={28}
+                  animation="wave"
+                  className={darkMode ? "bg-gray-700" : "bg-gray-200"}
+                />
+                <Skeleton
+                  variant="text"
+                  width="90%"
+                  height={20}
+                  animation="wave"
+                  className={darkMode ? "bg-gray-700" : "bg-gray-200"}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
   const renderPersonaSelection = () => {
+    if (isFlowLoading) {
+      return renderPersonaSkeleton();
+    }
+
     return (
       <div className={cn(
         isMobile && "max-h-[40vh] overflow-y-auto overflow-x-hidden pb-2 -mx-2 px-2"
@@ -218,7 +295,7 @@ const OnboardingFlow = () => {
                   variant={isMobile ? "subtitle1" : "h6"}
                   className={`font-bold mb-0.5 ${darkMode ? 'text-purple-100' : 'text-blue-800'}`}
                 >
-                  {persona.title}
+                  {persona.topic}
                 </Typography>
 
                 <Typography
@@ -501,7 +578,7 @@ const OnboardingFlow = () => {
           <MoonIcon size={24} className={cn(
             "text-gray-400",
             darkMode ? "block" : "hidden",
-            )} />
+          )} />
         </div>
       </div>
 
@@ -554,14 +631,14 @@ const OnboardingFlow = () => {
           )}>
             {renderStepContent()}
           </div>
-          
+
           <div className="mt-4 md:mt-8 flex justify-end">
             <ButtonComponent
               btnText={step === steps.length - 1 ? "Get Started" : "Next"}
               endIcon={step === steps.length - 1 ? null : <ArrowForward />}
               darkMode={darkMode}
               handleClick={handleNext}
-              disabled={(step === 1 && !selectedPersona) || (step === 2 && !gender)}
+              disabled={(step === 1 && !selectedPersona) || (step === 2 && !gender) || (step === 1 && isFlowLoading)}
               size={isMobile ? "small" : "medium"}
             />
           </div>

@@ -19,7 +19,7 @@ const EmptyStatePage = () => {
             addNewTab(noteName);
             setNoteName('');
             setShowInput(false);
-            navigate('/texteditor/1');
+            navigate('/note-pad/1');
         }
     };
 
@@ -35,7 +35,6 @@ const EmptyStatePage = () => {
         setShowInput(true);
     };
 
-    // Focus input when it appears
     useEffect(() => {
         if (showInput && inputRef.current) {
             inputRef.current.focus();

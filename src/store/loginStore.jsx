@@ -1,7 +1,7 @@
 import { create } from "zustand";
 
 export const useLoginStore = create((set, get) => ({
-    isUserLoggedIn:false,
+    isUserLoggedIn: false,
     userName: "",
     email: "",
     password: "",
@@ -9,6 +9,7 @@ export const useLoginStore = create((set, get) => ({
     twoFa: false,
     gender: "",
     categoryId: "",
+    onBardingData:{},
     admins: 
         {
             user: "admin",
@@ -45,6 +46,9 @@ export const useLoginStore = create((set, get) => ({
         set({ [key]: value })
     },
 
+    getOnBoardingFlow: () => {
+
+    },
     loginId: "",
     token:""
 }));

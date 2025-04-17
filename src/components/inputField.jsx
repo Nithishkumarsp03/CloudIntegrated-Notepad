@@ -147,9 +147,6 @@ export const InputField = ({
           color: darkMode ? 'rgb(233, 213, 255) !important' : '#000000 !important',
           WebkitTextFillColor: darkMode ? 'rgb(233, 213, 255) !important' : '#000000 !important',
         },
-        '& .Mui-disabled .MuiOutlinedInput-notchedOutline': {
-          borderColor: 'transparent !important',
-        },
         '& .MuiInputLabel-root.Mui-disabled': {
           color: darkMode ? 'rgb(233, 213, 255) !important' : '#000000 !important',
         },
