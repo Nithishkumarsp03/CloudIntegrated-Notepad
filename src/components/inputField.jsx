@@ -11,6 +11,7 @@ export const InputField = ({
   onKeyDown,
   placeholder,
   type = 'text',
+  ref,
   id,
   value,
   disabled = false,
@@ -21,15 +22,15 @@ export const InputField = ({
   fullWidth = true,
   autofocus = false,
   inputProps,
-  endIcon = null // 🔥 new prop
+  endIcon = null 
 }) => {
   const { darkMode } = useEditorStore();
 
   return (
     <TextField
       id={id}
+      ref={ref}
       label={label}
-      autoComplete='off'
       name={name}
       autoFocus={autofocus}
       variant={variant}
@@ -71,6 +72,21 @@ export const InputField = ({
           color: hasError
             ? (darkMode ? '#FCA5A5' : '#DC2626')
             : (darkMode ? 'rgb(233, 213, 255)' : 'black'),
+          '&:-webkit-autofill': {
+            WebkitBoxShadow: darkMode ? '0 0 0 100px #1F2937 inset !important' : 'none',
+            WebkitTextFillColor: darkMode ? 'rgb(233, 213, 255) !important' : 'black !important',
+            caretColor: darkMode ? 'rgb(233, 213, 255)' : 'black',
+            borderRadius: 'inherit',
+          },
+          '&:-webkit-autofill:hover': {
+            WebkitBoxShadow: darkMode ? '0 0 0 100px #1F2937 inset !important' : 'none',
+          },
+          '&:-webkit-autofill:focus': {
+            WebkitBoxShadow: darkMode ? '0 0 0 100px #1F2937 inset !important' : 'none',
+          },
+          '&:-webkit-autofill:active': {
+            WebkitBoxShadow: darkMode ? '0 0 0 100px #1F2937 inset !important' : 'none',
+          },
         },
         '& .MuiFormLabel-root': {
           fontSize: '14px',

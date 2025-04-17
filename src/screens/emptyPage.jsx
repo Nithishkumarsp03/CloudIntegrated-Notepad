@@ -5,6 +5,7 @@ import { cn } from '../components/cn';
 import { ButtonComponent } from '../components/button';
 import NotePad from '../assets/svgs/notePad';
 import { useNavigate } from 'react-router-dom';
+import { InputField } from '../components/inputField';
 
 const EmptyStatePage = () => {
     const [noteName, setNoteName] = useState('');
@@ -92,20 +93,14 @@ const EmptyStatePage = () => {
 
                 {showInput ? (
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-6 animate-fadeIn">
-                        <input
+                        <InputField
                             ref={inputRef}
-                            type="text"
-                            placeholder="Enter Note Name"
+                            type='text'
+                            placeholder={"Enter Note Name"}
                             value={noteName}
                             onChange={(e) => setNoteName(e.target.value)}
                             onKeyDown={handleKeyPress}
-                            className={cn(
-                                "px-4 py-2 rounded-lg border w-full sm:w-64",
-                                "bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600",
-                                "text-gray-800 dark:text-gray-200",
-                                "focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-purple-400",
-                                "transition-all duration-200"
-                            )}
+
                         />
 
                         <ButtonComponent
