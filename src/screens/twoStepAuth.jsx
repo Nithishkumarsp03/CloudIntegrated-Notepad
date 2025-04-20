@@ -14,20 +14,21 @@ const TwoStepAuthentication = () => {
     const [verificationCode, setVerificationCode] = useState(["", "", "", "", "", ""]);
     const [currentStage, setCurrentStage] = useState("verification");
     const [errorMessage, setErrorMessage] = useState("");
-    const [secondsRemaining, setSecondsRemaining] = useState(() => {
-        const expiryTime = localStorage.getItem('otpExpiryTime');
-        if (expiryTime) {
-            const remainingTime = Math.floor((parseInt(expiryTime) - Date.now()) / 1000);
-            return remainingTime > 0 ? remainingTime : 0;
-        } else {
-            const newExpiryTime = Date.now() + (300 * 1000);
-            localStorage.setItem('otpExpiryTime', newExpiryTime.toString());
-            return 300;
-        }
-    });
+   const [secondsRemaining, setSecondsRemaining] = useState(() => {
+    const expiryTime = localStorage.getItem('otpExpiryTime');
+    if (expiryTime) {
+        const remainingTime = Math.floor((parseInt(expiryTime) - Date.now()) / 1000);
+        return remainingTime > 0 ? remainingTime : 0;
+    } else {
+        const newExpiryTime = Date.now() + (300 * 1000);
+        localStorage.setItem('otpExpiryTime', newExpiryTime.toString());
+        return 300;
+    }
+});
     const [isTimerRunning, setIsTimerRunning] = useState(secondsRemaining > 0);
     const { darkMode, setDarkMode } = useEditorStore();
-    const { twoStepAuth, loaders, email, login } = useLoginStore();
+    const { twoStepAuth, loaders, login } = useLoginStore();
+    const email = localStorage.getItem("email");
     const navigate = useNavigate();
     const inputRefs = useRef(Array(6).fill(null));
 
@@ -73,14 +74,12 @@ const TwoStepAuthentication = () => {
         if (isTimerRunning && secondsRemaining > 0) {
             const timer = setTimeout(() => {
                 setSecondsRemaining(secondsRemaining - 1);
-                // Also update the expiry time in localStorage
                 const expiryTime = Date.now() + (secondsRemaining - 1) * 1000;
                 localStorage.setItem('otpExpiryTime', expiryTime.toString());
             }, 1000);
             return () => clearTimeout(timer);
         } else if (secondsRemaining === 0) {
             setIsTimerRunning(false);
-            // Clear the expiry time from localStorage
             localStorage.removeItem('otpExpiryTime');
         }
     }, [isTimerRunning, secondsRemaining]);

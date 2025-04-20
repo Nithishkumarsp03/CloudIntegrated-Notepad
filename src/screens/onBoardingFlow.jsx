@@ -33,23 +33,36 @@ import Snackbar from '../components/snackBar';
 const OnboardingFlow = () => {
   const navigate = useNavigate();
   const { darkMode, setDarkMode } = useEditorStore();
-  const { getOnBoardingFlow, loaders, onChange, register, resetAll, twoFa } = useLoginStore();
+  const { getOnBoardingFlow, loaders, onChange, register, resetAll, twoFa} = useLoginStore();
   const [step, setStep] = useState(0);
   const [selectedPersona, setSelectedPersona] = useState(null);
   const [gender, setGender] = useState('');
   const isMobile = useMediaQuery('(max-width:768px)');
   const [personas, setPersonas] = useState([]);
-  const [snackBar, setSnackBar] = useState(false);
+  const [snackBar, setSnackBar] = useState({
+    state: false,
+    message:""
+  });
 
+  const handleSelect = (e) => {
+    setGender(e.target.value);
+    onChange("gender", e.target.value);
+  };
 
   useEffect(() => {
       const fetchPersonas = async () => {
         const response = await getOnBoardingFlow();
         if (!response.state) {
-          setSnackBar(true);
+          setSnackBar({
+            state: true,
+            message: response.message
+          });
           setTimeout(() => {
             navigate('/');
-            setSnackBar(false);
+            setSnackBar({
+              state: false,
+              message: response.message
+            });
           }, 5000);
         }
       const personasWithIcons = response?.data?.map(persona => {
@@ -114,10 +127,17 @@ const OnboardingFlow = () => {
         navigate('/notes');
       }
       else {
-        setSnackBar(true);
+        console.log(response)
+        setSnackBar({
+          state: true,
+          message:response?.message
+        });
         setTimeout(() => {
           navigate('/');
-          setSnackBar(false);
+          setSnackBar({
+            state: false,
+            message:""
+          });
         }, 7000);
       }
     }
@@ -332,7 +352,7 @@ const OnboardingFlow = () => {
             value={gender}
             displayEmpty
             size={isMobile ? "medium" : "large"}
-            onChange={(e) => setGender(e.target.value)}
+            onChange={handleSelect}
             sx={{
               width: "100%",
               marginTop: "8px",
@@ -648,9 +668,9 @@ const OnboardingFlow = () => {
         {!isMobile && renderStepIndicator()}
       </Box>
       <Snackbar
-        open={snackBar}
+        open={snackBar.state}
         autoHideDuration={7000}
-        message={"Some error occured.Try again"}
+        message={snackBar.message}
         variant='error'
       />
     </Box>
