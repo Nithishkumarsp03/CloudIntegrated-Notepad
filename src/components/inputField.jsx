@@ -155,6 +155,12 @@ export const InputField = ({
           WebkitTextFillColor: darkMode ? 'rgb(233, 213, 255) !important' : '#000000 !important',
           opacity: 1,
         },
+        '& .MuiInputBase-root.Mui-disabled': {
+          backgroundColor: darkMode ? '#374151' : '#E5E7EB',
+          fieldset: {
+            borderColor: 'transparent !important'
+          }
+        },
         ...styles
       }}
     />

@@ -1,4 +1,4 @@
-import { Button } from '@mui/material';
+import { Button, CircularProgress } from '@mui/material';
 import React, { useState, useEffect } from 'react';
 import { useMediaQuery } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
@@ -18,6 +18,7 @@ export const ButtonComponent = ({
   variant = "contained",
   fullWidth = true,
   disabled = false,
+  loading = false,
   onKey,
 }) => {
   const [iconState, setIconState] = useState({
@@ -60,6 +61,8 @@ export const ButtonComponent = ({
   const currentColors = darkMode ? colors.dark : colors.light;
 
   function handleOnClick() {
+    if (loading) return;
+
     if (iconState.mouseEnter) {
       setIconState(prev => ({ ...prev, animate: true, mouseEnter: false }));
     }
@@ -79,7 +82,7 @@ export const ButtonComponent = ({
       }}
       focusRipple
       className={`relative ${className}`}
-      disabled={disabled}
+      disabled={disabled || loading}
       sx={{
         backgroundColor: currentColors.primary,
         color: "white",
@@ -89,19 +92,20 @@ export const ButtonComponent = ({
         textTransform: 'none',
         boxShadow: currentColors.shadow,
         transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
-        cursor: "pointer",
-        position: "relative", 
-        overflow: "hidden", 
+        cursor: loading ? "default" : "pointer",
+        position: "relative",
+        overflow: "hidden",
+        minWidth: '120px',
 
         "&:hover": {
           backgroundColor: currentColors.hover,
-          transform: "translateY(-2px)",
+          transform: loading ? "none" : "translateY(-2px)",
           boxShadow: currentColors.hoverShadow,
         },
 
         "&:active": {
           backgroundColor: currentColors.active,
-          transform: "translateY(0px)",
+          transform: loading ? "none" : "translateY(0px)",
           boxShadow: currentColors.shadow,
         },
 
@@ -114,7 +118,7 @@ export const ButtonComponent = ({
         },
 
         "&:hover .MuiButton-startIcon": {
-          transform: "scale(1.05)",
+          transform: loading ? "none" : "scale(1.05)",
         },
 
         "&.Mui-disabled": {
@@ -125,19 +129,41 @@ export const ButtonComponent = ({
 
         ...styles
       }}
-      startIcon={startIcon}
-      endIcon={!imgAnim && endIcon ? endIcon : null} 
+      startIcon={loading ? null : startIcon}
+      endIcon={!imgAnim && !loading && endIcon ? endIcon : null}
       variant={variant}
       fullWidth={fullWidth}
       onClick={handleOnClick}
-      onMouseEnter={() => setIconState(prev => ({ ...prev, hover: true, mouseEnter: true }))}
-      onMouseLeave={() => setIconState(prev => ({ ...prev, hover: false, mouseEnter: false }))}
+      onMouseEnter={() => {
+        if (!loading) {
+          setIconState(prev => ({ ...prev, hover: true, mouseEnter: true }));
+        }
+      }}
+      onMouseLeave={() => {
+        if (!loading) {
+          setIconState(prev => ({ ...prev, hover: false, mouseEnter: false }));
+        }
+      }}
     >
-      <span className="relative z-10 font-normal text-nowrap">
-        {children ? children : btnText}
-      </span>
+      {loading ? (
+        <div className="flex items-center justify-center">
+          <CircularProgress
+            size={20}
+            thickness={4}
+            sx={{
+              color: 'white',
+              marginRight: children || btnText ? '8px' : '0'
+            }}
+          />
+          {children ? children : btnText}
+        </div>
+      ) : (
+        <span className="relative z-10 font-normal text-nowrap">
+          {children ? children : btnText}
+        </span>
+      )}
 
-      {imgAnim && !isMobile && endIcon && (
+      {imgAnim && !loading && !isMobile && endIcon && (
         <span
           className={`
             absolute transition-all duration-300 flex items-center
@@ -153,7 +179,7 @@ export const ButtonComponent = ({
         </span>
       )}
 
-      {isRipple && (
+      {isRipple && !loading && (
         <span
           className={`
             absolute top-0 left-0 right-0 bottom-0 
@@ -165,4 +191,3 @@ export const ButtonComponent = ({
     </Button>
   );
 };
-
