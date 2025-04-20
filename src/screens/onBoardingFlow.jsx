@@ -27,68 +27,59 @@ import ProfileSwitch from '../components/switch';
 import { SunIcon } from '../assets/svgs/sun';
 import { MoonIcon } from '../assets/svgs/moon';
 import logo from '../assets/logo.png';
+import { useLoginStore } from '../store/loginStore';
+import Snackbar from '../components/snackBar';
 
 const OnboardingFlow = () => {
   const navigate = useNavigate();
   const { darkMode, setDarkMode } = useEditorStore();
+  const { getOnBoardingFlow, loaders, onChange, register, resetAll, twoFa } = useLoginStore();
   const [step, setStep] = useState(0);
   const [selectedPersona, setSelectedPersona] = useState(null);
   const [gender, setGender] = useState('');
-  const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
   const isMobile = useMediaQuery('(max-width:768px)');
   const [personas, setPersonas] = useState([]);
-  const [isFlowLoading, setIsFlowLoading] = useState(true);
+  const [snackBar, setSnackBar] = useState(false);
+
 
   useEffect(() => {
-    const fetchPersonas = async () => {
-      setIsFlowLoading(true);
-      try {
-    
-        await new Promise(resolve => setTimeout(resolve, 1500));
-
-        const personaData = [
-          {
-            id: 'student',
-            title: 'Student',
-            description: 'Class notes, study schedules, assignments, revision checklists',
-            icon: <School fontSize="large" />,
-          },
-          {
-            id: 'professional',
-            title: 'Professional',
-            description: 'Meeting minutes, tasklists, project ideas, to-do lists',
-            icon: <Business fontSize="large" />,
-          },
-          {
-            id: 'creative',
-            title: 'Writer & Creative',
-            description: 'Drafts, brainstorms, character/world-building notes, quotes',
-            icon: <Create fontSize="large" />,
-          },
-          {
-            id: 'planner',
-            title: 'Planner & Organizer',
-            description: 'Daily journaling, life goals, bullet journals, meal or habit tracking',
-            icon: <EventNote fontSize="large" />,
-          },
-          {
-            id: 'thinker',
-            title: 'Thinker & Idea Dumper',
-            description: 'Random thoughts, shower ideas, book notes, dream journal',
-            icon: <Psychology fontSize="large" />,
-          }
-        ];
-
-        setPersonas(personaData);
-      } catch (error) {
-        console.error('Error fetching personas:', error);
-      } finally {
-        setIsFlowLoading(false);
-      }
+      const fetchPersonas = async () => {
+        const response = await getOnBoardingFlow();
+        if (!response.state) {
+          setSnackBar(true);
+          setTimeout(() => {
+            navigate('/');
+            setSnackBar(false);
+          }, 5000);
+        }
+      const personasWithIcons = response?.data?.map(persona => {
+        let icon;
+        switch (persona.id) {
+          case 2:
+            icon = <School fontSize="large" />;
+            break;
+          case 3:
+            icon = <Business fontSize="large" />;
+            break;
+          case 4:
+            icon = <Create fontSize="large" />;
+            break;
+          case 5:
+            icon = <EventNote fontSize="large" />;
+            break;
+          case 6:
+            icon = <Psychology fontSize="large" />;
+            break;
+          default:
+            icon = <School fontSize="large" />;
+        }
+        return { ...persona, icon };
+      });
+        setPersonas(personasWithIcons);
     };
-
     fetchPersonas();
   }, []);
+
 
   const steps = [
     {
@@ -110,17 +101,25 @@ const OnboardingFlow = () => {
   ];
 
   const handlePersonaSelect = (persona) => {
+    onChange("categoryId", persona.id);
     setSelectedPersona(persona);
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (step < steps.length - 1) {
-      if (step === 2) {
-        console.log('Saving settings:', { gender, twoFactorEnabled });
-      }
       setStep(step + 1);
     } else {
-      navigate('/notes');
+      const response = await register();
+      if (response.status) {
+        navigate('/notes');
+      }
+      else {
+        setSnackBar(true);
+        setTimeout(() => {
+          navigate('/');
+          setSnackBar(false);
+        }, 7000);
+      }
     }
   };
 
@@ -250,7 +249,7 @@ const OnboardingFlow = () => {
   };
 
   const renderPersonaSelection = () => {
-    if (isFlowLoading) {
+    if (loaders.isFlowLoading) {
       return renderPersonaSkeleton();
     }
 
@@ -262,7 +261,7 @@ const OnboardingFlow = () => {
           "grid gap-3",
           isMobile ? "grid-cols-1" : "grid-cols-1 md:grid-cols-2"
         )}>
-          {personas.map((persona) => (
+          {personas?.map((persona) => (
             <div
               key={persona.id}
               onClick={() => handlePersonaSelect(persona)}
@@ -418,7 +417,7 @@ const OnboardingFlow = () => {
 
           <Box className={cn(
             "p-3 md:p-4 rounded-lg mb-3 md:mb-4 border transition-all duration-300 mt-2",
-            twoFactorEnabled
+            twoFa
               ? darkMode ? "bg-purple-900/20 border-purple-700" : "bg-blue-50 border-blue-200"
               : darkMode ? "bg-gray-700/50 border-gray-600" : "bg-gray-50 border-gray-200"
           )}>
@@ -426,8 +425,8 @@ const OnboardingFlow = () => {
               control={
                 <ProfileSwitch
                   className="mr-1.5 ml-0.5"
-                  checked={twoFactorEnabled}
-                  onChange={() => setTwoFactorEnabled(!twoFactorEnabled)}
+                  checked={twoFa}
+                  onChange={() => onChange("twoFa",!twoFa)}
                 />
               }
               label={
@@ -442,7 +441,7 @@ const OnboardingFlow = () => {
               }
             />
 
-            {twoFactorEnabled && (
+            {twoFa && (
               <Box className={cn(
                 "mt-3 md:mt-4 pt-3 md:pt-4 border-t",
                 darkMode ? "border-purple-700/50" : "border-blue-200"
@@ -520,7 +519,7 @@ const OnboardingFlow = () => {
                 })}
               </div>
               <Typography className={`${darkMode ? "text-purple-200" : "text-blue-800"} text-sm md:text-base`}>
-                {selectedPersona?.title}
+                {selectedPersona?.topic}
               </Typography>
             </div>
           )}
@@ -638,7 +637,7 @@ const OnboardingFlow = () => {
               endIcon={step === steps.length - 1 ? null : <ArrowForward />}
               darkMode={darkMode}
               handleClick={handleNext}
-              disabled={(step === 1 && !selectedPersona) || (step === 2 && !gender) || (step === 1 && isFlowLoading)}
+              disabled={(step === 1 && !selectedPersona) || (step === 2 && !gender) || (step === 1 && loaders.isFlowLoading)}
               size={isMobile ? "small" : "medium"}
             />
           </div>
@@ -648,6 +647,12 @@ const OnboardingFlow = () => {
 
         {!isMobile && renderStepIndicator()}
       </Box>
+      <Snackbar
+        open={snackBar}
+        autoHideDuration={7000}
+        message={"Some error occured.Try again"}
+        variant='error'
+      />
     </Box>
   );
 };

@@ -7,9 +7,9 @@ const Protect = () => {
     const navigate = useNavigate();
     const { isUserLoggedIn } = useLoginStore();
     useEffect(() => {
-        if (!isUserLoggedIn) {
-            navigate('/');
-        }
+            if (!isUserLoggedIn) {
+                navigate('/');
+            }
     },[isUserLoggedIn])
 
     return isUserLoggedIn ? <Outlet /> : <LoginPage />;

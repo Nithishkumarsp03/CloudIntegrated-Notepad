@@ -15,12 +15,12 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path='/' element={<LoginPage />} />
-          <Route element={<Protect />}>
-            <Route path='/forgotPassword' element={<ForgotPassword/>}/>
-          <Route path='/profile' element={<ProfilePage />} />
             <Route path='/onBoarding-flow' element={<OnboardingFlow />} />
-            <Route path='/notes' element={<EmptyStatePage/>}/>
+            <Route path='/forgotPassword' element={<ForgotPassword/>}/>
             <Route path='/twoStepAuth' element={<TwoStepAuthentication/>} />
+          <Route element={<Protect />}>
+          <Route path='/profile' element={<ProfilePage />} />
+            <Route path='/notes' element={<EmptyStatePage/>}/>
             <Route path='/note-pad/:id' element={<Main />} />
           </Route>
       </Routes>

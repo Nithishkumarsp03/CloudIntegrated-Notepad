@@ -7,16 +7,27 @@ import { SunIcon } from "../assets/svgs/sun";
 import { MoonIcon } from "../assets/svgs/moon";
 import { ButtonComponent } from "../components/button";
 import useEditorStore from "../store/globalStore";
+import { useLoginStore } from '../store/loginStore';
 import NotePad from "../assets/svgs/notePad";
 
 const TwoStepAuthentication = () => {
     const [verificationCode, setVerificationCode] = useState(["", "", "", "", "", ""]);
     const [currentStage, setCurrentStage] = useState("verification");
     const [errorMessage, setErrorMessage] = useState("");
-    const [secondsRemaining, setSecondsRemaining] = useState(60);
-    const [isTimerRunning, setIsTimerRunning] = useState(true);
-    const [authenticatedEmail, setAuthenticatedEmail] = useState("user@example.com");
+    const [secondsRemaining, setSecondsRemaining] = useState(() => {
+        const expiryTime = localStorage.getItem('otpExpiryTime');
+        if (expiryTime) {
+            const remainingTime = Math.floor((parseInt(expiryTime) - Date.now()) / 1000);
+            return remainingTime > 0 ? remainingTime : 0;
+        } else {
+            const newExpiryTime = Date.now() + (300 * 1000);
+            localStorage.setItem('otpExpiryTime', newExpiryTime.toString());
+            return 300;
+        }
+    });
+    const [isTimerRunning, setIsTimerRunning] = useState(secondsRemaining > 0);
     const { darkMode, setDarkMode } = useEditorStore();
+    const { twoStepAuth, loaders, email, login } = useLoginStore();
     const navigate = useNavigate();
     const inputRefs = useRef(Array(6).fill(null));
 
@@ -62,10 +73,15 @@ const TwoStepAuthentication = () => {
         if (isTimerRunning && secondsRemaining > 0) {
             const timer = setTimeout(() => {
                 setSecondsRemaining(secondsRemaining - 1);
+                // Also update the expiry time in localStorage
+                const expiryTime = Date.now() + (secondsRemaining - 1) * 1000;
+                localStorage.setItem('otpExpiryTime', expiryTime.toString());
             }, 1000);
             return () => clearTimeout(timer);
         } else if (secondsRemaining === 0) {
             setIsTimerRunning(false);
+            // Clear the expiry time from localStorage
+            localStorage.removeItem('otpExpiryTime');
         }
     }, [isTimerRunning, secondsRemaining]);
 
@@ -110,24 +126,39 @@ const TwoStepAuthentication = () => {
             setErrorMessage("Verification code has expired. Please request a new one.");
             return;
         }
-
-        setCurrentStage("success");
         setErrorMessage("");
+        handleVerify();
     };
 
-    const handleResendCode = () => {
-        setSecondsRemaining(60);
+    const handleVerify = async () => {
+        const otp = verificationCode.join('');
+        const response = await twoStepAuth(otp);
+        if (response.state) {
+            setCurrentStage("success");
+            localStorage.removeItem('otpExpiryTime');
+        }
+        else {
+            setErrorMessage(response.message);
+        }
+    };
+
+    const handleResendCode = async () => {
+        await login();
+        const newExpiryTime = Date.now() + (300 * 1000);
+        localStorage.setItem('otpExpiryTime', newExpiryTime.toString());
+        setSecondsRemaining(300);
         setIsTimerRunning(true);
         setErrorMessage("");
         setVerificationCode(["", "", "", "", "", ""]);
     };
 
     const handleBackToLogin = () => {
+        localStorage.removeItem('otpExpiryTime');
         navigate("/");
     };
 
     const handleContinue = () => {
-        navigate("/dashboard");
+        navigate("/note-pad/1");
     };
 
     const formatTime = (seconds) => {
@@ -206,7 +237,7 @@ const TwoStepAuthentication = () => {
                             "mb-4 text-sm text-center",
                             "text-gray-600 dark:text-gray-300"
                         )}>
-                            For your security, we sent a verification code to <span className="font-medium text-blue-600 dark:text-purple-400">{authenticatedEmail}</span>
+                            For your security, we sent a verification code to <span className="font-medium text-blue-600 dark:text-purple-400">{email}</span>
                         </p>
 
                         <div className={cn(
@@ -257,6 +288,7 @@ const TwoStepAuthentication = () => {
                             <ButtonComponent
                                 btnText="Verify"
                                 type="submit"
+                                loading={loaders.isTwoStepLoading}
                                 styles={{
                                     width: "100%",
                                     height: "48px",
@@ -280,22 +312,23 @@ const TwoStepAuthentication = () => {
                                 <button
                                     type="button"
                                     onClick={handleResendCode}
-                                    disabled={isTimerRunning}
+                                    disabled={isTimerRunning && secondsRemaining > 240} 
                                     className={cn(
                                         "text-sm font-medium",
-                                        isTimerRunning
+                                        isTimerRunning && secondsRemaining > 240
                                             ? "text-gray-400 dark:text-gray-500 cursor-not-allowed"
                                             : "text-blue-600 dark:text-purple-400 hover:underline cursor-pointer"
                                     )}
                                 >
-                                    {isTimerRunning ? "Resend code in " + formatTime(secondsRemaining) : "Resend code"}
+                                    {isTimerRunning && secondsRemaining > 240
+                                        ? "Resend code in " + formatTime(secondsRemaining - 240)
+                                        : "Resend code"}
                                 </button>
                             </div>
                         </form>
                     </>
                 )}
 
-                {/* Success Stage */}
                 {currentStage === "success" && (
                     <>
                         <div className="flex flex-col items-center justify-center py-4">
@@ -325,7 +358,7 @@ const TwoStepAuthentication = () => {
 
                             <ButtonComponent
                                 btnText="Continue to Your Account"
-                                onClick={handleContinue}
+                                handleClick={handleContinue}
                                 styles={{
                                     width: "100%",
                                     height: "48px",

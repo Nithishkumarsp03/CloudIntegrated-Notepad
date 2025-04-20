@@ -21,25 +21,24 @@ import { InputField } from '../components/inputField';
 import BackArrow from '../assets/svgs/backArrow';
 import { SunIcon } from '../assets/svgs/sun';
 import { MoonIcon } from '../assets/svgs/moon';
+import { useLoginStore } from '../store/loginStore';
 
 const ProfilePage = () => {
-    const { darkMode, setDarkMode, data } = useEditorStore();
+    const { darkMode, setDarkMode } = useEditorStore();
+    const { twoFa, onChange, notification, userName, email, gender, phone, profilePicture } = useLoginStore();
     const navigate = useNavigate();
     const fileInputRef = useRef(null);
     const [profileData, setProfileData] = useState({
-        name: 'John Doe',
-        email: 'john@example.com',
-        gender: 'male',
-        phone: '+1 (555) 123-4567',
-        twoFactorEnabled: false,
-        profilePicture: null,
-        notificationsEnabled: true,
-        password: 'demo123'
+        userName: userName,
+        email: email,
+        gender: gender === "M" && "male" || gender === "F" && "female" || "Rather not say",
+        phone: phone,
+        profilePicture: profilePicture,
+        notificationsEnabled: notification,
     });
     const [tempData, setTempData] = useState(profileData);
     const [previewImage, setPreviewImage] = useState('');
     const [edit, setEdit] = useState(true);
-
     const [showPasswordFields, setShowPasswordFields] = useState(false);
     const [passwordData, setPasswordData] = useState({
         oldPassword: '',
@@ -50,15 +49,15 @@ const ProfilePage = () => {
         text: ''
     });
 
+
     const handleFileChange = (e) => {
         if (e.target.files && e.target.files[0]) {
             const selectedFile = e.target.files[0];
-
             setProfileData({
                 ...profileData,
                 profilePicture: selectedFile
             });
-
+            onChange("profilePicture", selectedFile);
             const reader = new FileReader();
             reader.onload = (event) => {
                 setPreviewImage(event.target.result);
@@ -83,6 +82,12 @@ const ProfilePage = () => {
             </Box>
         );
     }, [darkMode]);
+
+    function handleProfileChange(e) {
+        const { name, value } = e.target;
+        onChange(name, value);
+        setTempData(p => ({ ...p, [name]: value }));
+    }
 
     function handleEdit() {
         if (!edit) {
@@ -239,7 +244,7 @@ const ProfilePage = () => {
 
                             <Box className="flex-1 w-full text-center md:text-left">
                                 <Typography variant="h4" className={`font-bold mb-1 ${darkMode ? 'text-purple-100' : 'text-blue-900'}`}>
-                                    {profileData.name}
+                                    {profileData.userName}
                                 </Typography>
                                 <Typography className={`pl-1.5 ${darkMode ? 'text-purple-300' : 'text-blue-600'}`}>
                                     {profileData.email}
@@ -252,7 +257,7 @@ const ProfilePage = () => {
                                     )}>
                                         <Security fontSize="small" className="mr-1" />
                                         <span className='font-normal'>
-                                            {profileData.twoFactorEnabled ? '2FA Enabled' : '2FA Disabled'}
+                                            {twoFa ? '2FA Enabled' : '2FA Disabled'}
                                         </span>
                                     </Box>
                                     <Box className={cn(
@@ -261,7 +266,7 @@ const ProfilePage = () => {
                                     )}>
                                         <Notifications fontSize="small" className="mr-1" />
                                         <span className='font-normal'>
-                                            {profileData.notificationsEnabled ? 'Notifications On' : 'Notifications Off'}
+                                            {notification ? 'Notifications On' : 'Notifications Off'}
                                         </span>
                                     </Box>
                                 </div>
@@ -284,28 +289,31 @@ const ProfilePage = () => {
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <InputField
+                                    name="userName"
                                     disabled={edit}
                                     darkMode={darkMode}
                                     styles={{ '& .MuiInputBase-root': { height: "55px" } }}
                                     label="Full Name"
-                                    value={tempData.name}
-                                    onChange={(e) => setTempData({ ...tempData, name: e.target.value })}
+                                    value={tempData.userName}
+                                    onChange={handleProfileChange}
                                 />
                                 <InputField
+                                    name="email"
                                     disabled={edit}
                                     darkMode={darkMode}
                                     styles={{ '& .MuiInputBase-root': { height: "55px" } }}
                                     label="Email"
                                     value={tempData.email}
-                                    onChange={(e) => setTempData({ ...tempData, email: e.target.value })}
+                                    onChange={handleProfileChange}
                                 />
                                 <InputField
+                                    name="phone"
                                     disabled={edit}
                                     darkMode={darkMode}
                                     styles={{ '& .MuiInputBase-root': { height: "55px" } }}
                                     label="Phone"
                                     value={tempData.phone}
-                                    onChange={(e) => setTempData({ ...tempData, phone: e.target.value })}
+                                    onChange={handleProfileChange}
                                 />
 
                                 <FormControl fullWidth variant="outlined">
@@ -326,11 +334,12 @@ const ProfilePage = () => {
                                         Gender
                                     </InputLabel>
 
-                                        <Select
+                                    <Select
+                                            name="gender"
                                             disabled={edit}
                                             labelId="gender-label"
                                             value={tempData.gender}
-                                            onChange={(e) => setTempData({ ...tempData, gender: e.target.value })}
+                                            onChange={handleProfileChange}
                                             label="Gender"
                                             sx={{
                                                 '& .MuiOutlinedInput-notchedOutline': {
@@ -368,19 +377,11 @@ const ProfilePage = () => {
                                                 '&.Mui-disabled': {
                                                     WebkitTextFillColor: darkMode ? "rgb(233, 213, 255) !important" : "#000000 !important",
                                                     color: darkMode ? "rgb(233, 213, 255) !important" : "#000000 !important",
-                                                    backgroundColor:"transparent !important"
                                                 },
                                                 '& .MuiSelect-select.Mui-disabled': {
                                                     color: darkMode ? 'rgb(233, 213, 255) !important' : '#000000 !important',
                                                     WebkitTextFillColor: darkMode ? 'rgb(233, 213, 255) !important' : '#000000 !important',
                                                     opacity: 1,
-                                                    backgroundColor: "transparent !important"
-                                                },
-                                                '& .MuiInputBase-input.Mui-disabled': {
-                                                    color: darkMode ? 'rgb(233, 213, 255) !important' : '#000000 !important',
-                                                    WebkitTextFillColor: darkMode ? 'rgb(233, 213, 255) !important' : '#000000 !important',
-                                                    opacity: 1,
-                                                    backgroundColor: "transparent !important"
                                                 },
                                             }}
                                             MenuProps={{
@@ -399,7 +400,7 @@ const ProfilePage = () => {
                                                     },
                                                 },
                                             }}
-                                            className={`rounded-lg ${edit ? (darkMode ? 'bg-gray-700' : 'bg-gray-200') :'bg-transparent'}`}
+                                        className={`rounded-lg ${edit ? (darkMode ? 'bg-gray-700' : 'bg-gray-200') : ('bg-transparent') }`}
                                         >
                                             <MenuItem value="male">Male</MenuItem>
                                             <MenuItem value="female">Female</MenuItem>
@@ -423,8 +424,8 @@ const ProfilePage = () => {
                                     control={
                                         <ProfileSwitch
                                             className="mr-2 ml-1"
-                                            checked={profileData.twoFactorEnabled}
-                                            onChange={() => setProfileData({ ...profileData, twoFactorEnabled: !profileData.twoFactorEnabled })}
+                                            checked={twoFa}
+                                            onChange={() => onChange("twoFa",!twoFa)}
                                         />
                                     }
                                     label={
@@ -554,8 +555,8 @@ const ProfilePage = () => {
                                 control={
                                     <ProfileSwitch
                                         className="mr-2"
-                                        checked={profileData.notificationsEnabled}
-                                        onChange={() => setProfileData({ ...profileData, notificationsEnabled: !profileData.notificationsEnabled })}
+                                        checked={notification}
+                                        onChange={() => onChange("notification",!notification)}
                                     />
                                 }
                                 label={
