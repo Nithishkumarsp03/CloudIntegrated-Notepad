@@ -2,13 +2,13 @@ import React, { useState, useEffect, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowBack } from "@mui/icons-material";
 import useEditorStore from "../store/globalStore";
-import { InputField } from "../components/inputField";
-import { ButtonComponent } from "../components/button";
-import { cn } from "../components/cn";
+import { InputField } from "../components/inputFiels/inputField";
+import { cn } from "../components/cn/cn";
 import NotePad from "../assets/svgs/notePad";
-import ProfileSwitch from "../components/switch";
+import ProfileSwitch from "../components/switch/switch";
 import { SunIcon } from "../assets/svgs/sun";
 import { MoonIcon } from "../assets/svgs/moon";
+import { ButtonComponent } from "../components/button/button";
 
 const ForgotPassword = () => {
     const [email, setEmail] = useState("");
@@ -42,7 +42,7 @@ const ForgotPassword = () => {
                 </div>
 
 
-                <div className="absolute inset-0">                    
+                <div className="absolute inset-0">
                     <div className={`absolute top-1/4 left-1/4 w-24 h-24 rounded-full ${darkMode ? 'border-2 border-purple-500 opacity-10' : 'border-2 border-blue-400 opacity-15'} animate-float-slow`}></div>
                     <div className={`absolute top-2/3 right-1/3 w-16 h-16 rounded-full ${darkMode ? 'border border-blue-400 opacity-10' : 'border border-purple-400 opacity-15'} animate-float-slower`}></div>
                     <div className={`absolute top-1/3 right-1/4 w-20 h-20 ${darkMode ? 'border border-purple-400 opacity-10' : 'border border-blue-400 opacity-15'} transform rotate-45 animate-float-medium`}></div>
@@ -175,14 +175,14 @@ const ForgotPassword = () => {
                 : "bg-gradient-to-br from-blue-50 via-white to-purple-50",
         )}>
             <div className="absolute top-4 right-4 z-20 cursor-pointer" onClick={setDarkMode} >
-                            <div className="flex items-center gap-2 bg-white/10 dark:bg-gray-800/30 backdrop-blur-sm p-2 rounded-full">
-                                <ProfileSwitch
-                                    checked={darkMode}
-                                />
-                                <SunIcon className={cn("text-gray-400", darkMode ? "hidden" : "block")} />
-                                <MoonIcon className={cn("text-gray-400", darkMode ? "block" : "hidden")} />
-                            </div>
-                        </div>
+                <div className="flex items-center gap-2 bg-white/10 dark:bg-gray-800/30 backdrop-blur-sm p-2 rounded-full">
+                    <ProfileSwitch
+                        checked={darkMode}
+                    />
+                    <SunIcon className={cn("text-gray-400", darkMode ? "hidden" : "block")} />
+                    <MoonIcon className={cn("text-gray-400", darkMode ? "block" : "hidden")} />
+                </div>
+            </div>
             <WaveBackground />
             <div className={cn(
                 "absolute z-0 w-full max-w-md h-full max-h-96 rounded-xl",

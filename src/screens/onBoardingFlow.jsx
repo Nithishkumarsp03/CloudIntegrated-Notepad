@@ -20,20 +20,21 @@ import {
   CheckCircle,
   Security
 } from '@mui/icons-material';
-import useEditorStore from '../store/globalStore';
-import { cn } from '../components/cn';
-import { ButtonComponent } from '../components/button';
-import ProfileSwitch from '../components/switch';
+import { cn } from '../components/cn/cn';
+import ProfileSwitch from '../components/switch/switch';
 import { SunIcon } from '../assets/svgs/sun';
+import { ButtonComponent } from '../components/button/button';
+import Snackbar from '../components/snackBar/snackBar';
 import { MoonIcon } from '../assets/svgs/moon';
-import logo from '../assets/logo.png';
 import { useLoginStore } from '../store/loginStore';
-import Snackbar from '../components/snackBar';
+import useEditorStore from '../store/globalStore';
+import { logo } from '../assets';
+
 
 const OnboardingFlow = () => {
   const navigate = useNavigate();
   const { darkMode, setDarkMode } = useEditorStore();
-  const { getOnBoardingFlow, loaders, onChange, register, resetAll, twoFa} = useLoginStore();
+  const { getOnBoardingFlow, loaders, onChange, register, resetAll, twoFa } = useLoginStore();
   const [step, setStep] = useState(0);
   const [selectedPersona, setSelectedPersona] = useState(null);
   const [gender, setGender] = useState('');
@@ -41,8 +42,9 @@ const OnboardingFlow = () => {
   const [personas, setPersonas] = useState([]);
   const [snackBar, setSnackBar] = useState({
     state: false,
-    message:""
+    message: ""
   });
+  const [timeoutDuration, setTimeoutDuration] = useState(0);
 
   const handleSelect = (e) => {
     setGender(e.target.value);
@@ -50,21 +52,27 @@ const OnboardingFlow = () => {
   };
 
   useEffect(() => {
-      const fetchPersonas = async () => {
-        const response = await getOnBoardingFlow();
-        if (!response.state) {
+    if (timeoutDuration === 0) {
+      setTimeoutDuration(300000);
+    }
+  }, []);
+
+  useEffect(() => {
+    const fetchPersonas = async () => {
+      const response = await getOnBoardingFlow();
+      if (!response.state) {
+        setSnackBar({
+          state: true,
+          message: response.message
+        });
+        setTimeout(() => {
+          navigate('/');
           setSnackBar({
-            state: true,
+            state: false,
             message: response.message
           });
-          setTimeout(() => {
-            navigate('/');
-            setSnackBar({
-              state: false,
-              message: response.message
-            });
-          }, 5000);
-        }
+        }, timeoutDuration || 5000); 
+      }
       const personasWithIcons = response?.data?.map(persona => {
         let icon;
         switch (persona.id) {
@@ -88,10 +96,10 @@ const OnboardingFlow = () => {
         }
         return { ...persona, icon };
       });
-        setPersonas(personasWithIcons);
+      setPersonas(personasWithIcons);
     };
     fetchPersonas();
-  }, []);
+  }, [timeoutDuration]);
 
 
   const steps = [
@@ -130,15 +138,15 @@ const OnboardingFlow = () => {
         console.log(response)
         setSnackBar({
           state: true,
-          message:response?.message
+          message: response?.message
         });
         setTimeout(() => {
           navigate('/');
           setSnackBar({
             state: false,
-            message:""
+            message: ""
           });
-        }, 7000);
+        }, timeoutDuration || 7000); 
       }
     }
   };
@@ -446,7 +454,7 @@ const OnboardingFlow = () => {
                 <ProfileSwitch
                   className="mr-1.5 ml-0.5"
                   checked={twoFa}
-                  onChange={() => onChange("twoFa",!twoFa)}
+                  onChange={() => onChange("twoFa", !twoFa)}
                 />
               }
               label={

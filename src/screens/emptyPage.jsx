@@ -1,11 +1,11 @@
 import React, { useMemo, useState, useRef, useEffect } from 'react';
 import { Add } from '@mui/icons-material';
 import useEditorStore from '../store/globalStore';
-import { cn } from '../components/cn';
-import { ButtonComponent } from '../components/button';
+import { cn } from '../components/cn/cn';
 import NotePad from '../assets/svgs/notePad';
 import { useNavigate } from 'react-router-dom';
-import { InputField } from '../components/inputField';
+import { InputField } from '../components/inputFiels/inputField';
+import { ButtonComponent } from '../components/button/button';
 
 const EmptyStatePage = () => {
     const [noteName, setNoteName] = useState('');

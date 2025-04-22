@@ -1,36 +1,92 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowBack } from "@mui/icons-material";
-import { cn } from "../components/cn";
-import ProfileSwitch from "../components/switch";
+import { cn } from "../components/cn/cn";
+import ProfileSwitch from "../components/switch/switch";
 import { SunIcon } from "../assets/svgs/sun";
 import { MoonIcon } from "../assets/svgs/moon";
-import { ButtonComponent } from "../components/button";
+import { ButtonComponent } from "../components/button/button";
 import useEditorStore from "../store/globalStore";
 import { useLoginStore } from '../store/loginStore';
 import NotePad from "../assets/svgs/notePad";
+import Snackbar from "../components/snackBar/snackBar";
 
 const TwoStepAuthentication = () => {
     const [verificationCode, setVerificationCode] = useState(["", "", "", "", "", ""]);
     const [currentStage, setCurrentStage] = useState("verification");
     const [errorMessage, setErrorMessage] = useState("");
-   const [secondsRemaining, setSecondsRemaining] = useState(() => {
-    const expiryTime = localStorage.getItem('otpExpiryTime');
-    if (expiryTime) {
-        const remainingTime = Math.floor((parseInt(expiryTime) - Date.now()) / 1000);
-        return remainingTime > 0 ? remainingTime : 0;
-    } else {
-        const newExpiryTime = Date.now() + (300 * 1000);
-        localStorage.setItem('otpExpiryTime', newExpiryTime.toString());
-        return 300;
-    }
-});
+    const [snackbar, setSnackbar] = useState({
+        open: false,
+        message: "",
+        variant: "info",
+        title: ""
+    });
+
+    // Initial timer setup from localStorage with proper fallback logic
+    const [secondsRemaining, setSecondsRemaining] = useState(() => {
+        const expiryTimeString = localStorage.getItem("otpExpiryTime");
+        if (expiryTimeString) {
+            const expiryTime = parseInt(expiryTimeString);
+            const now = Date.now();
+            // If it's a future timestamp, calculate remaining seconds
+            if (expiryTime > now) {
+                return Math.floor((expiryTime - now) / 1000);
+            }
+        }
+        // Only set to default if there's no valid timestamp
+        // This prevents refreshing from resetting the timer
+        const isNewAuth = !localStorage.getItem("otpInitiated");
+        return isNewAuth ? 300 : 0;
+    });
+
     const [isTimerRunning, setIsTimerRunning] = useState(secondsRemaining > 0);
     const { darkMode, setDarkMode } = useEditorStore();
     const { twoStepAuth, loaders, login } = useLoginStore();
     const email = localStorage.getItem("email");
     const navigate = useNavigate();
     const inputRefs = useRef(Array(6).fill(null));
+
+    // Save remaining seconds as a timestamp when it changes
+    useEffect(() => {
+        if (secondsRemaining > 0) {
+            const expiryTime = Date.now() + (secondsRemaining * 1000);
+            localStorage.setItem("otpExpiryTime", expiryTime.toString());
+            // Mark that OTP process has been initiated
+            localStorage.setItem("otpInitiated", "true");
+        } else {
+            // Don't remove otpExpiryTime when timer reaches zero
+            // This allows us to know the timer has expired rather than being new
+        }
+    }, [secondsRemaining]);
+
+    useEffect(() => {
+        if (!email) {
+            navigate('/');
+        }
+
+        // Handle browser back button and cleanup
+        const handleBeforeUnload = () => {
+            // Don't remove items on page refresh
+            // We'll handle cleanup elsewhere
+        };
+
+        // Handle browser back/forward navigation using the History API
+        const handlePopState = () => {
+            localStorage.removeItem('otpExpiryTime');
+            localStorage.removeItem('otpInitiated');
+        };
+
+        // Listen for page unload and popstate events
+        window.addEventListener('beforeunload', handleBeforeUnload);
+        window.addEventListener('popstate', handlePopState);
+
+        // Cleanup function to run when component unmounts
+        return () => {
+            // Only clear when navigating away, not on refresh
+            window.removeEventListener('beforeunload', handleBeforeUnload);
+            window.removeEventListener('popstate', handlePopState);
+        };
+    }, [email, navigate]);
 
     const WaveBackground = useMemo(() => {
         return () => (
@@ -70,17 +126,21 @@ const TwoStepAuthentication = () => {
         );
     }, [darkMode]);
 
+    // Timer countdown effect
     useEffect(() => {
         if (isTimerRunning && secondsRemaining > 0) {
             const timer = setTimeout(() => {
-                setSecondsRemaining(secondsRemaining - 1);
-                const expiryTime = Date.now() + (secondsRemaining - 1) * 1000;
-                localStorage.setItem('otpExpiryTime', expiryTime.toString());
+                setSecondsRemaining(prev => {
+                    const newTime = prev - 1;
+                    if (newTime <= 0) {
+                        setIsTimerRunning(false);
+                        return 0;
+                    }
+                    return newTime;
+                });
             }, 1000);
+
             return () => clearTimeout(timer);
-        } else if (secondsRemaining === 0) {
-            setIsTimerRunning(false);
-            localStorage.removeItem('otpExpiryTime');
         }
     }, [isTimerRunning, secondsRemaining]);
 
@@ -134,7 +194,8 @@ const TwoStepAuthentication = () => {
         const response = await twoStepAuth(otp);
         if (response.state) {
             setCurrentStage("success");
-            localStorage.removeItem('otpExpiryTime');
+            // Clear OTP data on successful verification
+            clearOtpData();
         }
         else {
             setErrorMessage(response.message);
@@ -142,9 +203,15 @@ const TwoStepAuthentication = () => {
     };
 
     const handleResendCode = async () => {
-        await login();
-        const newExpiryTime = Date.now() + (300 * 1000);
-        localStorage.setItem('otpExpiryTime', newExpiryTime.toString());
+        setSnackbar({
+            open: true,
+            message: `Verification code sent to ${email}`,
+            variant: "success",
+            title: "Code Sent"
+        });
+        const result = await login();
+
+        // Set timer to 5 minutes (300 seconds)
         setSecondsRemaining(300);
         setIsTimerRunning(true);
         setErrorMessage("");
@@ -152,12 +219,25 @@ const TwoStepAuthentication = () => {
     };
 
     const handleBackToLogin = () => {
-        localStorage.removeItem('otpExpiryTime');
+        clearOtpData();
         navigate("/");
     };
 
     const handleContinue = () => {
         navigate("/note-pad/1");
+    };
+
+    // Helper function to clear OTP-related data
+    const clearOtpData = () => {
+        localStorage.removeItem('otpExpiryTime');
+        localStorage.removeItem('otpInitiated');
+    };
+
+    const handleCloseSnackbar = () => {
+        setSnackbar({
+            ...snackbar,
+            open: false
+        });
     };
 
     const formatTime = (seconds) => {
@@ -244,11 +324,15 @@ const TwoStepAuthentication = () => {
                             "text-sm font-medium",
                             secondsRemaining <= 10 ? "text-red-500 dark:text-red-400" : "text-gray-600 dark:text-gray-300"
                         )}>
-                            Code expires in: {formatTime(secondsRemaining)}
+                            {secondsRemaining > 0 ? (
+                                <>Code expires in: {formatTime(secondsRemaining)}</>
+                            ) : (
+                                <>Code expired. Please request a new one.</>
+                            )}
                         </div>
 
                         <form onSubmit={handleVerificationSubmit} className="space-y-6">
-                            <div className="flex justify-between mb-4">
+                            <div className="flex justify-between gap-1.5 mb-4">
                                 {[0, 1, 2, 3, 4, 5].map((index) => (
                                     <input
                                         key={index}
@@ -288,21 +372,30 @@ const TwoStepAuthentication = () => {
                                 btnText="Verify"
                                 type="submit"
                                 loading={loaders.isTwoStepLoading}
+                                disabled={secondsRemaining === 0}
                                 styles={{
                                     width: "100%",
                                     height: "48px",
-                                    backgroundColor: darkMode ? "#7C3AED" : "#2563EB",
+                                    backgroundColor: secondsRemaining === 0 ?
+                                        (darkMode ? "#4B5563" : "#9CA3AF") :
+                                        (darkMode ? "#7C3AED" : "#2563EB"),
                                     color: "white",
                                     borderRadius: "8px",
                                     textTransform: "none",
                                     fontWeight: 500,
                                     fontSize: "0.95rem",
                                     "&:hover": {
-                                        backgroundColor: darkMode ? "#6D28D9" : "#3B82F6",
-                                        boxShadow: darkMode ? "0 2px 4px rgba(0,0,0,0.3)" : "0 2px 4px rgba(0,0,0,0.1)"
+                                        backgroundColor: secondsRemaining === 0 ?
+                                            (darkMode ? "#4B5563" : "#9CA3AF") :
+                                            (darkMode ? "#6D28D9" : "#3B82F6"),
+                                        boxShadow: secondsRemaining === 0 ?
+                                            "none" :
+                                            (darkMode ? "0 2px 4px rgba(0,0,0,0.3)" : "0 2px 4px rgba(0,0,0,0.1)")
                                     },
                                     "&:active": {
-                                        backgroundColor: darkMode ? "#5B21B6" : "#1D4ED8"
+                                        backgroundColor: secondsRemaining === 0 ?
+                                            (darkMode ? "#4B5563" : "#9CA3AF") :
+                                            (darkMode ? "#5B21B6" : "#1D4ED8")
                                     }
                                 }}
                             />
@@ -311,7 +404,7 @@ const TwoStepAuthentication = () => {
                                 <button
                                     type="button"
                                     onClick={handleResendCode}
-                                    disabled={isTimerRunning && secondsRemaining > 240} 
+                                    disabled={isTimerRunning && secondsRemaining > 240}
                                     className={cn(
                                         "text-sm font-medium",
                                         isTimerRunning && secondsRemaining > 240
@@ -380,6 +473,16 @@ const TwoStepAuthentication = () => {
                     </>
                 )}
             </div>
+
+            <Snackbar
+                open={snackbar.open}
+                onClose={handleCloseSnackbar}
+                message={snackbar.message}
+                variant={snackbar.variant}
+                title={snackbar.title}
+                vertical="top"
+                horizontal="center"
+            />
         </div>
     );
 };

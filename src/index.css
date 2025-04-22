@@ -44,3 +44,6 @@
     padding-left: 1.5rem;
 }
 
+pre {
+  @apply p-2 bg-black text-white
+}

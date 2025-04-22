@@ -2,7 +2,7 @@
 
 import { motion, useAnimation } from 'framer-motion';
 import { forwardRef, useCallback, useImperativeHandle, useRef } from 'react';
-import { cn } from '../../components/cn';
+import { cn } from '../../components/cn/cn';
 
 const defaultTransition = {
     times: [0, 0.4, 1],

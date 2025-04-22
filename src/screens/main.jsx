@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
-import Navbar from "../components/navbar";
-import Appbar from "../components/appbar";
-import Tiptap from "../components/textEditor";
-import EditorToolKit from "../components/editorToolKit";
+import Navbar from "../components/navbar/navbar";
+import EditorToolKit from "../components/editor/editorToolKit";
 import { useMediaQuery } from "@mui/material";
 import useEditorStore from "../store/globalStore";
-import { cn } from "../components/cn";
-import NotePad from "../assets/svgs/notePad";
+import { cn } from "../components/cn/cn";
+import Appbar from "../components/appbar/appbar";
+import Tiptap from "../components/editor/textEditor";
 
 const Main = () => {
   const [active, setActive] = useState('');
