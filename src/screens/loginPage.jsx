@@ -6,14 +6,14 @@ import {
   useMediaQuery,
 } from '@mui/material';
 import useEditorStore from '../store/globalStore';
-import { cn } from '../components/cn';
+import { cn } from '../components/cn/cn';
 import { useLoginStore } from '../store/loginStore';
-import Snackbar from '../components/snackBar';
-import VideoComponent from '../components/videoComponent';
-import LoginForm from '../components/loginForm';
-import SignupForm from '../components/signupForm';
-import LoginHeader from '../components/loginHeader';
-import LoginSwitch from '../components/loginSwitch';
+import Snackbar from '../components/snackBar/snackBar';
+import LoginForm from '../components/authentication/loginForm';
+import SignupForm from '../components/authentication/signupForm';
+import VideoComponent from '../components/authentication/videoComponent';
+import LoginSwitch from '../components/authentication/loginSwitch';
+import LoginHeader from '../components/authentication/loginHeader';
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -76,6 +76,11 @@ const LoginPage = () => {
   const switchAuthMode = (e) => {
     e.preventDefault();
     resetAll();
+    setSnackBar({
+      variant: "",
+      state: false,
+      msg: ""
+    })
     setFormData({
       loginName: '',
       loginEmail: '',
@@ -111,7 +116,7 @@ const LoginPage = () => {
   };
 
   const validatePassword = (password) => {
-    return "";
+    return ""
     const errors = [];
     if (!password) return "Password is required";
     const hasLength = password.length >= 8;
@@ -180,14 +185,15 @@ const LoginPage = () => {
       let response;
       if (!firstLogin) {
         response = await authentication("login", formData.loginEmail, formData.loginPass);
-        if (!response.state) {
+        if (!response.state && response.message) {
           setSnackBar({
             variant: response.state ? "success" : "error",
-            state: !response.state,
+            state: true,
             msg: response.message
           })
         }
         if (response?.twoFa) {
+          localStorage.setItem("otpExpiryTime", 10);
           navigate('/twoStepAuth');
         }
         else if (response?.state) {
@@ -238,14 +244,21 @@ const LoginPage = () => {
     }
   };
 
+  useEffect(() => {
+    localStorage.removeItem("userName");
+    localStorage.removeItem("email");
+    localStorage.removeItem("gender");
+    localStorage.removeItem("password");
+  }, []);
+
   return (
     <Box className="h-screen w-screen flex flex-col md:flex-row overflow-hidden">
       <Snackbar
         variant={snackBar.variant}
         open={snackBar.state}
         message={snackBar.msg}
-        autoHideDuration={5000}
         onClose={() => setSnackBar(p => ({ ...p, state: false }))}
+        loading={false}
       />
       {(!isMobile || formState.showLeftPanel) && (
         <VideoComponent

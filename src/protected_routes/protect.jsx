@@ -7,10 +7,15 @@ const Protect = () => {
     const navigate = useNavigate();
     const { isUserLoggedIn } = useLoginStore();
     useEffect(() => {
-            if (!isUserLoggedIn) {
+        if (!isUserLoggedIn) {
+                localStorage.removeItem("userName");
+                localStorage.removeItem("email");
+                localStorage.removeItem("gender");
+                localStorage.removeItem("password");
                 navigate('/');
-            }
-    },[isUserLoggedIn])
+        }
+    }, [isUserLoggedIn])
+
 
     return isUserLoggedIn ? <Outlet /> : <LoginPage />;
 }

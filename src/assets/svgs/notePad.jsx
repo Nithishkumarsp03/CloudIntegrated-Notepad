@@ -1,5 +1,5 @@
 import React from 'react';
-import { cn } from '../../components/cn'; // Ensure this path is correct
+import { cn } from '../../components/cn/cn'; // Ensure this path is correct
 
 const NotePad = ({ className }) => {
     return (

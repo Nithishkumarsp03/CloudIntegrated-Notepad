@@ -2,9 +2,9 @@
 
 import { motion, useAnimation } from 'framer-motion';
 import { forwardRef, useCallback, useImperativeHandle, useRef } from 'react';
-import { cn } from '../../components/cn';
+import { cn } from '../../components/cn/cn';
 
-const SaveIcon = forwardRef(({ onMouseEnter, onMouseLeave, className,height=20,width=20, ...props }, ref) => {
+const SaveIcon = forwardRef(({ onMouseEnter, onMouseLeave, className, height = 20, width = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 
