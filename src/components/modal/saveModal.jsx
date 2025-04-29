@@ -19,7 +19,7 @@ import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
 import DownloadOutlinedIcon from '@mui/icons-material/DownloadOutlined';
 import useEditorStore from "../../store/globalStore";
 import { ButtonComponent } from '../button/button';
-import { InputField } from '../inputFiels/inputField';
+import { InputField } from '../inputFields/inputField';
 
 const SAVE_OPTIONS = {
     ONLINE: 'online',
@@ -43,26 +43,7 @@ const SaveModal = ({ isOpen, onClose, onSave, onSaveAs, currentFileName }) => {
     }, [isOpen, currentFileName]);
 
     const handleSubmit = (e) => {
-        if (!fileName.trim()) return;
-
-        if (saveOption === SAVE_OPTIONS.DOWNLOAD) {
-            // Handle download logic
-            console.log(`Downloading file: ${fileName} as ${fileFormat}`);
-            // Example implementation for PDF download
-            if (fileFormat === 'pdf') {
-                // This is where you would implement the actual PDF generation/download
-                // For example, using a library like jsPDF or a server endpoint
-                alert(`Downloading ${fileName}.${fileFormat}`);
-            } else {
-                // Handle other file formats
-                alert(`Downloading ${fileName}.${fileFormat}`);
-            }
-        } else {
-            // Handle online save
-            onSave();
-            console.log(`Saving file online: ${fileName}`);
-        }
-
+        onSave(e);
         onClose();
     };
 
@@ -125,25 +106,6 @@ const SaveModal = ({ isOpen, onClose, onSave, onSaveAs, currentFileName }) => {
             <DialogContent sx={{ p: 0 }}>
                 <div>
                     <Box mb={3}>
-                        <Typography variant="body2" sx={{
-                            mb: 1,
-                            color: darkMode ? 'grey.300' : 'grey.600',
-                            fontWeight: 'medium'
-                        }}>
-                            File Name*
-                        </Typography>
-                        <InputField
-                            autoFocus
-                            fullWidth
-                            size="small"
-                            styles={{ backgroundColor: "transparent" }}
-                            value={fileName}
-                            onChange={(e) => setFileName(e.target.value)}
-                            placeholder="Enter file name"
-                        />
-                    </Box>
-
-                    <Box mt={3} mb={3}>
                         <Typography variant="body2" sx={{
                             mb: 1,
                             color: darkMode ? 'grey.300' : 'grey.600',
@@ -351,7 +313,7 @@ const SaveModal = ({ isOpen, onClose, onSave, onSaveAs, currentFileName }) => {
 
                         <ButtonComponent
                             btnText={saveOption === SAVE_OPTIONS.DOWNLOAD ? `Download` : 'Save Online'}
-                            handleClick={handleSubmit}
+                            handleClick={() => handleSubmit(saveOption === SAVE_OPTIONS.DOWNLOAD ? `Download` : 'Save Online')}
                             styles={{
                                 minWidth: '150px',
                                 height: '40px',

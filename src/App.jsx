@@ -8,7 +8,7 @@ import ForgotPassword from './screens/forgotPassword';
 import OnboardingFlow from './screens/onBoardingFlow';
 import EmptyStatePage from './screens/emptyPage';
 import TwoStepAuthentication from './screens/twoStepAuth';
-import Texteditor from './demo/texteditor';
+import TextEditorDisplay from './screens/editorDisplay';
 
 function App() {
   return (
@@ -22,11 +22,11 @@ function App() {
             <Route element={<Protect />}>
             <Route path='/profile' element={<ProfilePage />} />
               <Route path='/notes' element={<EmptyStatePage/>}/>
-              <Route path='/note-pad/:id' element={<Main />} />
+            <Route path='/note-pad/:id' element={<Main />} />
+            <Route path='/shareEditor/:id' element = {<TextEditorDisplay/>}/>
             </Route>
         </Routes>
         </BrowserRouter>
-      {/* <Texteditor/> */}
     </div>
   );
 }

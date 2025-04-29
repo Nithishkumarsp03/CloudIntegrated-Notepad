@@ -1,26 +1,29 @@
 import React, { useMemo, useState, useRef, useEffect } from 'react';
 import { Add } from '@mui/icons-material';
 import useEditorStore from '../store/globalStore';
-import { cn } from '../components/cn/cn';
+import { cn } from '../components/cn';
 import NotePad from '../assets/svgs/notePad';
 import { useNavigate } from 'react-router-dom';
-import { InputField } from '../components/inputFiels/inputField';
+import { InputField } from '../components/inputFields/inputField';
 import { ButtonComponent } from '../components/button/button';
+import { useNavbarStore } from '../store/navbarStore';
 
 const EmptyStatePage = () => {
     const [noteName, setNoteName] = useState('');
     const [showInput, setShowInput] = useState(false);
     const { darkMode, addNewTab } = useEditorStore();
+    const { getNotes } = useNavbarStore();
     const navigate = useNavigate();
     const inputRef = useRef(null);
 
-    const handleCreateNote = () => {
+    const handleCreateNote = async () => {
         if (noteName && noteName.trim() !== '') {
             addNewTab(noteName);
             setNoteName('');
             setShowInput(false);
-            navigate('/note-pad/1');
-        }
+            const response = await getNotes();
+            const uuid = response.data[0].uuid;
+            navigate(`/note-pad/${uuid}`);        }
     };
 
     const handleKeyPress = (e) => {

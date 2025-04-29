@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowBack } from "@mui/icons-material";
-import { cn } from "../components/cn/cn";
+import { cn } from "../components/cn";
 import ProfileSwitch from "../components/switch/switch";
 import { SunIcon } from "../assets/svgs/sun";
 import { MoonIcon } from "../assets/svgs/moon";
@@ -10,6 +10,7 @@ import useEditorStore from "../store/globalStore";
 import { useLoginStore } from '../store/loginStore';
 import NotePad from "../assets/svgs/notePad";
 import Snackbar from "../components/snackBar/snackBar";
+import { useNavbarStore } from "../store/navbarStore";
 
 const TwoStepAuthentication = () => {
     const [verificationCode, setVerificationCode] = useState(["", "", "", "", "", ""]);
@@ -22,40 +23,43 @@ const TwoStepAuthentication = () => {
         title: ""
     });
 
-    // Initial timer setup from localStorage with proper fallback logic
+    // Fix: Initialize with default value of 300 seconds when no stored time exists
     const [secondsRemaining, setSecondsRemaining] = useState(() => {
         const expiryTimeString = localStorage.getItem("otpExpiryTime");
         if (expiryTimeString) {
             const expiryTime = parseInt(expiryTimeString);
             const now = Date.now();
-            // If it's a future timestamp, calculate remaining seconds
             if (expiryTime > now) {
                 return Math.floor((expiryTime - now) / 1000);
             }
         }
-        // Only set to default if there's no valid timestamp
-        // This prevents refreshing from resetting the timer
-        const isNewAuth = !localStorage.getItem("otpInitiated");
-        return isNewAuth ? 300 : 0;
+        // Always default to 300 seconds (5 minutes) when there's no valid time
+        return 300;
     });
 
-    const [isTimerRunning, setIsTimerRunning] = useState(secondsRemaining > 0);
+    // Fix: Start with timer running by default
+    const [isTimerRunning, setIsTimerRunning] = useState(true);
     const { darkMode, setDarkMode } = useEditorStore();
-    const { twoStepAuth, loaders, login } = useLoginStore();
+    const { getNotes } = useNavbarStore();
+    const { twoStepAuth, loaders, authentication } = useLoginStore();
     const email = localStorage.getItem("email");
     const navigate = useNavigate();
     const inputRefs = useRef(Array(6).fill(null));
 
-    // Save remaining seconds as a timestamp when it changes
+    // Fix: Set initial OTP expiry time if not already set
+    useEffect(() => {
+        if (!localStorage.getItem("otpExpiryTime")) {
+            const expiryTime = Date.now() + (300 * 1000); // 5 minutes
+            localStorage.setItem("otpExpiryTime", expiryTime.toString());
+            localStorage.setItem("otpInitiated", "true");
+        }
+    }, []);
+
     useEffect(() => {
         if (secondsRemaining > 0) {
             const expiryTime = Date.now() + (secondsRemaining * 1000);
             localStorage.setItem("otpExpiryTime", expiryTime.toString());
-            // Mark that OTP process has been initiated
             localStorage.setItem("otpInitiated", "true");
-        } else {
-            // Don't remove otpExpiryTime when timer reaches zero
-            // This allows us to know the timer has expired rather than being new
         }
     }, [secondsRemaining]);
 
@@ -64,29 +68,35 @@ const TwoStepAuthentication = () => {
             navigate('/');
         }
 
-        // Handle browser back button and cleanup
         const handleBeforeUnload = () => {
-            // Don't remove items on page refresh
-            // We'll handle cleanup elsewhere
+            // Empty function but keeping it for compatibility
         };
 
-        // Handle browser back/forward navigation using the History API
         const handlePopState = () => {
             localStorage.removeItem('otpExpiryTime');
             localStorage.removeItem('otpInitiated');
         };
 
-        // Listen for page unload and popstate events
         window.addEventListener('beforeunload', handleBeforeUnload);
         window.addEventListener('popstate', handlePopState);
 
-        // Cleanup function to run when component unmounts
         return () => {
-            // Only clear when navigating away, not on refresh
             window.removeEventListener('beforeunload', handleBeforeUnload);
             window.removeEventListener('popstate', handlePopState);
         };
     }, [email, navigate]);
+
+    // Fix: If OTP hasn't been requested yet, request it automatically
+    useEffect(() => {
+        const checkAndRequestOtp = async () => {
+            const otpInitiated = localStorage.getItem("otpInitiated");
+            if (!otpInitiated) {
+                await handleResendCode();
+            }
+        };
+
+        checkAndRequestOtp();
+    }, []);
 
     const WaveBackground = useMemo(() => {
         return () => (
@@ -203,19 +213,46 @@ const TwoStepAuthentication = () => {
     };
 
     const handleResendCode = async () => {
-        setSnackbar({
-            open: true,
-            message: `Verification code sent to ${email}`,
-            variant: "success",
-            title: "Code Sent"
-        });
-        const result = await login();
+        try {
+            const result = await authentication("login");
+            // Only update UI state if authentication was successful
+            if (result && !result.error) {
+                setSnackbar({
+                    open: true,
+                    message: `Verification code sent to ${email}`,
+                    variant: "success",
+                    title: "Code Sent"
+                });
 
-        // Set timer to 5 minutes (300 seconds)
-        setSecondsRemaining(300);
-        setIsTimerRunning(true);
-        setErrorMessage("");
-        setVerificationCode(["", "", "", "", "", ""]);
+                // Set a new 5-minute timer
+                setSecondsRemaining(300);
+                setIsTimerRunning(true);
+
+                // Reset error message and input fields
+                setErrorMessage("");
+                setVerificationCode(["", "", "", "", "", ""]);
+
+                // Update localStorage with new expiry time
+                const expiryTime = Date.now() + (300 * 1000);
+                localStorage.setItem("otpExpiryTime", expiryTime.toString());
+                localStorage.setItem("otpInitiated", "true");
+            } else {
+                setSnackbar({
+                    open: true,
+                    message: "Failed to send verification code. Please try again.",
+                    variant: "error",
+                    title: "Error"
+                });
+            }
+        } catch (error) {
+            console.error("Error sending code:", error);
+            setSnackbar({
+                open: true,
+                message: "Failed to send verification code. Please try again.",
+                variant: "error",
+                title: "Error"
+            });
+        }
     };
 
     const handleBackToLogin = () => {
@@ -223,11 +260,18 @@ const TwoStepAuthentication = () => {
         navigate("/");
     };
 
-    const handleContinue = () => {
-        navigate("/note-pad/1");
+    const handleContinue = async () => {
+        try {
+            const response = await getNotes();
+            const uuid = await response.data?.notes[0]?.uuid;
+            console.log(response)
+            navigate(`/note-pad/${uuid}`);
+        } catch (error) {
+            console.error("Error navigating to notes:", error);
+            navigate('/note-pad');
+        }
     };
 
-    // Helper function to clear OTP-related data
     const clearOtpData = () => {
         localStorage.removeItem('otpExpiryTime');
         localStorage.removeItem('otpInitiated');
@@ -371,7 +415,7 @@ const TwoStepAuthentication = () => {
                             <ButtonComponent
                                 btnText="Verify"
                                 type="submit"
-                                loading={loaders.isTwoStepLoading}
+                                loading={loaders?.isTwoStepLoading}
                                 disabled={secondsRemaining === 0}
                                 styles={{
                                     width: "100%",

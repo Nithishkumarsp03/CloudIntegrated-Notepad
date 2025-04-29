@@ -24,7 +24,7 @@ import {
 import useEditorStore from "../../store/globalStore";
 import { ButtonComponent } from '../button/button';
 import { CopyIcon } from '../../assets/svgs/copy';
-import { InputField } from '../inputFiels/inputField'; 
+import { InputField } from '../inputFields/inputField';
 
 const ShareModal = ({ isOpen, onClose, shareLink = "https://in.search.yahoo.com/search?fr=mcafee&type=E211IN1589G0&p=link+notepad" }) => {
     const { darkMode } = useEditorStore();

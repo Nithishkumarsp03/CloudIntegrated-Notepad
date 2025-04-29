@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import { useTextEditorStore } from '../store/textEditorStore';
+import React, { useRef, useState } from 'react';
 import {
   Bold,
   Underline,
@@ -11,25 +10,65 @@ import {
   Undo,
   Redo,
   BulletList,
-  TextColor,
   Italic,
   OrderedList,
   Code
-} from '../assets';
-import EditorButton from '../components/editor/editorButton'
+} from '../../../assets';
+import LinkModal from '../../modal/modal';
+import EditorButton from './editorButton';
+import CustomSelect from '../../select/select';
+import { fontFamilyOptions, fontSizes } from '../../../utils';
+import FontSelector from '../../select/fontSelect';
 import { UploadFile } from '@mui/icons-material';
-import { fontFamilyOptions, fontSizes } from '../utils';
-import FontSelector from '../components/select/fontSelect';
-import CustomSelect from '../components/select/select';
-import LinkModal from '../components/modal/modal';
+import ColorPopover from '../extensions/textColor';
+import  useEditorStore  from '../../../store/globalStore';
 
-const EditorToolKit = ({editor}) => {
-  const { darkMode } = useTextEditorStore();
+const EditorToolKit = ({ editor }) => {
+  const { darkMode } = useEditorStore();
   const [fontFamily, setFontFamily] = useState(fontFamilyOptions[0].family);
   const [fontSize, setFontSize] = useState("18px");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const fileInputRef = useRef(null);
 
-  const handleFont =(e) => {
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (editor && editor.commands.setImage) {
+        try {
+          editor.chain().focus().setImage({
+            src: reader.result,
+            alt: file.name,
+            width: 300,
+            height: 'auto'
+          }).run();
+          console.log("Image inserted successfully");
+        } catch (error) {
+          console.error("Error inserting image:", error);
+        }
+      } else {
+        console.error("Image extension not available in editor");
+      }
+    };
+
+    reader.onerror = (error) => {
+      console.error("Error reading file:", error);
+    };
+    reader.readAsDataURL(file);
+    e.target.value = "";
+  };
+
+  const addImage = () => {
+    console.log("Triggering file input click");
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    } else {
+      console.error("File input ref is null");
+    }
+  };
+
+  const handleFont = (e) => {
     setFontFamily(e.target.value);
     if (editor && editor.commands.setFontFamily) {
       editor.chain().focus().setFontFamily(e.target.value).run();
@@ -38,9 +77,9 @@ const EditorToolKit = ({editor}) => {
     }
   };
 
-  const handleFontSize = (e) => { 
+  const handleFontSize = (e) => {
     setFontSize(e.target.value);
-    editor.chain().focus().setFontSize(e.target.value).run()
+    editor.chain().focus().setFontSize(e.target.value).run();
   };
 
   const handleInsertLink = ({ url, text }) => {
@@ -63,72 +102,76 @@ const EditorToolKit = ({editor}) => {
     return null;
   }
 
-  const addImage = () => {
-    const url = window.prompt("URl");
-    if (url) {
-      editor.chain().focus().setImage({src:url}).run()
-    }
-  };
-
   const Options = [
     {
-      name:"Bold",
+      name: "Bold",
       icon: <Bold />,
       onClick: () => editor.chain().focus().toggleBold().run(),
+      pressed: () => editor.isActive("bold")
     },
     {
       name: "UnderLine",
       icon: <Underline />,
       onClick: () => editor.chain().focus().toggleUnderline().run(),
+      pressed: () => editor.isActive("underline")
     },
     {
       name: "StrikeThrough",
       icon: <StrikeThrough />,
       onClick: () => editor.chain().focus().toggleStrike().run(),
+      pressed: () => editor.isActive("strike"),
+      classes: { padding: "6px 6px" }
     },
     {
       name: "Italic",
       icon: <Italic />,
       onClick: () => editor.chain().focus().toggleItalic().run(),
+      pressed: () => editor.isActive("italic")
     },
     {
       name: "Link",
       icon: <Link />,
-      // onClick: () =>
+      onClick: () => setIsModalOpen(true)
     },
     {
       name: "Code",
       icon: <Code />,
+      pressed: () => editor.isActive("code"),
       onClick: () => editor.chain().focus().toggleCodeBlock().run(),
     },
     {
       name: "Upload",
       icon: <UploadFile />,
-      onClick: () => addImage(),
+      onClick: addImage,
     },
     {
       name: "OrderedList",
       icon: <OrderedList />,
+      pressed: () => editor.isActive("orderedList"),
       onClick: () => editor.chain().focus().toggleOrderedList().run(),
     },
     {
       name: "BulletList",
       icon: <BulletList />,
+      pressed: () => editor.isActive("bulletList"),
       onClick: () => editor.chain().focus().toggleBulletList().run(),
     },
     {
       name: "Left Align",
       icon: <LeftAlign />,
+      pressed: () => editor.isActive("leftAlign"),
       onClick: () => editor.chain().focus().setTextAlign("left").run(),
     },
     {
       name: "Center Align",
       icon: <CenterAlign />,
+      pressed: () => editor.isActive("centerAlign"),
       onClick: () => editor.chain().focus().setTextAlign("center").run(),
     },
     {
       name: "Right Align",
       icon: <RightAlign />,
+      pressed: () => editor.isActive("rightAlign"),
       onClick: () => editor.chain().focus().setTextAlign("right").run(),
     },
     {
@@ -140,45 +183,52 @@ const EditorToolKit = ({editor}) => {
       name: "Redo",
       icon: <Redo />,
       onClick: () => editor.chain().focus().redo().run(),
-    },
-    {
-      name: "Text Color",
-      icon: <TextColor />
     }
   ];
 
   return (
-    <div className={`p-2 rounded-2xl overflow-hidden flex flex-wrap justify-between shadow-md ${darkMode ? "bg-gray-800" : "bg-gray-100"}`}>
-      <CustomSelect
-        darkMode={darkMode}
-        options={fontSizes}
-        onChange={handleFontSize}
-        value={fontSize}
+    <div className={`p-2 rounded-2xl flex overflow-x-auto gap-2 items-center justify-between scrollbar-none shadow-md bg-gray-100 dark:bg-gray-800`}>
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={handleImageUpload}
       />
+
       <FontSelector
         darkMode={darkMode}
         fontOptions={fontFamilyOptions}
         onChange={handleFont}
         value={fontFamily}
       />
+      <CustomSelect
+        darkMode={darkMode}
+        options={fontSizes}
+        onChange={handleFontSize}
+        value={fontSize}
+      />
       {
         Options.map(option => (
-          <EditorButton
-            key={option.name}
-            btnText={option.icon}
-            handleClick={option.onClick}
-            handlePressed={option.pressed}
-            size="small"
-          />
+          <div key={option.name} className="relative">
+            <EditorButton
+              classes={option.classes}
+              btnText={option.icon}
+              handleClick={option.onClick}
+              handlePressed={option.pressed}
+              size="small"
+            />
+          </div>
         ))
       }
+      <ColorPopover editor={editor} />
       <LinkModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onInsertLink={handleInsertLink}
       />
     </div>
-  )
-}
+  );
+};
 
 export default EditorToolKit;

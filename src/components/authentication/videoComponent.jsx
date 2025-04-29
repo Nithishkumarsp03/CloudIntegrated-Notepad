@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Typography } from '@mui/material';
-import { cn } from '../cn/cn';
+import { cn } from '../cn';
 import video from '../../assets/noteVideo.mp4';
 import logo from '../../assets/logo.png';
 

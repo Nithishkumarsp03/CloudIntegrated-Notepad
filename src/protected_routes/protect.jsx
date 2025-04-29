@@ -5,19 +5,19 @@ import { useLoginStore } from '../store/loginStore';
 
 const Protect = () => {
     const navigate = useNavigate();
-    const { isUserLoggedIn } = useLoginStore();
+    const { isUserLoggedIn, onChange } = useLoginStore();
+    const token = localStorage.getItem("token");
     useEffect(() => {
-        if (!isUserLoggedIn) {
+        if (!token) {
+                onChange("isUserLoggedIn",true);
                 localStorage.removeItem("userName");
                 localStorage.removeItem("email");
                 localStorage.removeItem("gender");
                 localStorage.removeItem("password");
                 navigate('/');
         }
-    }, [isUserLoggedIn])
-
-
-    return isUserLoggedIn ? <Outlet /> : <LoginPage />;
+    }, [token])
+    return token ? <Outlet /> : <LoginPage />;
 }
 
 export default Protect;

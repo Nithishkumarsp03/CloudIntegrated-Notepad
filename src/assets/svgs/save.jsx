@@ -2,7 +2,7 @@
 
 import { motion, useAnimation } from 'framer-motion';
 import { forwardRef, useCallback, useImperativeHandle, useRef } from 'react';
-import { cn } from '../../components/cn/cn';
+import { cn } from '../../components/cn';
 
 const SaveIcon = forwardRef(({ onMouseEnter, onMouseLeave, className, height = 20, width = 20, ...props }, ref) => {
     const controls = useAnimation();

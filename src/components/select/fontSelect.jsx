@@ -5,19 +5,18 @@ const FontSelector = ({
     value,
     onChange,
     fontOptions,
-    darkMode,
     sx = {},
     menuSx = {},
     menuOffsetY = -60,
     minWidth = "40",
     maxWidth = "40"
 }) => {
+    const darkMode = document.documentElement.classList.contains("dark");
     return (
         <Select
-            classes={{ root: `h-full max-h-11 w-full min-w-${minWidth} max-w-${maxWidth} shadow-sm` }}
+            classes={{ root: `h-full max-h-11 w-fit shadow-sm` }}
             sx={{
                 borderRadius: "12px",
-                fontFamily: value,
                 backgroundColor: darkMode ? "#374151" : "white",
                 color: darkMode ? "#E5E7EB" : "#1F2937",
                 "& .MuiOutlinedInput-notchedOutline": {
@@ -26,7 +25,6 @@ const FontSelector = ({
                 "& .MuiSvgIcon-root": {
                     color: darkMode ? "#9CA3AF" : "#6B7280",
                 },
-                ...sx
             }}
             MenuProps={{
                 PaperProps: {
@@ -34,8 +32,7 @@ const FontSelector = ({
                         backgroundColor: darkMode ? "#374151" : "white",
                         borderRadius: "7px",
                         border: darkMode ? "1px solid #4B5563" : "1px solid #D1D5DB",
-                        mt: `${menuOffsetY}px`,
-                        ...menuSx
+                        mt: "-60px",
                     },
                 },
                 MenuListProps: {
