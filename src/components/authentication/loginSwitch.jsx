@@ -1,5 +1,5 @@
 import React from 'react'
-import { cn } from '../cn/cn'
+import { cn } from '../cn'
 import ProfileSwitch from '../switch/switch'
 import { SunIcon } from '../../assets/svgs/sun'
 import { MoonIcon } from '../../assets/svgs/moon'

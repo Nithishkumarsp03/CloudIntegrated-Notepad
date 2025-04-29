@@ -184,7 +184,6 @@ const RenameModal = ({ open, onClose, onRename, placeholder = "Enter new file na
                 <ButtonComponent
                     btnText={heading == "Rename File" ? "Rename" : "Create Note"}
                     handleClick={handleRename}
-                    disabled={!newName.trim()}
                     styles={{
                         width: "120px",
                         height: "36px",

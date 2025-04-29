@@ -1,8 +1,8 @@
 import React from 'react';
-import { ButtonComponent } from '../button/button';
-import useEditorStore from '../../store/globalStore';
+import { ButtonComponent } from '../../button/button';
+import useEditorStore from '../../../store/globalStore';
 
-const EditorButton = ({ handleClick, btnText, classes, handlePressed, handlePressedChange }) => {
+const EditorButton = ({ handleClick, btnText, classes, handlePressed }) => {
   const { darkMode } = useEditorStore();
 
   const lightStyles = {
@@ -44,7 +44,6 @@ const EditorButton = ({ handleClick, btnText, classes, handlePressed, handlePres
   return (
     <div>
       <ButtonComponent
-        // isRipple={false}
         btnText={btnText}
         styles={darkMode ? darkStyles : lightStyles}
         handleClick={handleClick}

@@ -22,15 +22,49 @@ export const InputField = ({
   fullWidth = true,
   autofocus = false,
   inputProps,
-  endIcon = null
+  endIcon = null,
+  startIcon = null,
+  isSearchStyle = false, 
 }) => {
   const { darkMode } = useEditorStore();
+
+  const searchBarStyles = isSearchStyle ? {
+    '& .MuiInputBase-root': {
+      height: '40px',
+      padding: 0,
+      borderRadius: '24px', 
+      backgroundColor: darkMode ? '#1F2937' : 'white',
+      border: `1.5px solid ${darkMode ? '#374151' : '#E5E7EB'}`,
+      '&.Mui-focused': {
+        border: `1.5px solid ${darkMode ? '#8B5CF6' : '#3B82F6'}`,
+      }
+    },
+    '& .MuiInputBase-input': {
+      height: '40px',
+      padding: '6px 16px',
+      fontSize: '14px',
+      fontWeight: 400,
+      fontFamily: 'sans-serif',
+      color: darkMode ? 'rgb(209, 213, 219)' : 'rgb(55, 65, 81)',
+    },
+    '& .MuiOutlinedInput-notchedOutline': {
+      border: 'none', // Remove default MUI outline
+    },
+    '&:hover .MuiOutlinedInput-notchedOutline': {
+      border: 'none', // Remove hover outline
+    },
+    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+      border: 'none', // Remove focus outline (we're using the border of the root element instead)
+    },
+    // Shadow similar to the search bar
+    boxShadow: darkMode ? 'none' : '0 1px 3px rgba(0, 0, 0, 0.05)',
+  } : {};
 
   return (
     <TextField
       id={id}
       ref={ref}
-      label={label}
+      label={isSearchStyle ? undefined : label} // No floating label for search style
       name={name}
       autoFocus={autofocus}
       variant={variant}
@@ -46,8 +80,13 @@ export const InputField = ({
       onKeyDown={onKeyDown}
       inputProps={inputProps}
       InputProps={{
+        startAdornment: startIcon ? (
+          <InputAdornment position="start" sx={{ ml: isSearchStyle ? 1 : 0 }}>
+            {startIcon}
+          </InputAdornment>
+        ) : null,
         endAdornment: endIcon ? (
-          <InputAdornment position="end">
+          <InputAdornment position="end" sx={{ mr: isSearchStyle ? 1 : 0 }}>
             {endIcon}
           </InputAdornment>
         ) : null,
@@ -64,21 +103,22 @@ export const InputField = ({
         '& .MuiInputBase-root': {
           height: '40px',
           padding: 0,
-          paddingTop: "5px",
-          borderRadius: "6px",
+          paddingTop: isSearchStyle ? 0 : "5px",
+          borderRadius: isSearchStyle ? "24px" : "6px",
           backgroundColor: darkMode
             ? (disabled ? '#374151' : '#1F2937')
             : (disabled ? '#E5E7EB' : 'white'),
+          transition: 'all 0.2s ease-in-out',
         },
         '& .MuiInputBase-input': {
           height: '40px',
-          paddingLeft: '10px',
+          paddingLeft: isSearchStyle ? '16px' : '10px',
           margin: 0,
-          fontSize: '15px',
-          fontWeight: 500,
+          fontSize: isSearchStyle ? '14px' : '15px',
+          fontWeight: isSearchStyle ? 400 : 500,
           color: hasError
             ? (darkMode ? '#FCA5A5' : '#DC2626')
-            : (darkMode ? 'rgb(233, 213, 255)' : 'black'),
+            : (darkMode ? (isSearchStyle ? 'rgb(209, 213, 219)' : 'rgb(233, 213, 255)') : 'black'),
           // Enhanced autofill handling for all states
           '&:-webkit-autofill': {
             WebkitBoxShadow: darkMode ? '0 0 0 100px #1F2937 inset !important' : '0 0 0 100px #ffffff inset !important',
@@ -129,26 +169,32 @@ export const InputField = ({
             backgroundColor: 'transparent !important',
           },
           '& .MuiOutlinedInput-notchedOutline': {
-            borderWidth: '2px',
-            borderColor: disabled
+            borderWidth: isSearchStyle ? '0' : '2px',
+            borderColor: isSearchStyle
               ? 'transparent !important'
-              : hasError
-                ? (darkMode ? '#EF4444 !important' : '#EF4444 !important')
-                : (darkMode ? '#6D28D9' : '#0b6bcb')
+              : disabled
+                ? 'transparent !important'
+                : hasError
+                  ? (darkMode ? '#EF4444 !important' : '#EF4444 !important')
+                  : (darkMode ? '#6D28D9' : '#0b6bcb')
           },
           '&:hover .MuiOutlinedInput-notchedOutline': {
-            borderColor: disabled
+            borderColor: isSearchStyle
               ? 'transparent !important'
-              : hasError
-                ? (darkMode ? '#EF4444 !important' : '#EF4444 !important')
-                : (darkMode ? '#8B5CF6 !important' : '#1a73e8 !important')
+              : disabled
+                ? 'transparent !important'
+                : hasError
+                  ? (darkMode ? '#EF4444 !important' : '#EF4444 !important')
+                  : (darkMode ? '#8B5CF6 !important' : '#1a73e8 !important')
           },
           '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-            borderColor: disabled
+            borderColor: isSearchStyle
               ? 'transparent !important'
-              : hasError
-                ? (darkMode ? '#EF4444 !important' : '#EF4444 !important')
-                : (darkMode ? '#4C1D95 !important' : '#1557b0 !important')
+              : disabled
+                ? 'transparent !important'
+                : hasError
+                  ? (darkMode ? '#EF4444 !important' : '#EF4444 !important')
+                  : (darkMode ? '#4C1D95 !important' : '#1557b0 !important')
           }
         },
         '& .MuiFormHelperText-root': {
@@ -182,6 +228,33 @@ export const InputField = ({
           WebkitBoxShadow: darkMode ? '0 0 0 100px #1F2937 inset !important' : '0 0 0 100px #ffffff inset !important',
           WebkitTextFillColor: darkMode ? 'rgb(233, 213, 255) !important' : 'black !important',
         },
+
+        ...(isSearchStyle && {
+          '& .MuiInputBase-root': {
+            height: '40px',
+            padding: 0,
+            borderRadius: '24px',
+            border: `1.5px solid ${darkMode ? '#374151' : '#E5E7EB'}`,
+            backgroundColor: darkMode ? '#1F2937' : 'white',
+            '&:hover': {
+              borderColor: darkMode ? '#4B5563' : '#D1D5DB',
+            },
+            '&.Mui-focused': {
+              borderColor: darkMode ? '#8B5CF6' : '#3B82F6',
+              boxShadow: darkMode ? '0 0 0 1px rgba(139, 92, 246, 0.2)' : '0 0 0 2px rgba(59, 130, 246, 0.2)',
+            }
+          },
+          '& .MuiInputBase-input': {
+            height: '40px',
+            padding: '0 6px',
+            fontSize: '14px',
+            fontWeight: 400,
+            fontFamily: 'sans-serif',
+            color: darkMode ? 'rgb(209, 213, 219)' : 'rgb(55, 65, 81)',
+          },
+          boxShadow: darkMode ? 'none' : '0 1px 3px rgba(0, 0, 0, 0.05)',
+        }),
+
         ...styles
       }}
     />

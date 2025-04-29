@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Button, TextField } from "@mui/material";
 import useEditorStore from "../../store/globalStore";
+import { InputField } from '../inputFields/inputField';
 
-const LinkModal = ({ isOpen, onClose, onInsertLink,content,isContent }) => {
+const LinkModal = ({ isOpen, onClose, onInsertLink, content, isContent }) => {
     const { darkMode } = useEditorStore();
     const [linkText, setLinkText] = useState('');
     const [linkUrl, setLinkUrl] = useState('https://');
@@ -12,7 +13,7 @@ const LinkModal = ({ isOpen, onClose, onInsertLink,content,isContent }) => {
         if (linkUrl) {
             onInsertLink({
                 url: linkUrl,
-                text:linkText
+                text: linkText
             });
             onClose();
         }
@@ -51,32 +52,10 @@ const LinkModal = ({ isOpen, onClose, onInsertLink,content,isContent }) => {
                             >
                                 Link Text (optional)
                             </label>
-                            <TextField
-                                autoFocus
-                                id="link-text"
+                            <InputField
                                 type="text"
                                 value={linkText}
                                 onChange={(e) => setLinkText(e.target.value)}
-                                fullWidth
-                                size="small"
-                                sx={{
-                                    '& .MuiInputBase-root': {
-                                        color: darkMode ? "#E5E7EB" : "#1F2937",
-                                        backgroundColor: darkMode ? "#374151" : "white",
-                                    },
-                                    '& .MuiOutlinedInput-root': {
-                                        '& .MuiOutlinedInput-notchedOutline': {
-                                            borderWidth: '2px',
-                                            borderColor: darkMode ? '#6D28D9' : '#0b6bcb'
-                                        },
-                                        '&:hover .MuiOutlinedInput-notchedOutline': {
-                                            borderColor: darkMode ? '#8B5CF6 !important' : '#1a73e8 !important'
-                                        },
-                                        '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                            borderColor: darkMode ? '#4C1D95 !important' : '#1557b0 !important'
-                                        }
-                                    }
-                                }}
                                 placeholder="Display text"
                             />
                         </div>
@@ -88,33 +67,11 @@ const LinkModal = ({ isOpen, onClose, onInsertLink,content,isContent }) => {
                             >
                                 URL*
                             </label>
-                            <TextField
-                                id="link-url"
+                            <InputField
+                                placeholder="https://example.com"
                                 type="url"
                                 value={linkUrl}
                                 onChange={(e) => setLinkUrl(e.target.value)}
-                                fullWidth
-                                size="small"
-                                required
-                                sx={{
-                                    '& .MuiInputBase-root': {
-                                        color: darkMode ? "#E5E7EB" : "#1F2937",
-                                        backgroundColor: darkMode ? "#374151" : "white",
-                                    },
-                                    '& .MuiOutlinedInput-root': {
-                                        '& .MuiOutlinedInput-notchedOutline': {
-                                            borderWidth: '2px',
-                                            borderColor: darkMode ? '#6D28D9' : '#0b6bcb'
-                                        },
-                                        '&:hover .MuiOutlinedInput-notchedOutline': {
-                                            borderColor: darkMode ? '#8B5CF6 !important' : '#1a73e8 !important'
-                                        },
-                                        '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                            borderColor: darkMode ? '#4C1D95 !important' : '#1557b0 !important'
-                                        }
-                                    }
-                                }}
-                                placeholder="https://example.com"
                             />
                         </div>
 
@@ -149,10 +106,10 @@ const LinkModal = ({ isOpen, onClose, onInsertLink,content,isContent }) => {
             </>
                 :
                 <>
-                {content}
+                    {content}
                 </>
             }
-            </div>
+        </div>
     );
 };
 

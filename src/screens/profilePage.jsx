@@ -14,9 +14,9 @@ import {
 import { Check, Notifications, Security, Edit, AddAPhoto } from '@mui/icons-material';
 import useEditorStore from '../store/globalStore';
 import NotePad from "../assets/svgs/notePad";
-import { cn } from '../components/cn/cn';
+import { cn } from '../components/cn';
 import ProfileSwitch from '../components/switch/switch';
-import { InputField } from '../components/inputFiels/inputField';
+import { InputField } from '../components/inputFields/inputField';
 import BackArrow from '../assets/svgs/backArrow';
 import { SunIcon } from '../assets/svgs/sun';
 import { MoonIcon } from '../assets/svgs/moon';
@@ -306,17 +306,8 @@ const ProfilePage = () => {
                                     value={tempData.email}
                                     onChange={handleProfileChange}
                                 />
-                                <InputField
-                                    name="phone"
-                                    disabled={edit}
-                                    darkMode={darkMode}
-                                    styles={{ '& .MuiInputBase-root': { height: "55px" } }}
-                                    label="Phone"
-                                    value={tempData.phone}
-                                    onChange={handleProfileChange}
-                                />
 
-                                <FormControl fullWidth variant="outlined">
+                                <FormControl fullWidth variant="outlined" >
                                     <InputLabel
                                         id="gender-label"
                                         sx={{
@@ -335,6 +326,7 @@ const ProfilePage = () => {
                                     </InputLabel>
 
                                     <Select
+                                        fullWidth
                                         name="gender"
                                         disabled={edit}
                                         labelId="gender-label"
@@ -342,6 +334,7 @@ const ProfilePage = () => {
                                         onChange={handleProfileChange}
                                         label="Gender"
                                         sx={{
+                                            width:"100%",
                                             '& .MuiOutlinedInput-notchedOutline': {
                                                 border: edit ? 'none' : '2px solid',
                                                 backgroundColor: "transparent !important",

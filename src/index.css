@@ -47,3 +47,33 @@
 pre {
   @apply p-2 bg-black text-white
 }
+
+strong {
+  font-family: inherit !important;
+}
+
+u, s, em, a {
+  font-family: inherit !important;
+}
+
+u {
+  font-family: inherit !important;
+  text-decoration: underline;
+}
+
+s {
+  font-family: inherit !important;
+  text-decoration: line-through;
+}
+
+em {
+  font-family: inherit !important;
+  font-style: italic;
+}
+
+a {
+  font-family: inherit !important;
+  color: #3b82f6; 
+  text-decoration: underline;
+  font-weight: 500;
+}

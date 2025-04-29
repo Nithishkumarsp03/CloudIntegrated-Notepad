@@ -20,7 +20,7 @@ import {
   CheckCircle,
   Security
 } from '@mui/icons-material';
-import { cn } from '../components/cn/cn';
+import { cn } from '../components/cn';
 import ProfileSwitch from '../components/switch/switch';
 import { SunIcon } from '../assets/svgs/sun';
 import { ButtonComponent } from '../components/button/button';
@@ -34,7 +34,7 @@ import { logo } from '../assets';
 const OnboardingFlow = () => {
   const navigate = useNavigate();
   const { darkMode, setDarkMode } = useEditorStore();
-  const { getOnBoardingFlow, loaders, onChange, register, resetAll, twoFa } = useLoginStore();
+  const { getOnBoardingFlow, loaders, onChange, authentication, twoFa } = useLoginStore();
   const [step, setStep] = useState(0);
   const [selectedPersona, setSelectedPersona] = useState(null);
   const [gender, setGender] = useState('');
@@ -122,6 +122,7 @@ const OnboardingFlow = () => {
   ];
 
   const handlePersonaSelect = (persona) => {
+    localStorage.setItem("categoryId", persona.id);
     onChange("categoryId", persona.id);
     setSelectedPersona(persona);
   };
@@ -130,12 +131,11 @@ const OnboardingFlow = () => {
     if (step < steps.length - 1) {
       setStep(step + 1);
     } else {
-      const response = await register();
+      const response = await authentication("register");
       if (response.status) {
         navigate('/notes');
       }
       else {
-        console.log(response)
         setSnackBar({
           state: true,
           message: response?.message

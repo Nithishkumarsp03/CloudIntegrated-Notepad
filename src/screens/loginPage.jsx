@@ -6,7 +6,7 @@ import {
   useMediaQuery,
 } from '@mui/material';
 import useEditorStore from '../store/globalStore';
-import { cn } from '../components/cn/cn';
+import { cn } from '../components/cn';
 import { useLoginStore } from '../store/loginStore';
 import Snackbar from '../components/snackBar/snackBar';
 import LoginForm from '../components/authentication/loginForm';
@@ -14,11 +14,13 @@ import SignupForm from '../components/authentication/signupForm';
 import VideoComponent from '../components/authentication/videoComponent';
 import LoginSwitch from '../components/authentication/loginSwitch';
 import LoginHeader from '../components/authentication/loginHeader';
+import { useNavbarStore } from '../store/navbarStore';
 
 const LoginPage = () => {
   const navigate = useNavigate();
   const { darkMode, setDarkMode } = useEditorStore();
   const { authentication, firstLogin, loaders, resetAll } = useLoginStore();
+  const { getNotes } = useNavbarStore();
   const [snackBar, setSnackBar] = useState({
     variant: "",
     state: false,
@@ -72,6 +74,10 @@ const LoginPage = () => {
   const handleToggleConfirmPasswordVisibility = () => {
     updateFormState('showConfirmPassword', !formState.showConfirmPassword);
   };
+
+  useEffect(() => {
+    resetAll();
+  }, []);
 
   const switchAuthMode = (e) => {
     e.preventDefault();
@@ -184,7 +190,8 @@ const LoginPage = () => {
     if (authType === 'login') {
       let response;
       if (!firstLogin) {
-        response = await authentication("login", formData.loginEmail, formData.loginPass);
+        await authentication("set", formData.loginEmail, formData.loginPass, formData.loginName);
+        response = await authentication("login");
         if (!response.state && response.message) {
           setSnackBar({
             variant: response.state ? "success" : "error",
@@ -197,12 +204,14 @@ const LoginPage = () => {
           navigate('/twoStepAuth');
         }
         else if (response?.state) {
-          navigate('/note-pad/1');
+          const response = await getNotes();
+          const uuid = response.data.notes[0].uuid;
+          navigate(`/note-pad/${uuid}`);
         }
       }
     }
     else {
-      await authentication("register", formData.loginEmail, formData.loginPass, formData.loginName);
+      await authentication("set", formData.loginEmail, formData.loginPass, formData.loginName);
       navigate('/onBoarding-flow');
     }
   }
@@ -243,13 +252,6 @@ const LoginPage = () => {
       }
     }
   };
-
-  useEffect(() => {
-    localStorage.removeItem("userName");
-    localStorage.removeItem("email");
-    localStorage.removeItem("gender");
-    localStorage.removeItem("password");
-  }, []);
 
   return (
     <Box className="h-screen w-screen flex flex-col md:flex-row overflow-hidden">

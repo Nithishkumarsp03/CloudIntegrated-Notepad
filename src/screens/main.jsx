@@ -1,18 +1,15 @@
 import React, { useState, useEffect } from "react";
-import Navbar from "../components/navbar/navbar";
-import EditorToolKit from "../components/editor/editorToolKit";
+import Navbar from "../components/navbar";
 import { useMediaQuery } from "@mui/material";
 import useEditorStore from "../store/globalStore";
-import { cn } from "../components/cn/cn";
-import Appbar from "../components/appbar/appbar";
-import Tiptap from "../components/editor/textEditor";
+import { cn } from "../components/cn";
+import Texteditor from "../components/editor/textEditor";
+import Appbar from "../components/appbar";
 
 const Main = () => {
-  const [active, setActive] = useState('');
-  const [fontStyle, setFontStyle] = useState('');
   const isMobile = useMediaQuery('(max-width: 768px)');
-  const { isSidebarOpen, data, darkMode } = useEditorStore();
-  const [color, setColor] = useState('#000000');
+  const { isSidebarOpen } = useEditorStore();
+  const [noteId, setNoteId] = useState('');
 
   useEffect(() => {
     if (isMobile) {
@@ -20,45 +17,20 @@ const Main = () => {
     }
   }, [isMobile]);
 
+
   return (
     <div className="flex flex-col h-screen dark:bg-gray-900 w-full overflow-hidden relative">
-      <Appbar />
+      <Appbar noteId={noteId} />
       <div className="flex flex-1 overflow-hidden relative">
+        <Navbar handleId={setNoteId} />
         <div className={cn(
-          "h-full transition-all duration-300",
+          "h-full p-4 pb-2 transition-all w-full duration-300 ease-in-out",
           {
-            "fixed inset-y-0 left-0 z-20": isMobile,
-            "relative": !isMobile,
-            "translate-x-0": !isMobile || !isSidebarOpen,
-            "-translate-x-full": isMobile && isSidebarOpen
+            'w-[1258px]' : !isSidebarOpen
           }
         )}>
-          <Navbar />
+          <Texteditor noteId={noteId} />
         </div>
-
-        <div className={cn(
-          "flex flex-col flex-1 p-3.5 gap-4 transition-all duration-300",
-          {
-            "ml-0": isMobile || isSidebarOpen,
-            "lg:ml-[0px]": !isMobile && !isSidebarOpen,
-            "w-full": isMobile,
-            "w-[calc(100%-280px)]": !isMobile && !isSidebarOpen
-          }
-        )}>
-          <Tiptap action={active} fontStyle={fontStyle} color={color} />
-          <EditorToolKit
-            handleClick={e => setActive(e)}
-            fontStyle={e => setFontStyle(e)}
-            handleColorClick={e => setColor(e)}
-          />
-        </div>
-
-        {isMobile && !isSidebarOpen && (
-          <div
-            className="fixed inset-0 bg-black bg-opacity-50 z-10 lg:hidden"
-            onClick={() => useEditorStore.setState({ isSidebarOpen: true })}
-          />
-        )}
       </div>
     </div>
   );

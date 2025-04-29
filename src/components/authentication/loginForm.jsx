@@ -10,7 +10,7 @@ import {
     VisibilityOff,
     Login,
 } from '@mui/icons-material';
-import { InputField } from '../inputFiels/inputField';
+import { InputField } from '../inputFields/inputField';
 import { ButtonComponent } from '../button/button';
 import LoginButton from './loginButton';
 

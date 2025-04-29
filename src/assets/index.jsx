@@ -13,6 +13,11 @@ import TextColor from './svgs/textColor';
 import Italic from './svgs/italics';
 import Code from './svgs/code';
 import logo from './logo.png';
+import Customer from './svgs/customerIcon';
+import {SaveIcon} from './svgs/save';
+import {ShareIcon} from './svgs/share';
+import { MoonIcon } from './svgs/moon';
+import { SunIcon } from './svgs/sun';
 
 export {
   Bold,
@@ -29,5 +34,10 @@ export {
   TextColor,
   Italic,
   Code,
-  logo
+  logo,
+  Customer,
+  SaveIcon,
+  ShareIcon,
+  MoonIcon,
+  SunIcon
 };
