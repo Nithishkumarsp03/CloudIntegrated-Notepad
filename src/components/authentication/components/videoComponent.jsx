@@ -1,10 +1,10 @@
 import React from 'react';
 import { Box, Typography } from '@mui/material';
-import { cn } from '../cn';
-import video from '../../assets/noteVideo.mp4';
-import logo from '../../assets/logo.png';
+import { cn } from '../../../components';
+import video from '../../../assets/noteVideo.mp4';
+import logo from '../../../assets/logo.png';
 
-const VideoComponent = ({
+export const VideoComponent = ({
     darkMode,
     isLogin,
     isMobile,
@@ -146,4 +146,3 @@ const VideoComponent = ({
     );
 };
 
-export default VideoComponent;

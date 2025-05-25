@@ -55,7 +55,7 @@ const StyledSwitch = styled(Switch)(({ theme, darkmode }) => ({
     },
 }));
 
-const ProfileSwitch = ({ checked, onChange, ...props }) => {
+export const ProfileSwitch = ({ checked, onChange, ...props }) => {
     const { darkMode } = useEditorStore();
 
     return (
@@ -70,4 +70,3 @@ const ProfileSwitch = ({ checked, onChange, ...props }) => {
     );
 };
 
-export default ProfileSwitch;

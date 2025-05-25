@@ -12,21 +12,19 @@ import {
     FormControlLabel,
     Radio,
     Divider,
-    Tooltip
 } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
 import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
 import DownloadOutlinedIcon from '@mui/icons-material/DownloadOutlined';
-import useEditorStore from "../../store/globalStore";
-import { ButtonComponent } from '../button/button';
-import { InputField } from '../inputFields/inputField';
+import useEditorStore from '../../../store/globalStore';
+import { ButtonComponent } from '../../../components'; 
 
 const SAVE_OPTIONS = {
     ONLINE: 'online',
     DOWNLOAD: 'download'
 };
 
-const SaveModal = ({ isOpen, onClose, onSave, onSaveAs, currentFileName }) => {
+export const SaveModal = ({ isOpen, onClose, onSave, onSaveAs, currentFileName }) => {
     const { darkMode } = useEditorStore();
     const theme = useTheme();
     const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
@@ -345,4 +343,3 @@ const SaveModal = ({ isOpen, onClose, onSave, onSaveAs, currentFileName }) => {
     );
 };
 
-export default SaveModal;

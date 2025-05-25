@@ -1,15 +1,10 @@
 import React from 'react';
 import { Select, MenuItem } from '@mui/material';
 
-const FontSelector = ({
+export const FontSelector = ({
     value,
     onChange,
     fontOptions,
-    sx = {},
-    menuSx = {},
-    menuOffsetY = -60,
-    minWidth = "40",
-    maxWidth = "40"
 }) => {
     const darkMode = document.documentElement.classList.contains("dark");
     return (
@@ -68,4 +63,3 @@ const FontSelector = ({
     );
 };
 
-export default FontSelector;

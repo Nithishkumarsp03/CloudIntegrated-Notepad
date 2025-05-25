@@ -21,6 +21,7 @@ export const AuthRegister = async (userName, email, password, twoFa, gender, cat
         localStorage.setItem("userName", userData?.name);
         localStorage.setItem("gender", userData?.gender);
         localStorage.setItem("loginId", userData?.id);
+        localStorage.setItem("isUserLoggedIn", true);
         localStorage.setItem("token", token);
         localStorage.setItem("twoFa", `${twoFa}`);
         onChange("twoFa", `${twoFa}`);

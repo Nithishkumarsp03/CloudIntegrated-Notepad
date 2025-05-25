@@ -1,17 +1,12 @@
 import React, { useState } from "react";
 import { AppBar, Toolbar, useMediaQuery } from "@mui/material";
-import LeftSection from "./components/leftSection";
-import RightSection from "./components/rightSection";
-import MobileMenu from "./components/mobileMenu";
-import CustomerMenu from "./components/customerMenu";
-import ShareModal from '../modal/share';
-import SaveModal from '../modal/saveModal';
 import useEditorStore from "../../store/globalStore";
 import { logo } from '../../assets';
-import { cn } from "../cn";
-import { useTextEditorStore } from "../../store/textEditorStore";
+import { cn, ShareModal, SaveModal } from "../../components";
+import { useTextEditorStore } from "../../store/textEditorStore"; 
+import { CustomerMenu, LeftSection, MobileMenu, RightSection } from "./components";
 
-const Appbar = ({ noteId }) => {
+export const Appbar = ({ noteId }) => {
     const [customerAnchorEl, setCustomerAnchorEl] = useState(null);
     const [mobileMenuAnchorEl, setMobileMenuAnchorEl] = useState(null);
     const [saveModal, setSaveModal] = useState(false);
@@ -133,4 +128,3 @@ const Appbar = ({ noteId }) => {
     );
 };
 
-export default Appbar;

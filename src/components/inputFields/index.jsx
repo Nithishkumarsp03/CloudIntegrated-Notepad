@@ -24,47 +24,14 @@ export const InputField = ({
   inputProps,
   endIcon = null,
   startIcon = null,
-  isSearchStyle = false, 
+  isSearchStyle = false,
 }) => {
   const { darkMode } = useEditorStore();
-
-  const searchBarStyles = isSearchStyle ? {
-    '& .MuiInputBase-root': {
-      height: '40px',
-      padding: 0,
-      borderRadius: '24px', 
-      backgroundColor: darkMode ? '#1F2937' : 'white',
-      border: `1.5px solid ${darkMode ? '#374151' : '#E5E7EB'}`,
-      '&.Mui-focused': {
-        border: `1.5px solid ${darkMode ? '#8B5CF6' : '#3B82F6'}`,
-      }
-    },
-    '& .MuiInputBase-input': {
-      height: '40px',
-      padding: '6px 16px',
-      fontSize: '14px',
-      fontWeight: 400,
-      fontFamily: 'sans-serif',
-      color: darkMode ? 'rgb(209, 213, 219)' : 'rgb(55, 65, 81)',
-    },
-    '& .MuiOutlinedInput-notchedOutline': {
-      border: 'none', // Remove default MUI outline
-    },
-    '&:hover .MuiOutlinedInput-notchedOutline': {
-      border: 'none', // Remove hover outline
-    },
-    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-      border: 'none', // Remove focus outline (we're using the border of the root element instead)
-    },
-    // Shadow similar to the search bar
-    boxShadow: darkMode ? 'none' : '0 1px 3px rgba(0, 0, 0, 0.05)',
-  } : {};
-
   return (
     <TextField
       id={id}
       ref={ref}
-      label={isSearchStyle ? undefined : label} // No floating label for search style
+      label={isSearchStyle ? undefined : label}
       name={name}
       autoFocus={autofocus}
       variant={variant}
@@ -90,7 +57,6 @@ export const InputField = ({
             {endIcon}
           </InputAdornment>
         ) : null,
-        // Adding global style for autofill
         sx: {
           "&:-webkit-autofill": {
             WebkitBoxShadow: darkMode ? '0 0 0 100px #1F2937 inset !important' : '0 0 0 100px #ffffff inset !important',
@@ -119,7 +85,6 @@ export const InputField = ({
           color: hasError
             ? (darkMode ? '#FCA5A5' : '#DC2626')
             : (darkMode ? (isSearchStyle ? 'rgb(209, 213, 219)' : 'rgb(233, 213, 255)') : 'black'),
-          // Enhanced autofill handling for all states
           '&:-webkit-autofill': {
             WebkitBoxShadow: darkMode ? '0 0 0 100px #1F2937 inset !important' : '0 0 0 100px #ffffff inset !important',
             WebkitTextFillColor: darkMode ? 'rgb(233, 213, 255) !important' : 'black !important',
@@ -163,7 +128,6 @@ export const InputField = ({
             : (darkMode ? 'rgb(233, 213, 255)' : '#0b6bcb')
         },
         '& .MuiOutlinedInput-root': {
-          // Add autofill handling at this level as well
           '&:-webkit-autofill': {
             WebkitBoxShadow: darkMode ? '0 0 0 100px #1F2937 inset !important' : '0 0 0 100px #ffffff inset !important',
             backgroundColor: 'transparent !important',

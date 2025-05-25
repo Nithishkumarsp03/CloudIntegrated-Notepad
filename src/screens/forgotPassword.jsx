@@ -2,13 +2,14 @@ import React, { useState, useEffect, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowBack } from "@mui/icons-material";
 import useEditorStore from "../store/globalStore";
-import { InputField } from "../components/inputFields/inputField";
+import { InputField } from "../components/inputFields";
 import { cn } from "../components/cn";
 import NotePad from "../assets/svgs/notePad";
-import ProfileSwitch from "../components/switch/switch";
+import { ProfileSwitch } from "../components";
 import { SunIcon } from "../assets/svgs/sun";
 import { MoonIcon } from "../assets/svgs/moon";
-import { ButtonComponent } from "../components/button/button";
+import { ButtonComponent } from "../components/button";
+import { useLoginStore } from "../store/loginStore";
 
 const ForgotPassword = () => {
     const [email, setEmail] = useState("");

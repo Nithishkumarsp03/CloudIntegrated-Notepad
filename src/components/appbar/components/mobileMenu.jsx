@@ -5,7 +5,7 @@ import { MoonIcon } from "../../../assets/svgs/moon";
 import { ShareIcon } from "../../../assets/svgs/share";
 import { SaveIcon } from '../../../assets/svgs/save';
 
-const MobileMenu = ({
+export const MobileMenu = ({
     anchorEl,
     isOpen,
     onClose,
@@ -60,5 +60,3 @@ const MobileMenu = ({
         </Menu>
     );
 };
-
-export default MobileMenu;

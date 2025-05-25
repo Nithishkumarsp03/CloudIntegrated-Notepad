@@ -1,10 +1,11 @@
-import React from 'react'
-import { cn } from '../cn'
-import ProfileSwitch from '../switch/switch'
-import { SunIcon } from '../../assets/svgs/sun'
-import { MoonIcon } from '../../assets/svgs/moon'
 
-const LoginSwitch = ({ isMobile, toggleLeftPanel, setDarkMode, darkMode }) => {
+import React from 'react';
+import { cn } from '../../cn';
+import { ProfileSwitch } from '../../switch';
+import { SunIcon } from '../../../assets/svgs/sun';
+import { MoonIcon } from '../../../assets/svgs/moon';
+
+export const LoginSwitch = ({ isMobile, toggleLeftPanel, setDarkMode, darkMode }) => {
     return (
         <div>
             {isMobile && (
@@ -30,4 +31,3 @@ const LoginSwitch = ({ isMobile, toggleLeftPanel, setDarkMode, darkMode }) => {
     )
 }
 
-export default LoginSwitch;

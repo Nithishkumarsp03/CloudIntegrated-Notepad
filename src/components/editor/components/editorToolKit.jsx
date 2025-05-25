@@ -14,14 +14,12 @@ import {
   OrderedList,
   Code
 } from '../../../assets';
-import LinkModal from '../../modal/modal';
 import EditorButton from './editorButton';
-import CustomSelect from '../../select/select';
 import { fontFamilyOptions, fontSizes } from '../../../utils';
-import FontSelector from '../../select/fontSelect';
 import { UploadFile } from '@mui/icons-material';
 import ColorPopover from '../extensions/textColor';
 import  useEditorStore  from '../../../store/globalStore';
+import { LinkModal, CustomSelect, FontSelector } from '../../../components';
 
 const EditorToolKit = ({ editor }) => {
   const { darkMode } = useEditorStore();

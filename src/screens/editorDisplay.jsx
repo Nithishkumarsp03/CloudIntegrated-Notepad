@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import Texteditor from '../components/editor/textEditor';
-import { ButtonComponent } from '../components/button/button';
-import ProfileSwitch from '../components/switch/switch';
+import Texteditor from '../components/editor';
+import { ButtonComponent } from '../components/button';
+import {
+    ProfileSwitch
+ } from '../components';
 import useEditorStore from '../store/globalStore';
 
 const TextEditorDisplay = () => {
@@ -30,7 +32,7 @@ const TextEditorDisplay = () => {
     }, []);
 
     const noScrollbarStyles = {
-        scrollbarWidth: 'none', 
+        scrollbarWidth: 'none',
         msOverflowStyle: 'none',
     };
 
@@ -69,11 +71,11 @@ const TextEditorDisplay = () => {
 
                 {isEditing ? (
                     <div className='h-full'>
-                    <Texteditor
-                        content={editorContent}
-                        onChange={handleContentChange}
+                        <Texteditor
+                            content={editorContent}
+                            onChange={handleContentChange}
                         />
-                        </div>
+                    </div>
                 ) : (
                     <div
                         className={`border rounded-lg p-6 shadow-sm overflow-y-auto ${darkMode ? 'border-gray-700 bg-gray-800 text-white' : 'border-gray-200 bg-white text-gray-800'}`}

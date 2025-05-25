@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { Button, TextField } from "@mui/material";
-import useEditorStore from "../../store/globalStore";
-import { InputField } from '../inputFields/inputField';
+import { Button } from "@mui/material";
+import useEditorStore from '../../../store/globalStore';
+import { InputField } from '../../../components';
 
-const LinkModal = ({ isOpen, onClose, onInsertLink, content, isContent }) => {
+export const LinkModal = ({ isOpen, onClose, onInsertLink, content, isContent }) => {
     const { darkMode } = useEditorStore();
     const [linkText, setLinkText] = useState('');
     const [linkUrl, setLinkUrl] = useState('https://');
@@ -113,4 +113,3 @@ const LinkModal = ({ isOpen, onClose, onInsertLink, content, isContent }) => {
     );
 };
 
-export default LinkModal;

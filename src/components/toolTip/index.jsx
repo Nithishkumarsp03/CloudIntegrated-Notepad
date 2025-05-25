@@ -1,7 +1,7 @@
 import * as React from 'react';
 import Tooltip from '@mui/material/Tooltip';
 
-const StyledTooltip = ({ title, children, display }) => {
+export const StyledTooltip = ({ title, children, display }) => {
     return (
         <Tooltip
             title={
@@ -36,4 +36,3 @@ const StyledTooltip = ({ title, children, display }) => {
     );
 };
 
-export default StyledTooltip;

@@ -4,7 +4,7 @@ import { AccountCircle, MoreVert } from "@mui/icons-material";
 import { Customer, SaveIcon, ShareIcon, MoonIcon, SunIcon } from "../../../assets";
 import { useNavigate } from "react-router-dom";
 
-const RightSection = ({
+export const RightSection = ({
     isMobile,
     darkMode,
     toggleDarkMode,
@@ -122,5 +122,3 @@ const DesktopButtons = ({
         </IconButton>
     </>
 );
-
-export default RightSection;

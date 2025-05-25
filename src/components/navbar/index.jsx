@@ -1,21 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { useMediaQuery } from "@mui/material";
-import { cn } from "../cn";
 import useEditorStore from "../../store/globalStore";
 import { useNavbarStore } from "../../store/navbarStore";
 import MobileHeader from "./components/mobileHeader";
 import NoteActions from "./components/noteActions";
 import NotesList from "./components/notesList";
 import NotesMenu from "./components/notesMenu";
-import RenameModal from '../modal/renameModel';
-import Snackbar from "../snackBar/snackBar";
 import { useNavigate } from "react-router-dom";
-import { useTextEditorStore } from "../../store/textEditorStore";
+import { RenameModal, Snackbar, cn } from "../../components";
 
-const Navbar = ({handleId}) => {
+export const Navbar = () => {
     const [id, setId] = useState();
     const { isSidebarOpen, setSearch } = useEditorStore();
-    const { getNotes, data, loaders, addNote, editNote, deleteNote, } = useNavbarStore();
+    const { getNotes, data, loaders, addNote, editNote, deleteNote, searchquery, onNavbarChange } = useNavbarStore();
     const [localSearch, setLocalSearch] = useState("");
     const [filter, setFilter] = useState(data);
     const [anchorEl, setAnchorEl] = useState(null);
@@ -30,19 +27,14 @@ const Navbar = ({handleId}) => {
         variant: 'info'
     });
 
-    useEffect(() => {
-        getNotes();
-    }, []);
+    const filteredData = filter.filter(item =>
+        item.note_name?.toLowerCase().includes(searchquery.toLowerCase())
+    );
 
     useEffect(() => {
-            if (data && data.length) {
-                const uuid = data[0]?.uuid;
-                const noteId = data[0]?.id;
-                setFilter(data);
-                setId(uuid);
-                handleId(JSON.stringify(noteId));
-            }
-    }, [data]);
+        onNavbarChange("noteId", JSON.stringify(data[0]?.id))
+        setId(data[0]?.uuid)
+     }, []);
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -68,7 +60,7 @@ const Navbar = ({handleId}) => {
     };
 
     const handleNavigate = (uuid, noteId) => {
-        handleId(JSON.stringify(noteId));
+        onNavbarChange("noteId",JSON.stringify(noteId));
         if (uuid) {
             navigate(`/note-pad/${uuid}`);
         }
@@ -161,8 +153,7 @@ const Navbar = ({handleId}) => {
                 )}
             >
                 <div className="h-full flex flex-col">
-
-                    {isMobile && !isSidebarOpen && (
+                    {isMobile && !isSidebarOpen && (    
                         <MobileHeader
                             localSearch={localSearch}
                             setLocalSearch={(e) => setLocalSearch(e)}
@@ -170,12 +161,13 @@ const Navbar = ({handleId}) => {
                     )}
 
                     <NoteActions
+                        loading = {loaders.isAddLoading}
                         setNewNote={setNewNote}
                         newNote={newNote}
                     />
 
                     <NotesList
-                        filter={filter}
+                        filter={filteredData}
                         handleuuid={handleNavigate}
                         id={id}
                         setId={setId}
@@ -223,4 +215,3 @@ const Navbar = ({handleId}) => {
     );
 };
 
-export default Navbar;

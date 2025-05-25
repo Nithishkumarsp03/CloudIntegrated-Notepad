@@ -21,12 +21,11 @@ import {
     Telegram,
     Reddit
 } from '@mui/icons-material';
-import useEditorStore from "../../store/globalStore";
-import { ButtonComponent } from '../button/button';
-import { CopyIcon } from '../../assets/svgs/copy';
-import { InputField } from '../inputFields/inputField';
+import useEditorStore from "../../../store/globalStore";
+import { CopyIcon } from '../../../assets/svgs/copy';
+import { InputField, ButtonComponent } from '../../../components';
 
-const ShareModal = ({ isOpen, onClose, shareLink = "https://in.search.yahoo.com/search?fr=mcafee&type=E211IN1589G0&p=link+notepad" }) => {
+export const ShareModal = ({ isOpen, onClose, shareLink = "https://in.search.yahoo.com/search?fr=mcafee&type=E211IN1589G0&p=link+notepad" }) => {
     const { darkMode } = useEditorStore();
     const theme = useTheme();
     const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
@@ -259,4 +258,3 @@ const ShareModal = ({ isOpen, onClose, shareLink = "https://in.search.yahoo.com/
     );
 };
 
-export default ShareModal;
