@@ -2,7 +2,7 @@
     import { useLoginStore } from "../../store/loginStore";
 
     export const AuthLogin = async (email, password) => {
-        const { onChange, onChangeLoaders } = useLoginStore.getState(); 
+        const { onChange, onChangeLoaders, persistStorage } = useLoginStore.getState(); 
         try {
             onChangeLoaders("isLoginLoading", true);
             const response = await axios.post("https://backend-notepad.vercel.app/notepad/v1/api/auth/login", {
@@ -10,13 +10,9 @@
                 password
             });
             if (response?.data?.["two-fa"]) {
-                localStorage.setItem("twoStepToken", response?.data?.["two-fa"]);
-                localStorage.setItem("otpToken", response?.data?.otpToken);
-                localStorage.setItem("otpResponseReceived", "true");
-                localStorage.setItem("twoFa", "true");
-                onChange("twoFa", "true");
-                onChange("twoStepToken", response?.data?.["two-fa"]);
-                onChange("otpToken", response?.data?.otpToken);
+                persistStorage("twoStepToken", response?.data?.["two-fa"]);
+                persistStorage("otpToken", response?.data?.otpToken);
+                persistStorage("twoFa", "true");
                 return {
                     state: false,
                     twoFa: true,
@@ -25,19 +21,13 @@
             } else {
                 const token = response?.data?.token;
                 const userData = response?.data?.userData;
-                localStorage.setItem("token", response?.data?.token);
-                localStorage.setItem("userName", userData?.name);
-                localStorage.setItem("gender", userData?.gender);
-                localStorage.setItem("loginId", userData?.id);
-                localStorage.setItem("token", token);
-                localStorage.setItem("twoFa", "false");
-                onChange("twoFa", "false");
-                onChange("token", response?.data?.token);
-                onChange("userName", userData?.name);
-                onChange("gender", userData?.gender);
-                onChange("loginId", userData?.id);
-                onChange("token", token);
-                onChange("isUserLoggedIn", true);
+                persistStorage("token", response?.data?.token);
+                persistStorage("userName", userData?.name);
+                persistStorage("loginId", userData?.id);
+                persistStorage("gender", userData?.gender);
+                persistStorage("token", token);
+                persistStorage("isUserLoggedIn", true);
+                persistStorage("twoFa", "false");
                 return {
                     state: true,
                     message: response?.data?.message,

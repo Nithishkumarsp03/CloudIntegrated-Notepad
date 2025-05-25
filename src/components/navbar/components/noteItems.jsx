@@ -1,8 +1,7 @@
 import React from "react";
-import { cn } from "../../cn";
 import NotePad from '../../../assets/svgs/notePad';
 import { BsThreeDots } from "react-icons/bs";
-import StyledTooltip from "../../toolTip/tooltop";
+import { StyledTooltip, cn } from "../../../components";
 
 const NoteItem = ({ data, isActive, isMobile, onClick, onMenuClick }) => {
     return (

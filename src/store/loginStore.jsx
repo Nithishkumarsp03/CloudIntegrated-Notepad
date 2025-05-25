@@ -3,16 +3,20 @@ import { create } from "zustand";
 import { Authentication, OnboardingFlow, TwoStepAuth } from "../api";
 
 export const useLoginStore = create((set, get) => ({
-    isUserLoggedIn: false,
+    isUserLoggedIn: localStorage.getItem("isUserLoggedIn"),
     userName: localStorage.getItem("userName"),
     email: localStorage.getItem("email"),
     gender: localStorage.getItem("gender"),
     password: localStorage.getItem("password"),
     twoFa: localStorage.getItem("twoFa"),
-    notification: true,
+    notification: false,
     categoryId: localStorage.getItem("categoryId"),
     onBoardingData: [],
     firstLogin: false,
+    loginId: localStorage.getItem("loginId"),
+    token: localStorage.getItem("token"),
+    otpToken: localStorage.getItem("otpToken"),
+    onBoardingData: localStorage.getItem("onBoardingData"),
     loaders: {
         isFlowLoading: false,
         isRegisterLoading: false,
@@ -21,19 +25,23 @@ export const useLoginStore = create((set, get) => ({
     },
 
     resetAll: () => {
-        localStorage.removeItem("userName");
-        localStorage.removeItem("email");
-        localStorage.removeItem("gender");
-        localStorage.removeItem("twoFa");
-        localStorage.removeItem("otpToken");
-        localStorage.removeItem("twoStepToken");
+        localStorage.clear();
         set({
             loginName: "",
             loginEmail: "",
             loginPass: "",
             loginConfirmPass: "",
-            twoFa:false
+            categoryId: "",
+            loginId: "",
+            otpToken:"",
+            twoFa: false,
+            token:""
         })
+    },
+
+    persistStorage: (key, value) => {
+        localStorage.setItem(key, value);
+        set({[key]:value})
     },
 
     onChangeLoaders: (key, value) => {
@@ -68,18 +76,21 @@ export const useLoginStore = create((set, get) => ({
 
 
     getOnBoardingFlow: async () => {
-            const response = await OnboardingFlow();        
-            return response;
+        const { onBoardingData } = get();
+        if (onBoardingData) {
+            const data = JSON.parse(onBoardingData);
+            return data;
+        }
+        const response = await OnboardingFlow();  
+        set({ onBoardingData: response });
+        localStorage.setItem("onBoardingData",JSON.stringify(response));
+        return response;
     },
 
     twoStepAuth: async (otp) => {
         const response = await TwoStepAuth(otp);
         return response;
     },
-
-    loginId: localStorage.getItem("loginId"),
-    token: localStorage.getItem("token"),
-    otpToken: localStorage.getItem("otpToken"),
 }));
 
 export const loginStore = useLoginStore.getState;

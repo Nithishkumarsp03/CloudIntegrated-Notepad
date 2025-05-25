@@ -15,10 +15,10 @@ function App() {
     <div className="w-screen h-screen">
         <BrowserRouter>
           <Routes>
-            <Route path='/' element={<LoginPage />} />
+            <Route path='/' element={<LoginPage />}/>
               <Route path='/onBoarding-flow' element={<OnboardingFlow />} />
               <Route path='/forgotPassword' element={<ForgotPassword/>}/>
-              <Route path='/twoStepAuth' element={<TwoStepAuthentication/>} />
+            <Route path='/twoStepAuth' element={<TwoStepAuthentication />} />
             <Route element={<Protect />}>
             <Route path='/profile' element={<ProfilePage />} />
               <Route path='/notes' element={<EmptyStatePage/>}/>

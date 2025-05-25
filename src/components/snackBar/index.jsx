@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Snackbar as MuiSnackbar, Alert, AlertTitle, Button } from '@mui/material';
+import { Snackbar as MuiSnackbar, Alert} from '@mui/material';
 import useEditorStore from '../../store/globalStore';
 
-const Snackbar = ({
+export const Snackbar = ({
     message,
     variant = 'info',
     open,
@@ -11,7 +11,6 @@ const Snackbar = ({
     vertical = 'top',
     horizontal = 'center',
     action = null,
-    title = null,
 }) => {
     const { darkMode } = useEditorStore();
     const [isVisible, setIsVisible] = useState(open);
@@ -66,5 +65,3 @@ const Snackbar = ({
         </MuiSnackbar>
     );
 };
-
-export default Snackbar;

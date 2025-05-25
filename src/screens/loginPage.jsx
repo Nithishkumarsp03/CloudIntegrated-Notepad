@@ -8,19 +8,28 @@ import {
 import useEditorStore from '../store/globalStore';
 import { cn } from '../components/cn';
 import { useLoginStore } from '../store/loginStore';
-import Snackbar from '../components/snackBar/snackBar';
-import LoginForm from '../components/authentication/loginForm';
-import SignupForm from '../components/authentication/signupForm';
-import VideoComponent from '../components/authentication/videoComponent';
-import LoginSwitch from '../components/authentication/loginSwitch';
-import LoginHeader from '../components/authentication/loginHeader';
 import { useNavbarStore } from '../store/navbarStore';
+import { VideoComponent,LoginSwitch, LoginHeader, LoginForm, SignupForm } from '../components';
+import { Snackbar } from '../components';
 
 const LoginPage = () => {
   const navigate = useNavigate();
   const { darkMode, setDarkMode } = useEditorStore();
-  const { authentication, firstLogin, loaders, resetAll } = useLoginStore();
+  const { authentication, firstLogin, loaders, isUserLoggedIn, resetAll } = useLoginStore();
   const { getNotes } = useNavbarStore();
+
+  useEffect(() => {
+    if (isUserLoggedIn) {
+      let data = JSON.parse(localStorage.getItem("notes"));
+      if (data) {
+        const uuid = data[0]?.uuid;
+        if (uuid) {
+          navigate(`/note-pad/${uuid}`);
+        }
+      }
+    }
+  },[])
+
   const [snackBar, setSnackBar] = useState({
     variant: "",
     state: false,
@@ -75,10 +84,6 @@ const LoginPage = () => {
     updateFormState('showConfirmPassword', !formState.showConfirmPassword);
   };
 
-  useEffect(() => {
-    resetAll();
-  }, []);
-
   const switchAuthMode = (e) => {
     e.preventDefault();
     resetAll();
@@ -122,7 +127,6 @@ const LoginPage = () => {
   };
 
   const validatePassword = (password) => {
-    return ""
     const errors = [];
     if (!password) return "Password is required";
     const hasLength = password.length >= 8;
@@ -181,8 +185,12 @@ const LoginPage = () => {
 
   async function handleFormSubmit(e) {
     e.preventDefault();
-    if (validateForm()) {
-      await handleAuth(formState.isLogin ? 'login' : 'signup');
+    if (formState.isLogin) {
+      console.log("login")
+      await handleAuth('login');
+    }
+    else if (validateForm()) {
+      await handleAuth('register');
     }
   }
 
@@ -224,7 +232,6 @@ const LoginPage = () => {
 
     if (formState.formSubmitted) {
       let errorMessage = '';
-
       switch (field) {
         case 'loginName':
           errorMessage = validateName(value);
@@ -295,7 +302,6 @@ const LoginPage = () => {
                   loaders={loaders}
                   handleTogglePasswordVisibility={handleTogglePasswordVisibility}
                   switchAuthMode={switchAuthMode}
-                  renderPasswordStrengthIndicator={() => validatePassword(formData.loginPass)}
                 />
               </>
             ) : (

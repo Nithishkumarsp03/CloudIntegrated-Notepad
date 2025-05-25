@@ -1,9 +1,8 @@
-// menus/CustomerMenu.jsx
 import React from "react";
 import { Menu, MenuItem, Typography } from "@mui/material";
 import { FiMail, FiGithub } from "react-icons/fi";
 
-const CustomerMenu = ({ anchorEl, isOpen, onClose, darkMode }) => {
+export const CustomerMenu = ({ anchorEl, isOpen, onClose, darkMode }) => {
     const teamMembers = [
         {
             name: "Guna Nihil N",
@@ -154,4 +153,3 @@ const TeamMember = ({ member, darkMode, handleEmailClick, handleGithubClick }) =
     </div>
 );
 
-export default CustomerMenu;

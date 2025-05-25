@@ -21,10 +21,10 @@ import {
   Security
 } from '@mui/icons-material';
 import { cn } from '../components/cn';
-import ProfileSwitch from '../components/switch/switch';
+import { ProfileSwitch } from '../components';
 import { SunIcon } from '../assets/svgs/sun';
-import { ButtonComponent } from '../components/button/button';
-import Snackbar from '../components/snackBar/snackBar';
+import { ButtonComponent } from '../components/button';
+import { Snackbar } from '../components';
 import { MoonIcon } from '../assets/svgs/moon';
 import { useLoginStore } from '../store/loginStore';
 import useEditorStore from '../store/globalStore';
@@ -34,17 +34,34 @@ import { logo } from '../assets';
 const OnboardingFlow = () => {
   const navigate = useNavigate();
   const { darkMode, setDarkMode } = useEditorStore();
-  const { getOnBoardingFlow, loaders, onChange, authentication, twoFa } = useLoginStore();
+  const { getOnBoardingFlow, loaders, onChange, authentication, twoFa, isUserLoggedIn } = useLoginStore();
   const [step, setStep] = useState(0);
   const [selectedPersona, setSelectedPersona] = useState(null);
   const [gender, setGender] = useState('');
   const isMobile = useMediaQuery('(max-width:768px)');
   const [personas, setPersonas] = useState([]);
+  const [register, setRegister] = useState(false);
   const [snackBar, setSnackBar] = useState({
     state: false,
     message: ""
   });
   const [timeoutDuration, setTimeoutDuration] = useState(0);
+  const email = localStorage.getItem("email");
+  if (!email) {
+    navigate('/');
+  }
+
+    useEffect(() => {
+      if (isUserLoggedIn) {
+        let data = JSON.parse(localStorage.getItem("notes"));
+        if (data) {
+          const uuid = data[0]?.uuid;
+          if (uuid) {
+            navigate(`/note-pad/${uuid}`);
+          }
+        }
+      }
+    },[])
 
   const handleSelect = (e) => {
     setGender(e.target.value);
@@ -68,10 +85,10 @@ const OnboardingFlow = () => {
         setTimeout(() => {
           navigate('/');
           setSnackBar({
-            state: false,
+            state: false, 
             message: response.message
           });
-        }, timeoutDuration || 5000); 
+        }, timeoutDuration); 
       }
       const personasWithIcons = response?.data?.map(persona => {
         let icon;
@@ -130,7 +147,8 @@ const OnboardingFlow = () => {
   const handleNext = async () => {
     if (step < steps.length - 1) {
       setStep(step + 1);
-    } else {
+    } else if (!register) {
+      setRegister(true);
       const response = await authentication("register");
       if (response.status) {
         navigate('/notes');
@@ -148,6 +166,7 @@ const OnboardingFlow = () => {
           });
         }, timeoutDuration || 7000); 
       }
+      setRegister(false);
     }
   };
 

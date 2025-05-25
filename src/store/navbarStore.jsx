@@ -2,42 +2,54 @@
     import { useLoginStore } from './loginStore';
     import { AddNote, DeleteNote, EditNote, GetNotes } from "../api";
 
-    export const useNavbarStore = create((set, get) => ({
-        isSideBarOpen: false,
-        data: [],
-        loaders: {
-            isNotesLoading: false,
-            isAddLoading: false,
-            isEditLoading: false,
-            isDeleteLoading: false
-        },
+export const useNavbarStore = create((set, get) => ({
+    isSideBarOpen: false,
+    data: JSON.parse(localStorage.getItem("notes")),
+    searchquery: "",
+    noteId:"",
+    loaders: {
+        isNotesLoading: false,
+        isAddLoading: false,
+        isEditLoading: false,
+        isDeleteLoading: false
+    },
 
-        setLoading: (loader, state) => {
-            set(p => ({ ...p, loaders: { ...p.loaders, [loader]: state } }));
-        },
+    onNavbarChange: (key, value) => {
+        set({ [key]: value });
+    },
 
-        getNotes: async () => {
-            const { loginId } = useLoginStore.getState();
-            const { setLoading } = get();
-            setLoading("isNotesLoading", true);
-                const response = await GetNotes(loginId);
-            if (response?.data?.notes) {
-                set({ data: response.data.notes });
-            }
-                setLoading("isNotesLoading", false);
-                    return response;
-        },
+    setLoading: (loader, state) => {
+        set(p => ({ ...p, loaders: { ...p.loaders, [loader]: state } }));
+    },
 
-        addNote: async (notename) => {
-            const { loginId } = useLoginStore.getState();
-            const { setLoading } = get();
-            setLoading("isAddLoading", true);
-                const response = await AddNote(loginId, notename);
-                if (response?.data?.note) {
-                    set(p => ({ data: [...p.data, response.data.note] }));
-                }
-                setLoading("isAddLoading", false);
-            return response;
+    getNotes: async () => {
+        const { loginId } = useLoginStore.getState();
+        const { setLoading } = get();
+        setLoading("isNotesLoading", true);
+        const response = await GetNotes(loginId);
+        if (response?.data?.notes) {
+            set({ data: response?.data?.notes });
+            localStorage.setItem("notes", JSON.stringify(response?.data?.notes));
+        }
+        setLoading("isNotesLoading", false);
+        return response;
+    },
+
+    addNote: async (notename) => {
+        const { loginId } = useLoginStore.getState();
+        const { setLoading, data } = get();
+        setLoading("isAddLoading", true);
+        const response = await AddNote(loginId, notename);
+        if (response?.data?.note) {
+            const newData = Array.isArray(data) && data.length > 0
+                ? [...data, response.data.note]
+                : [response.data.note];
+
+            set({ data: newData });
+            localStorage.setItem("notes", JSON.stringify(newData));
+        }
+        setLoading("isAddLoading", false);
+        return response;
         },
 
         editNote: async (noteTitle, uuid) => {

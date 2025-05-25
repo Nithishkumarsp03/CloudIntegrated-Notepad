@@ -1,5 +1,5 @@
 import React from 'react';
-import { ButtonComponent } from '../../button/button';
+import { ButtonComponent } from '../../../components';
 import useEditorStore from '../../../store/globalStore';
 
 const EditorButton = ({ handleClick, btnText, classes, handlePressed }) => {

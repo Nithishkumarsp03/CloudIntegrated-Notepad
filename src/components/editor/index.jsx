@@ -50,7 +50,7 @@ const Texteditor = ({ onChange, noteId }) => {
                     const response = await getNoteContent(loginId, noteId);
                     if (response?.data?.notes) {
                         localStorage.setItem("editorContent", response.data.notes);
-                        setNoteContent(response.data.notes);
+                        setNoteContent(response?.data?.notes);
                     } else {
                         localStorage.setItem("editorContent", "Start Writing...");
                         setNoteContent("Start Writing...");

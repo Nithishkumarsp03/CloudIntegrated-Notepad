@@ -1,9 +1,10 @@
-import React from 'react'
-import { ButtonComponent } from '../button/button';
-import { Facebook, Google } from '@mui/icons-material';
-import useEditorStore from '../../store/globalStore';
 
-const LoginButton = ({ handleGoogle, handleFacobook }) => {
+import React from 'react'
+import { ButtonComponent } from '../../../components';
+import { Facebook, Google } from '@mui/icons-material';
+import useEditorStore from '../../../store/globalStore';
+
+export const LoginButton = ({ handleGoogle, handleFacobook }) => {
     const { darkMode } = useEditorStore();
     return (
         <div>
@@ -41,4 +42,3 @@ const LoginButton = ({ handleGoogle, handleFacobook }) => {
     )
 }
 
-export default LoginButton;

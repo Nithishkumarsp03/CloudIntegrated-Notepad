@@ -1,7 +1,7 @@
 import React from 'react';
 import { Select as MuiSelect, MenuItem } from '@mui/material';
 
-const CustomSelect = ({
+export const CustomSelect = ({
     options,
     value,
     onChange,
@@ -79,4 +79,3 @@ const CustomSelect = ({
     );
 };
 
-export default CustomSelect;

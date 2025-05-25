@@ -1,6 +1,6 @@
 import React from 'react'
 import useEditorStore from '../../../store/globalStore';
-import { cn } from '../../cn';
+import { cn } from '../../../components';
 
 const MobileHeader = ({ setLocalSearch, localSearch }) => {
     return (

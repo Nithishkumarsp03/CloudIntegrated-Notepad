@@ -12,10 +12,10 @@ import {
 } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
 import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline';
-import useEditorStore from "../../store/globalStore";
-import { ButtonComponent } from "../button/button";
+import useEditorStore from "../../../store/globalStore";
+import { ButtonComponent } from "../../../components";
 
-const RenameModal = ({ open, onClose, onRename, placeholder = "Enter new file name", heading = "Rename File", value = '' }) => {
+export const RenameModal = ({ open, onClose, onRename, placeholder = "Enter new file name", heading = "Rename File", value = '' }) => {
     const [newName, setNewName] = useState(value);
     const darkMode = useEditorStore((state) => state.darkMode);
 
@@ -213,4 +213,3 @@ const RenameModal = ({ open, onClose, onRename, placeholder = "Enter new file na
     );
 };
 
-export default RenameModal;

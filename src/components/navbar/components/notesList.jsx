@@ -1,30 +1,47 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import { cn } from "../../cn";
 import useEditorStore from "../../../store/globalStore";
 import NoTabsFound from "./noTabs";
 import NoteItem from "./noteItems";
 import { Skeleton } from "@mui/material";
 import { useTextEditorStore } from "../../../store/textEditorStore";
+import { useNavbarStore } from "../../../store/navbarStore";
 
 const NotesList = ({ filter, isMobile, id, setId, handleMenuClick, loading, handleuuid }) => {
-    const { tabSaved } = useTextEditorStore();
+    const { tabSaved, addNoteContent } = useTextEditorStore();
+    const { noteId } = useNavbarStore();
+
     const handleClick = (uuid, note_id) => {
         if (!tabSaved) {
-            alert("Please save your note");
-        }
-        else {
+            const notes = localStorage.getItem("editorContent");
+            addNoteContent(noteId, notes);
+            handleuuid(uuid, note_id);
+            setId(uuid);
+        } else {
             handleuuid(uuid, note_id);
             setId(uuid);
         }
-        if (isMobile) {
-            useEditorStore.setState({ isSidebarOpen: true });
-        }
     };
+
+    useEffect(() => {
+        const handleBeforeUnload = (e) => {
+            if (!tabSaved) {
+                e.preventDefault();
+                return
+            }
+        };
+
+        window.addEventListener('beforeunload', handleBeforeUnload);
+
+        return () => {
+            window.removeEventListener('beforeunload', handleBeforeUnload);
+        };
+    }, [tabSaved]);
 
     const renderSkeletons = () => {
         return Array(4).fill(0).map((_, index) => (
             <div key={`skeleton-${index}`} className="px-4">
-                <Skeleton variant="text" height={60}  />
+                <Skeleton variant="text" height={60} />
             </div>
         ));
     };
@@ -55,8 +72,8 @@ const NotesList = ({ filter, isMobile, id, setId, handleMenuClick, loading, hand
                                     data={tab?.note_name}
                                     isActive={id === tab?.uuid}
                                     isMobile={isMobile}
-                                    onClick={() => handleClick(tab?.uuid,tab?.id)}
-                                    onMenuClick={e => handleMenuClick(e,tab?.uuid,tab?.note_name)}
+                                    onClick={() => handleClick(tab?.uuid, tab?.id)}
+                                    onMenuClick={e => handleMenuClick(e, tab?.uuid, tab?.note_name)}
                                 />
                             </div>
                         ))}
