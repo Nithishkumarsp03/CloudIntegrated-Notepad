@@ -16,5 +16,5 @@ export const Authentication = async (type) => {
     }
     finally {
         localStorage.removeItem("password");
-    }
+    }   
 };

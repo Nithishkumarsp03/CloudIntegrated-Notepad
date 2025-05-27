@@ -31,6 +31,7 @@ const EmptyStatePage = () => {
             setNoteName('');
             setShowInput(false);
             await addNote(noteName);
+            let data = JSON.parse(localStorage.getItem("notes"));
             const uuid = await data[0]?.uuid;
             if (uuid) {
                 navigate(`/note-pad/${uuid}`);
