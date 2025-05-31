@@ -22,7 +22,7 @@ import  useEditorStore  from '../../../store/globalStore';
 import { LinkModal, CustomSelect, FontSelector } from '../../../components';
 
 const EditorToolKit = ({ editor }) => {
-  const { darkMode } = useEditorStore();
+  const darkMode = useEditorStore(e => e.darkMode);
   const [fontFamily, setFontFamily] = useState(fontFamilyOptions[0].family);
   const [fontSize, setFontSize] = useState("18px");
   const [isModalOpen, setIsModalOpen] = useState(false);

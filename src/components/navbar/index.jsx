@@ -13,6 +13,16 @@ export const Navbar = () => {
     const [id, setId] = useState();
     const { isSidebarOpen, setSearch } = useEditorStore();
     const { getNotes, data, loaders, addNote, editNote, deleteNote, searchquery, onNavbarChange } = useNavbarStore();
+
+    useEffect(() => {
+        async function getNote() {
+            const response = await getNotes();
+            setId(response?.data?.notes[0]?.uuid);
+            onNavbarChange("noteId", JSON.stringify(response?.data?.notes[0]?.id));
+        };
+        getNote();
+    },[]);
+
     const [localSearch, setLocalSearch] = useState("");
     const [filter, setFilter] = useState(data);
     const [anchorEl, setAnchorEl] = useState(null);
@@ -30,11 +40,6 @@ export const Navbar = () => {
     const filteredData = filter.filter(item =>
         item.note_name?.toLowerCase().includes(searchquery.toLowerCase())
     );
-
-    useEffect(() => {
-        onNavbarChange("noteId", JSON.stringify(data[0]?.id))
-        setId(data[0]?.uuid)
-     }, []);
 
     useEffect(() => {
         const timer = setTimeout(() => {

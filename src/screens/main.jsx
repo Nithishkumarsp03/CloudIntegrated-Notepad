@@ -9,8 +9,8 @@ import { useNavbarStore } from "../store/navbarStore";
 
 const Main = () => {
   const isMobile = useMediaQuery('(max-width: 768px)');
-  const { isSidebarOpen } = useEditorStore();
-  const { noteId } = useNavbarStore();
+  const isSidebarOpen = useEditorStore(e => e.isSidebarOpen);
+  const noteId = useNavbarStore(e => e.noteId);
 
   useEffect(() => {
     if (isMobile) {

@@ -6,13 +6,14 @@ import { cn, ShareModal, SaveModal } from "../../components";
 import { useTextEditorStore } from "../../store/textEditorStore"; 
 import { CustomerMenu, LeftSection, MobileMenu, RightSection } from "./components";
 
-export const Appbar = ({ noteId }) => {
+export const Appbar = () => {
     const [customerAnchorEl, setCustomerAnchorEl] = useState(null);
     const [mobileMenuAnchorEl, setMobileMenuAnchorEl] = useState(null);
     const [saveModal, setSaveModal] = useState(false);
     const [share, setShare] = useState(false);
-    const { darkMode, isSidebarOpen } = useEditorStore();
-    const { addNoteContent } = useTextEditorStore();
+    const darkMode = useEditorStore(e => e.darkMode);   
+    const isSidebarOpen = useEditorStore(e => e.isSidebarOpen);   
+    const addNoteContent = useTextEditorStore(e => e.addNoteContent);
     const isMobile = useMediaQuery("(max-width:768px)");
 
     const handleCustomerMenuOpen = (event) => {
@@ -53,8 +54,7 @@ export const Appbar = ({ noteId }) => {
 
     const handleNoteSave = (e) => {
         if (e === "Save Online") {  
-            const notes = localStorage.getItem("editorContent");
-            addNoteContent(noteId, notes);
+            addNoteContent();
         }
     };
 

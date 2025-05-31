@@ -4,7 +4,7 @@
 
 export const useNavbarStore = create((set, get) => ({
     isSideBarOpen: false,
-    data: JSON.parse(localStorage.getItem("notes")),
+    data: [],
     searchquery: "",
     noteId:"",
     loaders: {
@@ -29,7 +29,6 @@ export const useNavbarStore = create((set, get) => ({
         const response = await GetNotes(loginId);
         if (response?.data?.notes) {
             set({ data: response?.data?.notes });
-            localStorage.setItem("notes", JSON.stringify(response?.data?.notes));
         }
         setLoading("isNotesLoading", false);
         return response;
@@ -44,9 +43,7 @@ export const useNavbarStore = create((set, get) => ({
             const newData = Array.isArray(data) && data.length > 0
                 ? [...data, response.data.note]
                 : [response.data.note];
-
             set({ data: newData });
-            localStorage.setItem("notes", JSON.stringify(newData));
         }
         setLoading("isAddLoading", false);
         return response;

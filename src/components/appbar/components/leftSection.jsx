@@ -22,8 +22,8 @@ export const LeftSection = ({ isSidebarOpen }) => {
                     <PanelRightOpenIcon />
                 }
             </span>
-            <InputField
-                styles={{ display: { xs:"none",md:"block"} }}
+            <div className="hidden md:block">
+                <InputField
                 isSearchStyle
                 startIcon={<SearchIcon className="dark:text-white w-10 text-gray-400" />}
                 placeholder={"Search..."}
@@ -33,7 +33,7 @@ export const LeftSection = ({ isSidebarOpen }) => {
                         onNavbarChange("searchquery",value);
                     }, 0);
                 }}
-            />
+            /></div>  
         </div>
     );
 };
