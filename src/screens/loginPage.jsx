@@ -19,15 +19,14 @@ const LoginPage = () => {
   const { getNotes } = useNavbarStore();
 
   useEffect(() => {
-    if (isUserLoggedIn) {
-      let data = JSON.parse(localStorage.getItem("notes"));
-      if (data) {
-        const uuid = data[0]?.uuid;
-        if (uuid) {
-          navigate(`/note-pad/${uuid}`);
-        }
+    async function getNote() {
+      if (isUserLoggedIn) {
+        const response = await getNotes();
+        const uuid = response?.data?.notes[0]?.uuid;
+        navigate(`/note-pad/${uuid}`);
       }
     }
+    getNote();
   },[])
 
   const [snackBar, setSnackBar] = useState({
@@ -186,7 +185,6 @@ const LoginPage = () => {
   async function handleFormSubmit(e) {
     e.preventDefault();
     if (formState.isLogin) {
-      console.log("login")
       await handleAuth('login');
     }
     else if (validateForm()) {
@@ -213,7 +211,7 @@ const LoginPage = () => {
         }
         else if (response?.state) {
           const response = await getNotes();
-          const uuid = response.data.notes[0].uuid;
+          const uuid = response?.data?.notes[0]?.uuid;
           navigate(`/note-pad/${uuid}`);
         }
       }

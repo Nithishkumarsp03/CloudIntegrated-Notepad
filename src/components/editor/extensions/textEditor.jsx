@@ -20,10 +20,9 @@ import { useLoginStore } from '../../../store/loginStore';
 import { useTextEditorStore } from '../../../store/textEditorStore';
 
 const Texteditor = ({ onChange, noteId }) => {
-    console.log(noteId)
     const [noteContent, setNoteContent] = useState('<p>Notecontent</p>');
-    const { loginId } = useLoginStore();
-    const { getNoteContent } = useTextEditorStore();
+    const loginId = useLoginStore(e => e.loginId);
+    const getNoteContent = useTextEditorStore(e => e.getNoteContent);
 
     useEffect(() => {
         async function getNote() {

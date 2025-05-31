@@ -3,7 +3,7 @@ import { ButtonComponent } from '../../../components';
 import useEditorStore from '../../../store/globalStore';
 
 const EditorButton = ({ handleClick, btnText, classes, handlePressed }) => {
-  const { darkMode } = useEditorStore();
+  const darkMode = useEditorStore(e => e.darkMode);
 
   const lightStyles = {
     minWidth: "44px",
