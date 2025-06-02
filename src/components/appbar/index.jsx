@@ -78,12 +78,12 @@ export const Appbar = () => {
                     "flex-row justify-between items-center px-4"
                 )}
             >
+                    <div className="flex justify-center mr-4 pt-1.5">
+                        <img src={logo} alt="logo" className="w-[90px] h-[50px]" />
+                    </div>
                 <div className="flex justify-between items-center w-full box-border">
                     <LeftSection isSidebarOpen={isSidebarOpen} />
 
-                    <div className="flex justify-center absolute left-1/2 transform -translate-x-1/2">
-                        <img src={logo} alt="logo" className="w-[90px] h-[50px]" />
-                    </div>
 
                     <RightSection
                         isMobile={isMobile}

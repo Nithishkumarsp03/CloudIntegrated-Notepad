@@ -24,7 +24,6 @@ export const RenameModal = ({ open, onClose, onRename, placeholder = "Enter new 
     };
 
     useEffect(() => {
-        console.log(value);
         setNewName(value);
     }, [value]);
 
