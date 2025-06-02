@@ -1,9 +1,7 @@
-// ResizableImageExtension.js
 import Image from '@tiptap/extension-image';
 import { Plugin, PluginKey } from 'prosemirror-state';
 import { NodeSelection } from 'prosemirror-state';
 
-// Custom Image extension that supports resizing and dragging
 const ResizableImage = Image.extend({
   addAttributes() {
     return {
@@ -28,7 +26,6 @@ const ResizableImage = Image.extend({
           return { height: attributes.height };
         },
       },
-      // Keep track of the original dimensions
       originalWidth: {
         default: null,
         parseHTML: () => null,
@@ -39,9 +36,8 @@ const ResizableImage = Image.extend({
         parseHTML: () => null,
         renderHTML: () => ({}),
       },
-      // Add alignment attributes for positioning
       alignment: {
-        default: 'inline', // can be 'inline', 'left', 'center', 'right'
+        default: 'inline', 
         parseHTML: element => element.getAttribute('data-alignment') || 'inline',
         renderHTML: attributes => {
           if (!attributes.alignment) {
@@ -50,7 +46,6 @@ const ResizableImage = Image.extend({
           return { 'data-alignment': attributes.alignment };
         },
       },
-      // Add margin attributes for fine-tuning position
       marginTop: {
         default: 0,
         parseHTML: element => element.getAttribute('data-margin-top') || 0,
@@ -76,11 +71,9 @@ const ResizableImage = Image.extend({
 
   addNodeView() {
     return ({ node, editor, getPos }) => {
-      // Create container for the image and resize handles
       const dom = document.createElement('div');
       dom.classList.add('image-resizable-container');
 
-      // Set style based on alignment
       updateContainerStyle();
 
       function updateContainerStyle() {
@@ -89,7 +82,6 @@ const ResizableImage = Image.extend({
           display: inline-block;
         `;
 
-        // Apply alignment styles
         if (node.attrs.alignment === 'left') {
           containerStyle += `
             float: left;
@@ -110,7 +102,6 @@ const ResizableImage = Image.extend({
           `;
         }
 
-        // Apply custom margins if set
         if (node.attrs.marginTop) {
           containerStyle += `margin-top: ${node.attrs.marginTop}px;`;
         }
@@ -123,7 +114,6 @@ const ResizableImage = Image.extend({
 
       dom.contentEditable = 'false';
 
-      // Create the image element
       const img = document.createElement('img');
       img.src = node.attrs.src;
       img.alt = node.attrs.alt || '';
@@ -135,19 +125,16 @@ const ResizableImage = Image.extend({
         cursor: move;
       `);
 
-      // Add CSS styles for selected node
       const addSelectedStyles = () => {
         let selectedStyle = dom.getAttribute('style');
         selectedStyle += `outline: 2px solid #4285f4;`;
         dom.setAttribute('style', selectedStyle);
       };
 
-      // Remove selected styles
       const removeSelectedStyles = () => {
         updateContainerStyle();
       };
 
-      // Create alignment controls
       const alignmentControls = document.createElement('div');
       alignmentControls.classList.add('image-alignment-controls');
       alignmentControls.setAttribute('style', `
@@ -193,7 +180,6 @@ const ResizableImage = Image.extend({
       alignmentControls.appendChild(rightAlignBtn);
       alignmentControls.appendChild(inlineAlignBtn);
 
-      // Add resize overlay for preview
       const resizeOverlay = document.createElement('div');
       resizeOverlay.classList.add('resize-overlay');
       resizeOverlay.setAttribute('style', `
@@ -208,13 +194,10 @@ const ResizableImage = Image.extend({
         display: none;
         z-index: 5;
       `);
-
-      // Add handles for resizing
       const resizeHandles = ['nw', 'ne', 'sw', 'se'].map(direction => {
         const handle = document.createElement('div');
         handle.classList.add('resize-handle', `resize-handle-${direction}`);
 
-        // Base styles for all handles
         let handleStyles = `
           position: absolute;
           width: 12px;
@@ -227,7 +210,6 @@ const ResizableImage = Image.extend({
           display: none;
         `;
 
-        // Position the handles
         switch (direction) {
           case 'nw':
             handleStyles += 'top: -6px; left: -6px;';
@@ -245,7 +227,6 @@ const ResizableImage = Image.extend({
 
         handle.setAttribute('style', handleStyles);
 
-        // Store original image dimensions on load
         img.onload = () => {
           if (!node.attrs.originalWidth) {
             editor.commands.updateAttributes('image', {
@@ -254,7 +235,6 @@ const ResizableImage = Image.extend({
             });
           }
 
-          // Make sure overlay matches image size
           resizeOverlay.style.width = `${img.offsetWidth}px`;
           resizeOverlay.style.height = `${img.offsetHeight}px`;
         };
@@ -262,29 +242,24 @@ const ResizableImage = Image.extend({
         let startX, startY, startWidth, startHeight;
         let isResizing = false;
 
-        // Add resize event handlers using requestAnimationFrame for smoother performance
         handle.addEventListener('mousedown', (e) => {
           e.preventDefault();
           e.stopPropagation();
 
-          // Select the node
           const pos = getPos();
           const { state, dispatch } = editor.view;
           dispatch(state.tr.setSelection(NodeSelection.create(state.doc, pos)));
 
-          // Store initial values
           startX = e.clientX;
           startY = e.clientY;
           startWidth = img.offsetWidth;
           startHeight = img.offsetHeight;
 
-          // Show resize overlay
           isResizing = true;
           resizeOverlay.style.display = 'block';
           resizeOverlay.style.width = `${startWidth}px`;
           resizeOverlay.style.height = `${startHeight}px`;
 
-          // Temporarily hide other handles during resize
           resizeHandles.forEach(h => {
             if (h !== handle) {
               h.style.opacity = '0.3';
@@ -302,7 +277,6 @@ const ResizableImage = Image.extend({
             const dx = e.clientX - startX;
             const dy = e.clientY - startY;
 
-            // Calculate new dimensions based on direction
             switch (direction) {
               case 'nw':
                 newWidth = startWidth - dx;
@@ -322,48 +296,39 @@ const ResizableImage = Image.extend({
                 break;
             }
 
-            // Ensure minimum dimensions
             newWidth = Math.max(20, newWidth);
             newHeight = Math.max(20, newHeight);
 
-            // Update resize overlay immediately for visual feedback
             if (rafId) cancelAnimationFrame(rafId);
 
             rafId = requestAnimationFrame(() => {
-              // Update the preview overlay
               resizeOverlay.style.width = `${newWidth}px`;
               resizeOverlay.style.height = `${newHeight}px`;
 
-              // Also update the actual image for immediate feedback
               img.style.width = `${newWidth}px`;
               img.style.height = `${newHeight}px`;
             });
           };
 
-          // Handle mouse up after resize
           const handleMouseUp = () => {
             if (!isResizing) return;
 
             document.removeEventListener('mousemove', handleMouseMove);
             document.removeEventListener('mouseup', handleMouseUp);
 
-            // Hide resize overlay
             isResizing = false;
             resizeOverlay.style.display = 'none';
 
-            // Restore handle opacity
             resizeHandles.forEach(h => {
               h.style.opacity = '1';
             });
 
-            // Update actual image size in the editor
             editor.commands.updateAttributes('image', {
               width: newWidth,
               height: newHeight
             });
           };
 
-          // Add mousemove and mouseup listeners to document
           document.addEventListener('mousemove', handleMouseMove);
           document.addEventListener('mouseup', handleMouseUp);
         });
@@ -371,15 +336,12 @@ const ResizableImage = Image.extend({
         return handle;
       });
 
-      // Add drag functionality
       let isDragging = false;
       let dragStartX, dragStartY;
       let originalMarginTop, originalMarginLeft;
       let dragTimeout;
 
-      // Start drag
       img.addEventListener('mousedown', (e) => {
-        // Ignore if clicking on a resize handle or button
         if (e.target.classList.contains('resize-handle') ||
           e.target.tagName === 'BUTTON') {
           return;
@@ -387,7 +349,6 @@ const ResizableImage = Image.extend({
 
         e.preventDefault();
 
-        // Select the node
         const pos = getPos();
         const { state, dispatch } = editor.view;
         dispatch(state.tr.setSelection(NodeSelection.create(state.doc, pos)));
@@ -398,36 +359,29 @@ const ResizableImage = Image.extend({
         originalMarginTop = parseInt(node.attrs.marginTop) || 0;
         originalMarginLeft = parseInt(node.attrs.marginLeft) || 0;
 
-        // Show drag ghost
         img.style.cursor = 'grabbing';
 
         document.addEventListener('mousemove', handleDragMove);
         document.addEventListener('mouseup', handleDragEnd);
       });
 
-      // Move during drag with debouncing for smoother UX
       const handleDragMove = (e) => {
         if (!isDragging) return;
 
         e.preventDefault();
 
-        // Calculate movement
         const dx = e.clientX - dragStartX;
         const dy = e.clientY - dragStartY;
 
-        // Apply movement visually immediately
         dom.style.transition = 'none';
         dom.style.marginTop = `${originalMarginTop + dy}px`;
         dom.style.marginLeft = `${originalMarginLeft + dx}px`;
 
-        // Debounce the actual update to reduce editor lag
         clearTimeout(dragTimeout);
         dragTimeout = setTimeout(() => {
-          // This won't execute until dragging stops or slows significantly
         }, 100);
       };
 
-      // End drag
       const handleDragEnd = (e) => {
         if (!isDragging) return;
 
@@ -435,21 +389,17 @@ const ResizableImage = Image.extend({
         document.removeEventListener('mousemove', handleDragMove);
         document.removeEventListener('mouseup', handleDragEnd);
 
-        // Reset cursor
         img.style.cursor = 'move';
 
-        // Calculate final movement
         const dx = e.clientX - dragStartX;
         const dy = e.clientY - dragStartY;
 
-        // Update the actual node attributes
         editor.commands.updateAttributes('image', {
           marginTop: originalMarginTop + dy,
           marginLeft: originalMarginLeft + dx
         });
       };
 
-      // Add selection listener
       const hideControls = () => {
         resizeHandles.forEach(handle => {
           handle.style.display = 'none';
@@ -467,10 +417,8 @@ const ResizableImage = Image.extend({
         addSelectedStyles();
       };
 
-      // Initially hide handles
       hideControls();
 
-      // Add selection listener
       editor.on('selectionUpdate', ({ editor }) => {
         const { selection } = editor.state;
         const isSelected = selection.node?.type.name === 'image' &&
@@ -483,7 +431,6 @@ const ResizableImage = Image.extend({
         }
       });
 
-      // Double click to reset size to original
       img.addEventListener('dblclick', () => {
         if (node.attrs.originalWidth && node.attrs.originalHeight) {
           editor.commands.updateAttributes('image', {
@@ -493,9 +440,8 @@ const ResizableImage = Image.extend({
         }
       });
 
-      // Append elements
       dom.appendChild(img);
-      dom.appendChild(resizeOverlay);  // Add resize overlay
+      dom.appendChild(resizeOverlay); 
       dom.appendChild(alignmentControls);
       resizeHandles.forEach(handle => dom.appendChild(handle));
 
@@ -504,7 +450,6 @@ const ResizableImage = Image.extend({
         update: (updatedNode) => {
           if (updatedNode.type.name !== 'image') return false;
 
-          // Update attributes if they changed
           if (updatedNode.attrs.src !== node.attrs.src) {
             img.src = updatedNode.attrs.src;
           }
@@ -515,13 +460,11 @@ const ResizableImage = Image.extend({
 
           if (updatedNode.attrs.width !== node.attrs.width) {
             img.width = updatedNode.attrs.width || 'auto';
-            // Update overlay to match
             resizeOverlay.style.width = `${img.offsetWidth}px`;
           }
 
           if (updatedNode.attrs.height !== node.attrs.height) {
             img.height = updatedNode.attrs.height || 'auto';
-            // Update overlay to match
             resizeOverlay.style.height = `${img.offsetHeight}px`;
           }
 
@@ -535,7 +478,6 @@ const ResizableImage = Image.extend({
           return true;
         },
         destroy: () => {
-          // Clean up event listeners when node is removed
           editor.off('selectionUpdate');
           img.onload = null;
           document.removeEventListener('mousemove', handleDragMove);
@@ -545,7 +487,6 @@ const ResizableImage = Image.extend({
     };
   },
 
-  // Add plugin to track selection changes and handle clicks
   addProseMirrorPlugins() {
     return [
       new Plugin({
@@ -555,11 +496,9 @@ const ResizableImage = Image.extend({
             click(view, event) {
               const { state, dispatch } = view;
 
-              // Find position at click
               const pos = view.posAtDOM(event.target, 0);
               if (pos === undefined || pos < 0) return false;
 
-              // Check if clicking on an image node
               const node = pos >= 0 ? state.doc.nodeAt(pos) : null;
 
               if (node && node.type.name === 'image') {

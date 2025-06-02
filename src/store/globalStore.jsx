@@ -1,5 +1,4 @@
 import { create } from "zustand";
-import { tabsData } from "../utils";
 
 const useEditorStore = create((set, get) => ({
     userDetails:{},
@@ -25,10 +24,6 @@ const useEditorStore = create((set, get) => ({
         const { darkMode } = get();
         document.documentElement.classList.toggle("dark");
         set({ darkMode: !darkMode });
-    },
-
-    setData: () => {
-        set({ data: tabsData });
     },
 
     addNewTab: (name) => {

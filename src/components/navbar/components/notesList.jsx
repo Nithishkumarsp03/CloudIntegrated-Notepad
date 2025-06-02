@@ -22,17 +22,14 @@ const NotesList = ({ filter, isMobile, id, setId, handleMenuClick, loading, hand
             setId(uuid);
         }
     };
-
     useEffect(() => {
         const handleBeforeUnload = (e) => {
             if (!tabSaved) {
                 e.preventDefault();
-                return
+                e.returnValue = ''; 
             }
         };
-
-        window.addEventListener('beforeunload', handleBeforeUnload);
-
+        window.addEventListener('beforeunload', handleBeforeUnload);    
         return () => {
             window.removeEventListener('beforeunload', handleBeforeUnload);
         };
