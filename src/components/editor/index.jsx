@@ -54,9 +54,9 @@ const Texteditor = ({ onChange, noteId }) => {
         }
     }, []);
 
-    const debouncedSave = useMemo(() => createDebounce(saveToLocalStorage, 0), [saveToLocalStorage]);
-    const debouncedStateUpdate = useMemo(() => createDebounce(() => onEditorChange("tabSaved", false), 0), [onEditorChange]);
-    const debouncedOnChange = useMemo(() => createDebounce((html) => onChange?.(html), 0), [onChange]);
+    const debouncedSave = useMemo(() => createDebounce(saveToLocalStorage, 1000), [saveToLocalStorage]);
+    const debouncedStateUpdate = useMemo(() => createDebounce(() => onEditorChange("tabSaved", false), 500), [onEditorChange]);
+    const debouncedOnChange = useMemo(() => createDebounce((html) => onChange?.(html), 300), [onChange]);
 
     const extensions = useMemo(() => [
         StarterKit.configure({
@@ -128,10 +128,8 @@ const Texteditor = ({ onChange, noteId }) => {
             try {
                 let content = "Start Writing...";
 
-                if (noteId) {
                     const response = await getNoteContent(loginId, noteId);
                     const apiContent = response?.data?.notes || "";
-
                     if (apiContent && apiContent.trim() &&
                         apiContent !== "Start Writing..." &&
                         apiContent !== "<p>Start Writing...</p>") {
@@ -142,15 +140,9 @@ const Texteditor = ({ onChange, noteId }) => {
                             localContent !== "Start Writing..." &&
                             localContent !== "<p>Start Writing...</p>") {
                             content = localContent;
+                            localStorage.setItem(content)
                         }
-                    }
-                } else {
-                    const localContent = localStorage.getItem('editorContent');
-                    if (localContent && localContent.trim()) {
-                        content = localContent;
-                    }
                 }
-
                 setInitialContent(content);
                 currentContentRef.current = content;
                 setIsInitialized(true);
