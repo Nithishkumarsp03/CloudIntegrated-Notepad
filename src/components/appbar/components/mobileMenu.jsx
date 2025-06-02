@@ -4,6 +4,7 @@ import { SunIcon } from "../../../assets/svgs/sun";
 import { MoonIcon } from "../../../assets/svgs/moon";
 import { ShareIcon } from "../../../assets/svgs/share";
 import { SaveIcon } from '../../../assets/svgs/save';
+import { DarkMode, LightMode } from "@mui/icons-material";
 
 export const MobileMenu = ({
     anchorEl,
@@ -35,24 +36,24 @@ export const MobileMenu = ({
             anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         >
             <MenuItem onClick={toggleDarkMode} sx={{ minHeight: 'auto', padding: '8px 16px' }}>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 text-md">
                     {darkMode ?
-                        <SunIcon className="w-4 h-4" size={16} /> :
-                        <MoonIcon className="w-4 h-4" size={16} />
+                        <DarkMode className="text-white w-3 h-3"/> :
+                        <LightMode className="w-3 h-3 text-black" />
                     }
                     <span>{darkMode ? "Light" : "Dark"} Mode</span>
                 </div>
             </MenuItem>
 
             <MenuItem onClick={handleShareClick} sx={{ minHeight: 'auto', padding: '8px 16px' }}>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 text-md">
                     <ShareIcon size={16} />
                     <span>Share</span>
                 </div>
             </MenuItem>
 
             <MenuItem onClick={handleSaveClick} sx={{ minHeight: 'auto', padding: '8px 16px' }}>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 text-md">
                     <SaveIcon size={16} />
                     <span>Save</span>
                 </div>

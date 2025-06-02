@@ -20,13 +20,15 @@ export const ProfileHeader = ({ darkMode, handleBack, handleSave }) => {
                     Profile Settings
                 </Typography>
             </Box>
+            <div className='hidden md:block'>
             <ButtonComponent
                 btnText={'Save Changes'}
                 startIcon={<Check />}
                 styles={{ width: "fit-content" }}
                 darkMode={darkMode}
                 handleClick={handleSave}
-            />
+                />
+            </div>
         </Box>
     );
 };

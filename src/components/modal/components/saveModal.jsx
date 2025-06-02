@@ -80,7 +80,7 @@ export const SaveModal = ({ isOpen, onClose, onSave, onSaveAs, currentFileName }
                 justifyContent: 'space-between',
                 alignItems: 'center'
             }}>
-                <Typography variant="h6" sx={{
+                <Typography sx={{
                     fontWeight: 'bold',
                     color: darkMode ? 'grey.100' : 'grey.800'
                 }}>

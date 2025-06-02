@@ -18,14 +18,14 @@ export const ProfileCard = ({
 
     return (
         <Box className={cn(
-            "p-6 rounded-xl shadow-lg relative overflow-hidden",
+            "p-6 rounded-xl shadow-lg relative",
             darkMode ? "bg-gray-800 border border-gray-700" : "bg-white border border-gray-100"
         )}>
             <div className="absolute top-0 right-0 w-48 h-48 rounded-full bg-gradient-to-br from-transparent to-blue-100 dark:to-purple-900/20 -translate-y-1/2 translate-x-1/4"></div>
             <div className="absolute bottom-0 left-0 w-32 h-32 rounded-full bg-gradient-to-tr from-transparent to-purple-100 dark:to-indigo-900/20 translate-y-1/2 -translate-x-1/4"></div>
 
-            <Box className="relative z-10 flex flex-col md:flex-row items-center md:items-start gap-6">
-                <Box className="relative h-full">
+            <Box className="relative z-10 flex flex-col md:flex-row items-center md:items-start gap-6 text-wrap whitespace-pre-wrap">
+                {/* <Box className="relative h-full">
                     <input
                         type="file"
                         ref={fileInputRef}
@@ -60,12 +60,13 @@ export const ProfileCard = ({
                             Change photo
                         </Typography>
                     </div>
-                </Box>
+                </Box> */}
 
                 <Box className="flex-1 w-full text-center md:text-left">
-                    <Typography variant="h4" className={`font-bold mb-1 ${darkMode ? 'text-purple-100' : 'text-blue-900'}`}>
+                    <p className={`font-medium text-lg w-full mb-1 break-words whitespace-normal ${darkMode ? 'text-purple-100' : 'text-blue-900'}`}>
                         {profileData.userName}
-                    </Typography>
+                    </p>
+
                     <Typography className={`pl-1.5 ${darkMode ? 'text-purple-300' : 'text-blue-600'}`}>
                         {profileData.email}
                     </Typography>

@@ -3,8 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { Box, Typography } from '@mui/material';
 import useEditorStore from '../store/globalStore';
 import { useLoginStore } from '../store/loginStore';
-import { BackgroundPattern, cn, LoginSwitch, PersonalSection, ProfileCard, ProfileHeader, SecuritySection } from '../components';
+import { BackgroundPattern, ButtonComponent, cn, LoginSwitch, PersonalSection, ProfileCard, ProfileHeader, SecuritySection } from '../components';
 import { AccountManagementSection, NotificationSection } from '../components/profilePage';
+import { Check } from '@mui/icons-material';
 
 const ProfilePage = () => {
     const { darkMode, setDarkMode } = useEditorStore();
@@ -164,7 +165,16 @@ const ProfilePage = () => {
                     />
                 </Box>
 
-                <Box className="mt-6 md:mt-8 text-center">
+            <div className='md:hidden block pt-5 text-end'>
+                <ButtonComponent
+                    type='button'
+                    btnText={'Save Changes'}
+                    startIcon={<Check />}
+                    styles={{ width: "fit-content" }}
+                    darkMode={darkMode}
+                />
+            </div>
+                <Box className="mt-2 md:mt-8 text-center">
                     <Typography variant="caption" className={darkMode ? "text-gray-400" : "text-gray-500"}>
                         © 2025 NotePad App • <span className="cursor-pointer hover:underline">Terms</span> • <span className="cursor-pointer hover:underline">Privacy</span>
                     </Typography>

@@ -21,13 +21,15 @@ export const AccountManagementSection = ({ darkMode, handleLogout }) => {
                                 Sign out from your account
                             </Typography>
                         </Box>
+                        <div className='text-center md:text-end w-full'>
                         <ButtonComponent
                             btnText={'Logout'}
                             startIcon={<Logout />}
                             darkMode={darkMode}
                             styles={{ width: "fit-content" }}
                             handleClick={handleLogout}
-                        />
+                            />
+                            </div>
                     </div>
                 </Box>
             </Box>
