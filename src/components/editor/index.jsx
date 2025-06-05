@@ -35,7 +35,6 @@ const Texteditor = ({ onChange, noteId }) => {
     const onEditorChange = useTextEditorStore(e => e.onEditorChange);
     const loginId = useLoginStore(e => e.loginId);
     const navbarLoader = useNavbarStore(e => e.loaders);
-
     const [initialContent, setInitialContent] = useState("");
     const [isInitialized, setIsInitialized] = useState(false);
     const currentContentRef = useRef("");
@@ -127,21 +126,13 @@ const Texteditor = ({ onChange, noteId }) => {
         async function loadNote() {
             try {
                 let content = "Start Writing...";
-
-                    const response = await getNoteContent(loginId, noteId);
-                    const apiContent = response?.data?.notes || "";
-                    if (apiContent && apiContent.trim() &&
-                        apiContent !== "Start Writing..." &&
-                        apiContent !== "<p>Start Writing...</p>") {
-                        content = apiContent;
-                    } else {
-                        const localContent = localStorage.getItem('editorContent');
-                        if (localContent && localContent.trim() &&
-                            localContent !== "Start Writing..." &&
-                            localContent !== "<p>Start Writing...</p>") {
-                            content = localContent;
-                            localStorage.setItem(content)
-                        }
+                const response = await getNoteContent(loginId, noteId);
+                const apiContent = response?.data?.notes ;
+                if (!apiContent) {
+                    content = "<p>Start writing...</p>"
+                }
+                else {
+                    content = apiContent;
                 }
                 setInitialContent(content);
                 currentContentRef.current = content;

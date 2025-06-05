@@ -12,13 +12,21 @@ import { RenameModal, Snackbar, cn } from "../../components";
 export const Navbar = () => {
     const [id, setId] = useState();
     const { isSidebarOpen, setSearch } = useEditorStore();
-    const { getNotes, data, loaders, addNote, editNote, deleteNote, searchquery, onNavbarChange } = useNavbarStore();
+    const { getNotes, data, loaders, addNote, editNote, deleteNote, searchquery, onNavbarChange, noteId } = useNavbarStore();
 
     useEffect(() => {
         async function getNote() {
             const response = await getNotes();
-            setId(response?.data?.notes[0]?.uuid);
-            onNavbarChange("noteId", JSON.stringify(response?.data?.notes[0]?.id));
+            const localUuid = localStorage.getItem("uuid");
+            if (localUuid && noteId) {
+                handleNavigate(localUuid, noteId);
+                setId(localUuid);
+                onNavbarChange("noteId", noteId); 
+            }
+            else {
+                setId(response?.data?.notes[0]?.uuid);
+                onNavbarChange("noteId", response?.data?.notes[0]?.id); 
+            }
         };
         getNote();
     },[]);
@@ -65,7 +73,7 @@ export const Navbar = () => {
     };
 
     const handleNavigate = (uuid, noteId) => {
-        onNavbarChange("noteId",JSON.stringify(noteId));
+        onNavbarChange("noteId",noteId);
         if (uuid) {
             navigate(`/note-pad/${uuid}`);
         }

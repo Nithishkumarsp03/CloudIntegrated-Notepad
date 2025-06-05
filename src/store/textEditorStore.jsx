@@ -27,6 +27,7 @@
 
         getNoteContent: async (loginId, noteId) => {
             const { onLoadersChange, notesummary } = get();
+            console.log(notesummary )
             if (!notesummary[noteId]) { 
                 onLoadersChange("textEditorLoading", true);
                 const response = await FetchNoteSummary(loginId, noteId);
