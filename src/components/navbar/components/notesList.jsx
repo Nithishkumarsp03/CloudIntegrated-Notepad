@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import { cn } from "../../cn";
-import useEditorStore from "../../../store/globalStore";
 import NoTabsFound from "./noTabs";
 import NoteItem from "./noteItems";
 import { Skeleton } from "@mui/material";
@@ -10,8 +9,9 @@ import { useNavbarStore } from "../../../store/navbarStore";
 const NotesList = ({ filter, isMobile, id, setId, handleMenuClick, loading, handleuuid }) => {
     const { tabSaved, addNoteContent } = useTextEditorStore();
     const { noteId } = useNavbarStore();
-
     const handleClick = (uuid, note_id) => {
+        localStorage.setItem("uuid", uuid);
+        localStorage.setItem("note_id", note_id);
         if (!tabSaved) {
             const notes = localStorage.getItem("editorContent");
             addNoteContent(noteId, notes);

@@ -1,16 +1,22 @@
 import axios from "axios";
 import { NOTES_SUMMARY_URL } from "../globalApi";
 
-export const AddNoteSummary = (loginId,noteId,notes) => {
+export const AddNoteSummary = async (loginId, noteId, notes) => {
     try {
-        const response = axios.post(`${NOTES_SUMMARY_URL}/addnew-notedetails`,{
+        const response = await axios.post(`${NOTES_SUMMARY_URL}/addnew-notedetails`, {
             loginId,
             noteId,
-            notes
+            notes,
         });
+
         return { state: true, data: response.data };
-    }
-    catch (err) {
-        return { state: false, message:err?.data?.response?.message };
+    } catch (err) {
+        if (!err.response) {
+            return { state: false, message: "Network error. Please try again." };
+        }
+        return {
+            state: false,
+            message: err.response?.data?.message || "Something went wrong.",
+        };
     }
 };

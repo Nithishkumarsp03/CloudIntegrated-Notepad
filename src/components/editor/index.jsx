@@ -35,11 +35,11 @@ const Texteditor = ({ onChange, noteId }) => {
     const onEditorChange = useTextEditorStore(e => e.onEditorChange);
     const loginId = useLoginStore(e => e.loginId);
     const navbarLoader = useNavbarStore(e => e.loaders);
-
     const [initialContent, setInitialContent] = useState("");
     const [isInitialized, setIsInitialized] = useState(false);
     const currentContentRef = useRef("");
     const isToolbarActionRef = useRef(false);
+    console.log("content:",initialContent)
 
     const saveToLocalStorage = useCallback((html) => {
         if (html && html.trim() &&
@@ -47,6 +47,11 @@ const Texteditor = ({ onChange, noteId }) => {
             html !== "<p>Start Writing...</p>" &&
             html !== "<p></p>") {
             try {
+                const sizeInBytes = new Blob([html]).size;
+                if (sizeInBytes > 4 * 1024 * 1024) { 
+                    console.warn('Content too large for localStorage');
+                    return;
+                }
                 localStorage.setItem('editorContent', html);
             } catch (error) {
                 console.warn('Failed to save to localStorage:', error);
@@ -106,6 +111,7 @@ const Texteditor = ({ onChange, noteId }) => {
         if (!transaction.docChanged) return;
 
         const html = editor.getHTML();
+        console.log(html)
         if (currentContentRef.current === html) return;
 
         currentContentRef.current = html;
@@ -127,21 +133,13 @@ const Texteditor = ({ onChange, noteId }) => {
         async function loadNote() {
             try {
                 let content = "Start Writing...";
-
-                    const response = await getNoteContent(loginId, noteId);
-                    const apiContent = response?.data?.notes || "";
-                    if (apiContent && apiContent.trim() &&
-                        apiContent !== "Start Writing..." &&
-                        apiContent !== "<p>Start Writing...</p>") {
-                        content = apiContent;
-                    } else {
-                        const localContent = localStorage.getItem('editorContent');
-                        if (localContent && localContent.trim() &&
-                            localContent !== "Start Writing..." &&
-                            localContent !== "<p>Start Writing...</p>") {
-                            content = localContent;
-                            localStorage.setItem(content)
-                        }
+                const response = await getNoteContent(loginId, noteId);
+                const apiContent = response?.data?.notes ;
+                if (!apiContent) {
+                    content = "<p>Start writing...</p>"
+                }
+                else {
+                    content = apiContent;
                 }
                 setInitialContent(content);
                 currentContentRef.current = content;
@@ -173,6 +171,7 @@ const Texteditor = ({ onChange, noteId }) => {
 
     useEffect(() => {
         if (editor && isInitialized && initialContent) {
+            console.log('Setting editor content:', initialContent);
             if (editor.getHTML() !== initialContent) {
                 editor.commands.setContent(initialContent, false);
                 currentContentRef.current = initialContent;
