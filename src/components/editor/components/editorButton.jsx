@@ -47,7 +47,6 @@ const EditorButton = ({ handleClick, btnText, classes, handlePressed }) => {
         styles={darkMode ? darkStyles : lightStyles}
         handleClick={handleClick}
         pressed={handlePressed}
-        onPressed={handlePressed}
       />
     </div>
   );

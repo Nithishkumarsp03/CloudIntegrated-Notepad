@@ -19,8 +19,6 @@ export const ButtonComponent = ({
   fullWidth = true,
   disabled = false,
   loading = false,
-  pressed,
-  onPressed,
   onKey,
 }) => {
   const [iconState, setIconState] = useState({
@@ -128,7 +126,6 @@ export const ButtonComponent = ({
           color: "rgba(255, 255, 255, 0.7)",
           boxShadow: "none",
         },
-
         ...styles
       }}
       startIcon={loading ? null : startIcon}
@@ -136,8 +133,6 @@ export const ButtonComponent = ({
       variant={variant}
       fullWidth={fullWidth}
       onClick={handleOnClick}
-      pressed={pressed}
-      onPressed={onPressed}
       onMouseEnter={() => {
         if (!loading) {
           setIconState(prev => ({ ...prev, hover: true, mouseEnter: true }));
@@ -165,32 +160,6 @@ export const ButtonComponent = ({
         <span className="relative z-10 font-normal text-nowrap">
           {children ? children : btnText}
         </span>
-      )}
-
-      {imgAnim && !loading && !isMobile && endIcon && (
-        <span
-          className={`
-            absolute transition-all duration-300 flex items-center
-            ${iconState.animate ? 'animate-bounce-right' : ''}
-            ${iconState.hover ? 'right-4 opacity-100' : 'right-[-20px] opacity-0'}
-          `}
-          style={{
-            top: '50%',
-            transform: 'translateY(-50%)',
-          }}
-        >
-          {endIcon}
-        </span>
-      )}
-
-      {isRipple && !loading && (
-        <span
-          className={`
-            absolute top-0 left-0 right-0 bottom-0 
-            bg-white opacity-0 pointer-events-none
-            ${iconState.animate ? 'animate-ripple' : ''}
-          `}
-        />
       )}
     </Button>
   );

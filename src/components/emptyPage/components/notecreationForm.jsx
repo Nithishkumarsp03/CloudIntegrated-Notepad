@@ -32,24 +32,6 @@ export const NoteCreationForm = ({
         }
     }, [showInput]);
 
-    const buttonStyles = {
-        width: "fit-content",
-        height: showInput ? "42px" : "44px",
-        backgroundColor: darkMode ? "#7C3AED" : "#2563EB",
-        color: "white",
-        borderRadius: "8px",
-        textTransform: "none",
-        fontWeight: 500,
-        fontSize: "0.875rem",
-        "&:hover": {
-            backgroundColor: darkMode ? "#6D28D9" : "#3B82F6",
-            boxShadow: "0 4px 12px rgba(79, 70, 229, 0.2)"
-        },
-        "&:active": {
-            backgroundColor: darkMode ? "#5B21B6" : "#1D4ED8"
-        }
-    };
-
     return (
         <>
             {showInput ? (
@@ -63,21 +45,23 @@ export const NoteCreationForm = ({
                         onKeyDown={handleKeyPress}
                     />
 
+                    <div>
                     <ButtonComponent
                         btnText="Create"
                         startIcon={<Add />}
                         handleClick={handleCreateNote}
-                        styles={buttonStyles}
-                    />
+                        />
+                    </div>
                 </div>
             ) : (
-                <ButtonComponent
+                <div className='text-center'>
+                    <ButtonComponent
                     btnText="Create New Note"
                     startIcon={<Add />}
                     loading={loaders.isAddLoading}
                     handleClick={toggleInputField}
-                    styles={buttonStyles}
-                />
+                        />
+                    </div>
             )}
         </>
     );

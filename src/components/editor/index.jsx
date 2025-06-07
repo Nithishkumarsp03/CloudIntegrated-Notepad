@@ -20,48 +20,46 @@ import { useLoginStore } from '../../store/loginStore';
 import { useTextEditorStore } from '../../store/textEditorStore';
 import TextEditorSkeleton from './components/editorSkeleton';
 import { useNavbarStore } from '../../store/navbarStore';
+import { EmptyStateContent } from '../emptyPage';
 
-const createDebounce = (fn, delay) => {
-    let timeoutId;
+function debounce(fn, delay) {
+    let timer;
     return (...args) => {
-        clearTimeout(timeoutId);
-        timeoutId = setTimeout(() => fn(...args), delay);
+        clearTimeout(timer);
+        timer = setTimeout(() => fn(...args), delay);
     };
 };
-
+  
 const Texteditor = ({ onChange, noteId }) => {
     const getNoteContent = useTextEditorStore(e => e.getNoteContent);
-    const loaders = useTextEditorStore(e => e.loaders);
+    const loaders = useTextEditorStore(e => e.notesLoading);
     const onEditorChange = useTextEditorStore(e => e.onEditorChange);
     const loginId = useLoginStore(e => e.loginId);
+    const saveEditorLoading = useTextEditorStore(e => e.saveEditorLoading);
+    const addNoteContent = useTextEditorStore(e => e.addNoteContent);
     const navbarLoader = useNavbarStore(e => e.loaders);
     const [initialContent, setInitialContent] = useState("");
     const [isInitialized, setIsInitialized] = useState(false);
+    const [saved, setSaved] = useState(false);
     const currentContentRef = useRef("");
     const isToolbarActionRef = useRef(false);
-    console.log("content:",initialContent)
 
-    const saveToLocalStorage = useCallback((html) => {
-        if (html && html.trim() &&
-            html !== "Start Writing..." &&
-            html !== "<p>Start Writing...</p>" &&
-            html !== "<p></p>") {
-            try {
-                const sizeInBytes = new Blob([html]).size;
-                if (sizeInBytes > 4 * 1024 * 1024) { 
-                    console.warn('Content too large for localStorage');
-                    return;
-                }
-                localStorage.setItem('editorContent', html);
-            } catch (error) {
-                console.warn('Failed to save to localStorage:', error);
-            }
+    useEffect(() => { 
+        if (saveEditorLoading) {
+            setSaved(true);
         }
-    }, []);
+        if (!saveEditorLoading) {
+            setTimeout(() => {
+                setSaved(false);
+            },[3000])
+        }
+    }, [saveEditorLoading]);
 
-    const debouncedSave = useMemo(() => createDebounce(saveToLocalStorage, 1000), [saveToLocalStorage]);
-    const debouncedStateUpdate = useMemo(() => createDebounce(() => onEditorChange("tabSaved", false), 500), [onEditorChange]);
-    const debouncedOnChange = useMemo(() => createDebounce((html) => onChange?.(html), 300), [onChange]);
+    const addNote = async (notes) => {
+        await addNoteContent(notes);
+     };
+
+    const debouncedSave = debounce(addNote,1000); 
 
     const extensions = useMemo(() => [
         StarterKit.configure({
@@ -109,25 +107,13 @@ const Texteditor = ({ onChange, noteId }) => {
 
     const handleUpdate = useCallback(({ editor, transaction }) => {
         if (!transaction.docChanged) return;
-
+        onEditorChange("tabSaved", false);
         const html = editor.getHTML();
-        console.log(html)
-        if (currentContentRef.current === html) return;
-
-        currentContentRef.current = html;
-        const isToolbarAction = isToolbarActionRef.current;
-
-        if (isToolbarAction) {
-            saveToLocalStorage(html);
-            onEditorChange("tabSaved", false);
-            onChange?.(html);
-            isToolbarActionRef.current = false;
-        } else {
-            debouncedSave(html);
-            debouncedStateUpdate();
-            debouncedOnChange(html);
+        localStorage.setItem("editorContent", html);
+        if (html) {
+            debouncedSave(html)
         }
-    }, [saveToLocalStorage, onEditorChange, onChange, debouncedSave, debouncedStateUpdate, debouncedOnChange]);
+     }, [onEditorChange, onChange]);
 
     useEffect(() => {
         async function loadNote() {
@@ -156,7 +142,7 @@ const Texteditor = ({ onChange, noteId }) => {
 
     const editor = useEditor({
         extensions,
-        content: "",
+        content:"",
         onUpdate: handleUpdate,
         editorProps: {
             attributes: {
@@ -171,7 +157,6 @@ const Texteditor = ({ onChange, noteId }) => {
 
     useEffect(() => {
         if (editor && isInitialized && initialContent) {
-            console.log('Setting editor content:', initialContent);
             if (editor.getHTML() !== initialContent) {
                 editor.commands.setContent(initialContent, false);
                 currentContentRef.current = initialContent;
@@ -194,7 +179,7 @@ const Texteditor = ({ onChange, noteId }) => {
         isToolbarActionRef.current = true;
     }, []);
 
-    if (navbarLoader.isNotesLoading || loaders.textEditorLoading) {
+    if (navbarLoader.isNotesLoading || loaders[noteId]) {
         return (
             <div className='w-full h-full flex flex-col gap-4'>
                 <div className="flex-grow overflow-auto h-full w-full scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100 dark:scrollbar-thumb-purple-600 dark:scrollbar-track-gray-800 dark:bg-gray-800 bg-gray-50 border border-gray-300 dark:border-gray-800 rounded-lg">
@@ -208,9 +193,21 @@ const Texteditor = ({ onChange, noteId }) => {
     return (
         <div className='w-full h-full flex flex-col gap-4'>
             <div
-                className="flex-grow overflow-auto h-full w-full text-wrap whitespace-break-spaces scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100 dark:scrollbar-thumb-purple-600 dark:scrollbar-track-gray-800 dark:bg-gray-800 bg-gray-50 border border-gray-300 dark:border-gray-800 rounded-lg cursor-text"
+                className="relative flex-grow overflow-auto h-full w-full text-wrap whitespace-break-spaces scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100 dark:scrollbar-thumb-purple-600 dark:scrollbar-track-gray-800 dark:bg-gray-800 bg-gray-50 border border-gray-300 dark:border-gray-800 rounded-lg cursor-text"
                 onClick={handleEditorClick}
             >
+                {saved &&
+                    <div className='absolute bottom-1 right-2 dark:bg-gray-800 bg-gray-50 text-gray-400 text-md flex'>
+                        {saveEditorLoading ?
+                            <>
+                        <div>Saving</div>
+                        <div>.</div>
+                        <div>.</div>
+                        <div>.</div>
+                            </>
+                        :<div>Saved</div>}
+                    </div>
+                }
                 <EditorContent
                     editor={editor}
                     className="h-full text-wrap whitespace-break-spaces"
@@ -219,7 +216,7 @@ const Texteditor = ({ onChange, noteId }) => {
             <EditorToolKit
                 editor={editor}
                 onToolbarAction={markToolbarAction}
-            />
+                    />
         </div>
     );
 };
@@ -228,3 +225,5 @@ export default React.memo(Texteditor, (prevProps, nextProps) => {
     return prevProps.noteId === nextProps.noteId &&
         prevProps.onChange === nextProps.onChange;
 });
+
+

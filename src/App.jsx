@@ -9,24 +9,26 @@ import OnboardingFlow from './screens/onBoardingFlow';
 import EmptyStatePage from './screens/emptyPage';
 import TwoStepAuthentication from './screens/twoStepAuth';
 import TextEditorDisplay from './screens/editorDisplay';
+import NotePad from './screens/notePad';
 
 function App() {
   return (
     <div className="w-screen h-screen">
-        <BrowserRouter>
-          <Routes>
-            <Route path='/' element={<LoginPage />}/>
-              <Route path='/onBoarding-flow' element={<OnboardingFlow />} />
-              <Route path='/forgotPassword' element={<ForgotPassword/>}/>
-            <Route path='/twoStepAuth' element={<TwoStepAuthentication />} />
-            <Route element={<Protect />}>
+      <BrowserRouter>
+        <Routes>
+          <Route path='/login' element={<LoginPage />} />
+          <Route path='/onBoarding-flow' element={<OnboardingFlow />} />
+          <Route path='/forgotPassword' element={<ForgotPassword />} />
+          <Route path='/twoStepAuth' element={<TwoStepAuthentication />} />
+          <Route element={<Protect />}>
             <Route path='/profile' element={<ProfilePage />} />
-              <Route path='/notes' element={<EmptyStatePage/>}/>
+            <Route path='/notes' element={<EmptyStatePage />} />
+            <Route path='/' element={<NotePad />} />
             <Route path='/note-pad/:id' element={<Main />} />
-            <Route path='/shareEditor/:id' element = {<TextEditorDisplay/>}/>
-            </Route>
+            <Route path='/shareEditor/:id' element={<TextEditorDisplay />} />
+          </Route>
         </Routes>
-        </BrowserRouter>
+      </BrowserRouter>
     </div>
   );
 }

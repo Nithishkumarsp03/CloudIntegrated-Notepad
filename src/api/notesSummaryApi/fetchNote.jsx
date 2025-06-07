@@ -7,7 +7,6 @@ export const FetchNoteSummary = async (loginId, noteId) => {
             loginId,
             noteId,
         });
-        console.log("message:", response.data.message);
         return { state: true, data: response?.data?.data };
     } catch (err) {
         if (!err.response) {

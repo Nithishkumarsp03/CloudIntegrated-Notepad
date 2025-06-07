@@ -40,7 +40,7 @@ const OnboardingFlow = () => {
   const email = localStorage.getItem("email");
 
   if (!email) {
-    navigate('/');
+    navigate('/login');
   }
 
   useEffect(() => {

@@ -5,6 +5,7 @@
 export const useNavbarStore = create((set, get) => ({
     isSideBarOpen: false,
     data: [],
+    notePadVisited:false,
     searchquery: "",
     noteId:localStorage.getItem("note_id"),
     loaders: {
