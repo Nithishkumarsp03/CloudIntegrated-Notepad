@@ -9,7 +9,7 @@ import { Check } from '@mui/icons-material';
 
 const ProfilePage = () => {
     const { darkMode, setDarkMode } = useEditorStore();
-    const { twoFa, onChange, notification, userName, email, gender, phone, profilePicture } = useLoginStore();    
+    const { twoFa, onChange, notification, userName, email, gender, phone, profilePicture } = useLoginStore();
     const navigate = useNavigate();
     const fileInputRef = useRef(null);
     const [profileData, setProfileData] = useState({
@@ -112,69 +112,85 @@ const ProfilePage = () => {
             "max-h-screen overflow-x-hidden relative scrollbar-none pt-16 lg:pt-0",
             darkMode ? "bg-gradient-to-b from-gray-900 to-gray-800" : "bg-gradient-to-b from-blue-50 to-purple-50"
         )}>
-             <LoginSwitch setDarkMode={setDarkMode} darkMode={darkMode} />
+            <LoginSwitch setDarkMode={setDarkMode} darkMode={darkMode} />
             <BackgroundPattern darkMode={darkMode} />
 
             <Box className="relative z-10 max-w-4xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                <ProfileHeader
-                    darkMode={darkMode}
-                    handleBack={handleBack}
-                    handleSave={handleSave}
-                />
-
-                <Box className="space-y-8">
-                    <ProfileCard
+                <Box className="relative z-30 mb-6">
+                    <ProfileHeader
                         darkMode={darkMode}
-                        profileData={profileData}
-                        twoFa={twoFa}
-                        notification={notification}
-                        previewImage={previewImage}
-                        fileInputRef={fileInputRef}
-                        handleFileChange={handleFileChange}
-                    />
-
-                    <PersonalSection
-                        darkMode={darkMode}
-                        edit={edit}
-                        handleEdit={handleEdit}
-                        tempData={tempData}
-                        handleProfileChange={handleProfileChange}
-                    />
-
-                    <SecuritySection
-                        darkMode={darkMode}
-                        twoFa={JSON.parse(twoFa)}
-                        onChange={onChange}
-                        showPasswordFields={showPasswordFields}
-                        togglePasswordFields={togglePasswordFields}
-                        passwordMessage={passwordMessage}
-                        passwordData={passwordData}
-                        setPasswordData={setPasswordData}
-                        handlePasswordChange={handlePasswordChange}
-                    />
-
-                    <NotificationSection
-                        darkMode={darkMode}
-                        notification={notification}
-                        onChange={onChange}
-                    />
-
-                    <AccountManagementSection
-                        darkMode={darkMode}
-                        handleLogout={handleLogout}
+                        handleBack={handleBack}
+                        handleSave={handleSave}
                     />
                 </Box>
 
-            <div className='md:hidden block pt-5 text-end'>
-                <ButtonComponent
-                    type='button'
-                    btnText={'Save Changes'}
-                    startIcon={<Check />}
-                    styles={{ width: "fit-content" }}
-                    darkMode={darkMode}
-                />
-            </div>
-                <Box className="mt-2 md:mt-8 text-center">
+                <Box className="relative z-20 space-y-8">
+                    <Box className="relative z-10">
+                        <ProfileCard
+                            darkMode={darkMode}
+                            profileData={profileData}
+                            twoFa={twoFa}
+                            notification={notification}
+                            previewImage={previewImage}
+                            fileInputRef={fileInputRef}
+                            handleFileChange={handleFileChange}
+                        />
+                    </Box>
+
+                    {/* Other Sections */}
+                    <Box className="relative z-10">
+                        <PersonalSection
+                            darkMode={darkMode}
+                            edit={edit}
+                            handleEdit={handleEdit}
+                            tempData={tempData}
+                            handleProfileChange={handleProfileChange}
+                        />
+                    </Box>
+
+                    <Box className="relative z-10">
+                        <SecuritySection
+                            darkMode={darkMode}
+                            twoFa={JSON.parse(twoFa)}
+                            onChange={onChange}
+                            showPasswordFields={showPasswordFields}
+                            togglePasswordFields={togglePasswordFields}
+                            passwordMessage={passwordMessage}
+                            passwordData={passwordData}
+                            setPasswordData={setPasswordData}
+                            handlePasswordChange={handlePasswordChange}
+                        />
+                    </Box>
+
+                    <Box className="relative z-10">
+                        <NotificationSection
+                            darkMode={darkMode}
+                            notification={notification}
+                            onChange={onChange}
+                        />
+                    </Box>
+
+                    <Box className="relative z-10">
+                        <AccountManagementSection
+                            darkMode={darkMode}
+                            handleLogout={handleLogout}
+                        />
+                    </Box>
+                </Box>
+
+                {/* Mobile Save Button */}
+                <Box className='md:hidden block pt-5 text-end relative z-20'>
+                    <ButtonComponent
+                        type='button'
+                        btnText={'Save Changes'}
+                        startIcon={<Check />}
+                        styles={{ width: "fit-content" }}
+                        darkMode={darkMode}
+                    />
+                </Box>
+
+                {/* Footer */}
+                <Box className="mt-2 md:mt-8 text-center relative z-10">
                     <Typography variant="caption" className={darkMode ? "text-gray-400" : "text-gray-500"}>
                         © 2025 NotePad App • <span className="cursor-pointer hover:underline">Terms</span> • <span className="cursor-pointer hover:underline">Privacy</span>
                     </Typography>
@@ -184,4 +200,4 @@ const ProfilePage = () => {
     );
 };
 
-export default ProfilePage;
+export default ProfilePage; 

@@ -21,6 +21,8 @@ import { useTextEditorStore } from '../../store/textEditorStore';
 import TextEditorSkeleton from './components/editorSkeleton';
 import { useNavbarStore } from '../../store/navbarStore';
 import { EmptyStateContent } from '../emptyPage';
+import { Dot } from '../../assets';
+import { TickMark } from '../../assets/svgs/tickMark';
 
 function debounce(fn, delay) {
     let timer;
@@ -197,17 +199,18 @@ const Texteditor = ({ onChange, noteId }) => {
                 onClick={handleEditorClick}
             >
                 {saved &&
-                    <div className='absolute bottom-1 right-2 dark:bg-gray-800 bg-gray-50 text-gray-400 text-md flex'>
+                    <div className='absolute bottom-1 text-md right-2 dark:bg-gray-800 bg-gray-50 text-gray-400 text-md flex'>
                         {saveEditorLoading ?
                             <>
                         <div>Saving</div>
-                        <div>.</div>
-                        <div>.</div>
-                        <div>.</div>
+                        <div className='animate-first'><Dot/></div>
+                        <div className='animate-second'><Dot/></div>
+                        <div className='animate-third'><Dot/></div>
                             </>
-                        :<div>Saved</div>}
+                    :<div className='flex gap-1.5 items-center'>Saved<TickMark /></div>
+                         } 
                     </div>
-                }
+                 }  
                 <EditorContent
                     editor={editor}
                     className="h-full text-wrap whitespace-break-spaces"
