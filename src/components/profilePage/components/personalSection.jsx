@@ -6,7 +6,7 @@ import FormSection from './formSection';
 import useEditorStore from '../../../store/globalStore';
 
 export const PersonalSection = ({ darkMode, edit, handleEdit, tempData, handleProfileChange }) => {
-    const textStyles = darkMode ? 'text-purple-200' : 'text-black';
+    const textStyles = `pl-0.5 !text-sm ${darkMode ? 'text-purple-200' : 'text-black'}`;
     return (
         <div>
             <div className='flex justify-between items-center mb-1'>
@@ -54,7 +54,6 @@ export const PersonalSection = ({ darkMode, edit, handleEdit, tempData, handlePr
                             labelId="gender-label"
                             value={tempData.gender}
                             onChange={handleProfileChange}
-                            label="Gender"
                             sx={{
                                 width: "100%",
                                 '& .MuiOutlinedInput-notchedOutline': {

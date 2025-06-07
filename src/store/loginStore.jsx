@@ -8,7 +8,7 @@ export const useLoginStore = create((set, get) => ({
     email: localStorage.getItem("email"),
     gender: localStorage.getItem("gender"),
     password: localStorage.getItem("password"),
-    twoFa: localStorage.getItem("twoFa"),
+    twoFa: JSON.parse(localStorage.getItem("twoFa")),
     notification: false,
     categoryId: localStorage.getItem("categoryId"),
     onBoardingData: [],

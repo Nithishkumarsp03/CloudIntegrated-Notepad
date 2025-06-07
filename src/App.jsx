@@ -21,9 +21,9 @@ function App() {
           <Route path='/forgotPassword' element={<ForgotPassword />} />
           <Route path='/twoStepAuth' element={<TwoStepAuthentication />} />
           <Route element={<Protect />}>
+            <Route path='/' element={<NotePad />} />
             <Route path='/profile' element={<ProfilePage />} />
             <Route path='/notes' element={<EmptyStatePage />} />
-            <Route path='/' element={<NotePad />} />
             <Route path='/note-pad/:id' element={<Main />} />
             <Route path='/shareEditor/:id' element={<TextEditorDisplay />} />
           </Route>

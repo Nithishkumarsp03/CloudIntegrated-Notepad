@@ -77,3 +77,71 @@ a {
   text-decoration: underline;
   font-weight: 500;
 }
+
+.animate-first {
+  opacity: 1;
+  padding-top: 10px;
+  margin-left: -1px;
+  animation: saveFirstChild 1s infinite linear;
+}
+
+.animate-second {
+  opacity: 1;
+  padding-top: 10px;
+  margin-left: -5px;
+  animation: saveSecondChild 1s infinite linear;
+  animation-delay: 0.2s;
+}
+
+.animate-third {
+  opacity: 1; 
+  padding-top: 10px;
+  margin-left: -5px;
+  animation: saveThirdChild 1s infinite linear;
+  animation-delay: 0.3s;
+}
+
+@keyframes saveFirstChild {
+  0%{
+    opacity: 1;
+  }
+  30%{
+    opacity: 1;
+  }
+  70% {
+    opacity: 0;
+  }
+  100%{
+    opacity: 0;
+  }
+}
+
+@keyframes saveSecondChild {
+  0%{
+    opacity: 1;
+  }
+  30%{
+    opacity: 1;
+  }
+  70% {
+    opacity: 0;
+  }
+  100%{
+    opacity: 0;
+  }
+}
+
+@keyframes saveThirdChild {
+  0%{
+    opacity: 1;
+  }
+  30%{
+    opacity: 1;
+  }
+  70% {
+    opacity: 0;
+  }
+  100%{
+    opacity: 0;
+  }
+}

@@ -19,7 +19,9 @@ import {ShareIcon} from './svgs/share';
 import { MoonIcon } from './svgs/moon';
 import { SunIcon } from './svgs/sun';
 import NotePadImg from './notePadImg.svg';
+import { Dot } from './svgs/dot';
 export {
+  Dot,
   NotePadImg,
   Bold,
   Underline,
