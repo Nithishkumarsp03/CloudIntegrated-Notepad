@@ -7,10 +7,21 @@
     export const useTextEditorStore = create((set, get) => ({
         tabSaved: true,
         notesummary: {},
+        notesLoading:{},
         loaders: {
-            textEditorLoading: false
+            textEditorLoading: false,
+            saveEditorLoading:false
         },
 
+        onNotesLoading: (key, bool) => {
+            set((state) => ({
+                notesLoading: {
+                    ...state.notesLoading,
+                    [key]: bool, 
+                }
+            }));
+        },
+          
         onEditorChange: (key, value) => {
             set({ [key]: value });
         },
@@ -26,10 +37,9 @@
         },
 
         getNoteContent: async (loginId, noteId) => {
-            const { onLoadersChange, notesummary } = get();
-            console.log(notesummary )
+            const { onNotesLoading, notesummary } = get();
+            onNotesLoading(noteId, true);
             if (!notesummary[noteId]) { 
-                onLoadersChange("textEditorLoading", true);
                 const response = await FetchNoteSummary(loginId, noteId);
                 if (response?.data?.notes) {
                     const updatedData = { ...notesummary,[noteId]: response?.data?.notes };
@@ -39,22 +49,32 @@
                     const updatedData = { ...notesummary, [noteId]: "<p>Start Writing...</p>" };
                     set({ notesummary: updatedData });
                 }
-                onLoadersChange("textEditorLoading", false);
+                onNotesLoading(noteId, false);
                 return response;
             } else {
-                return { data: { notes: notesummary[noteId] } };
+                onNotesLoading(noteId, false);
+                const data = { data: { notes: notesummary[noteId] } };
+                return data;
             }
         },
 
-        addNoteContent: async () => {
+        addNoteContent: async (data) => {
+            let notes = data;
+            if (!notes) {
+                notes = localStorage.getItem("editorContent");
+            }
+            set({ saveEditorLoading: true });
             const { loginId } = useLoginStore.getState();
             const { noteId } = useNavbarStore.getState();
-            const { notesummary } = get();
-            const notes = localStorage.getItem(`editorContent`);
-            const response = await AddNoteSummary(loginId, noteId, notes);
-            const updatedData = { ...notesummary, [noteId]: notes };
-            set({ tabSaved: true, notesummary:updatedData });
-            return response;
+            const { notesummary, tabSaved } = get();
+            if (!tabSaved) {
+                const response = await AddNoteSummary(loginId, noteId, notes);
+                const updatedData = { ...notesummary, [noteId]: notes };
+                set({ tabSaved: true, notesummary: updatedData });
+                set({ saveEditorLoading: false });
+                return response;
+            }
+            set({ saveEditorLoading: false });
         }
 
     }))

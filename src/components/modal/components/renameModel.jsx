@@ -8,31 +8,81 @@ import {
     Button,
     Typography,
     Box,
-    IconButton
+    IconButton,
+    FormHelperText
 } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
 import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import useEditorStore from "../../../store/globalStore";
 import { ButtonComponent } from "../../../components";
 
 export const RenameModal = ({ open, onClose, onRename, placeholder = "Enter new file name", heading = "Rename File", value = '' }) => {
     const [newName, setNewName] = useState(value);
+    const [error, setError] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
     const darkMode = useEditorStore((state) => state.darkMode);
 
     const handleInputChange = (event) => {
-        setNewName(event.target.value);
+        const inputValue = event.target.value;
+        setNewName(inputValue);
+
+        // Clear error when user starts typing
+        if (error && inputValue.trim()) {
+            setError(false);
+            setErrorMessage('');
+        }
     };
 
     useEffect(() => {
         setNewName(value);
+        setError(false);
+        setErrorMessage('');
     }, [value]);
 
-    const handleRename = () => {
-        onClose();
-        if (newName.trim()) {
-            onRename(newName);
-            setNewName("");
+    const validateInput = (name) => {
+        const trimmedName = name.trim();
+
+        if (!trimmedName) {
+            setError(true);
+            setErrorMessage('File name cannot be empty');
+            return false;
         }
+
+        if (trimmedName.length > 100) {
+            setError(true);
+            setErrorMessage('File name is too long (max 100 characters)');
+            return false;
+        }
+
+        // Check for invalid characters
+        const invalidChars = /[<>:"/\\|?*]/;
+        if (invalidChars.test(trimmedName)) {
+            setError(true);
+            setErrorMessage('File name contains invalid characters');
+            return false;
+        }
+
+        // Check if name starts or ends with spaces/dots
+        if (trimmedName !== name || trimmedName.startsWith('.') || trimmedName.endsWith('.')) {
+            setError(true);
+            setErrorMessage('Invalid file name format');
+            return false;
+        }
+
+        return true;
+    };
+
+    const handleRename = () => {
+        if (!validateInput(newName)) {
+            return;
+        }
+
+        setError(false);
+        setErrorMessage('');
+        onRename(newName);
+        onClose();
+        setNewName("");
     };
 
     const colors = {
@@ -54,6 +104,12 @@ export const RenameModal = ({ open, onClose, onRename, placeholder = "Enter new 
             primaryHover: darkMode ? "#6D28D9" : "#1D4ED8",
             text: darkMode ? "#9CA3AF" : "#64748B",
             textHover: darkMode ? "rgba(156, 163, 175, 0.08)" : "#475569"
+        },
+        error: {
+            main: darkMode ? "#F87171" : "#EF4444",
+            bg: darkMode ? "rgba(248, 113, 113, 0.12)" : "rgba(239, 68, 68, 0.08)",
+            border: darkMode ? "#F87171" : "#EF4444",
+            text: darkMode ? "#FCA5A5" : "#EF4444"
         }
     };
 
@@ -128,28 +184,39 @@ export const RenameModal = ({ open, onClose, onRename, placeholder = "Enter new 
                         value={newName}
                         onChange={handleInputChange}
                         placeholder={placeholder}
+                        error={error}
                         InputLabelProps={{
                             style: { color: colors.text.placeholder },
                         }}
                         sx={{
                             '& .MuiInputBase-root': {
-                                color: colors.text.primary,
-                                backgroundColor: colors.inputBg,
+                                color: error ? colors.error.main : colors.text.primary,
+                                backgroundColor: error ? colors.error.bg : colors.inputBg,
                                 fontSize: '0.95rem',
                                 transition: 'all 0.2s ease-in-out',
                             },
                             '& .MuiOutlinedInput-root': {
                                 borderRadius: "8px",
                                 '& fieldset': {
-                                    borderColor: colors.border.default,
+                                    borderColor: error ? colors.error.border : colors.border.default,
                                     transition: 'border-color 0.2s ease-in-out',
                                 },
                                 '&:hover fieldset': {
-                                    borderColor: colors.border.hover,
+                                    borderColor: error ? colors.error.border : colors.border.hover,
                                 },
                                 '&.Mui-focused fieldset': {
-                                    borderColor: colors.border.focus,
-                                    borderWidth: '1px',
+                                    borderColor: error ? colors.error.border : colors.border.focus,
+                                    borderWidth: error ? '2px' : '1px',
+                                },
+                                '&.Mui-error fieldset': {
+                                    borderColor: colors.error.border,
+                                },
+                                '&.Mui-error:hover fieldset': {
+                                    borderColor: colors.error.border,
+                                },
+                                '&.Mui-error.Mui-focused fieldset': {
+                                    borderColor: colors.error.border,
+                                    borderWidth: '2px',
                                 },
                             },
                             '& .MuiInputBase-input': {
@@ -157,6 +224,29 @@ export const RenameModal = ({ open, onClose, onRename, placeholder = "Enter new 
                             },
                         }}
                     />
+                    {error && (
+                        <Box sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 0.5,
+                            mt: 1,
+                            px: 1
+                        }}>
+                            <ErrorOutlineIcon sx={{
+                                fontSize: '0.875rem',
+                                color: colors.error.main,
+                                flexShrink: 0
+                            }} />
+                            <FormHelperText sx={{
+                                color: colors.error.text,
+                                fontSize: '0.75rem',
+                                margin: 0,
+                                fontWeight: 500
+                            }}>
+                                {errorMessage}
+                            </FormHelperText>
+                        </Box>
+                    )}
                 </Box>
             </DialogContent>
 
@@ -186,19 +276,19 @@ export const RenameModal = ({ open, onClose, onRename, placeholder = "Enter new 
                     styles={{
                         width: "120px",
                         height: "36px",
-                        backgroundColor: colors.button.primary,
+                        backgroundColor: error ? colors.error.main : colors.button.primary,
                         color: "white",
                         borderRadius: "6px",
                         textTransform: "none",
                         fontWeight: 500,
                         fontSize: "0.875rem",
                         "&:hover": {
-                            backgroundColor: colors.button.primaryHover,
+                            backgroundColor: error ? colors.error.main : colors.button.primaryHover,
                             boxShadow: darkMode ? "0 2px 4px rgba(0,0,0,0.3)" : "0 2px 4px rgba(0,0,0,0.1)",
                             transform: "translateY(-1px)"
                         },
                         "&:active": {
-                            backgroundColor: darkMode ? "#5B21B6" : "#1D4ED8",
+                            backgroundColor: error ? colors.error.main : (darkMode ? "#5B21B6" : "#1D4ED8"),
                             transform: "translateY(0)"
                         },
                         "&.Mui-disabled": {
@@ -211,4 +301,3 @@ export const RenameModal = ({ open, onClose, onRename, placeholder = "Enter new 
         </Dialog>
     );
 };
-

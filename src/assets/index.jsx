@@ -18,8 +18,9 @@ import {SaveIcon} from './svgs/save';
 import {ShareIcon} from './svgs/share';
 import { MoonIcon } from './svgs/moon';
 import { SunIcon } from './svgs/sun';
-
+import NotePadImg from './notePadImg.svg';
 export {
+  NotePadImg,
   Bold,
   Underline,
   LeftAlign,

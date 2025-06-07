@@ -7,7 +7,8 @@ import { useTextEditorStore } from "../../../store/textEditorStore";
 import { useNavbarStore } from "../../../store/navbarStore";
 
 const NotesList = ({ filter, isMobile, id, setId, handleMenuClick, loading, handleuuid }) => {
-    const { tabSaved, addNoteContent } = useTextEditorStore();
+    const tabSaved = useTextEditorStore(e => e.tabSaved);
+    const addNoteContent = useTextEditorStore(e => e.addNoteContent);
     const { noteId } = useNavbarStore();
     const handleClick = (uuid, note_id) => {
         localStorage.setItem("uuid", uuid);

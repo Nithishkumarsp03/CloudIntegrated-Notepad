@@ -3,12 +3,14 @@ import { Box, MenuItem, Select, FormControl, InputLabel } from '@mui/material';
 import { Edit, Check } from '@mui/icons-material';
 import { InputField, ButtonComponent } from '../../../components';
 import FormSection from './formSection';
+import useEditorStore from '../../../store/globalStore';
 
 export const PersonalSection = ({ darkMode, edit, handleEdit, tempData, handleProfileChange }) => {
+    const textStyles = darkMode ? 'text-purple-200' : 'text-black';
     return (
-        <FormSection title="Personal Information" darkMode={darkMode}>
-            <Box className="p-5">
-                <div className='flex justify-end mb-4'>
+        <div>
+            <div className='flex justify-between items-center mb-1'>
+                <p className={textStyles}>Personal Information</p>
                     <ButtonComponent
                         btnText={!edit ? 'Save Changes' : 'Edit'}
                         startIcon={edit ? <Edit /> : <Check />}
@@ -16,46 +18,35 @@ export const PersonalSection = ({ darkMode, edit, handleEdit, tempData, handlePr
                         darkMode={darkMode}
                         styles={{ width: "fit-content" }}
                     />
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <InputField
-                        name="userName"
+            </div>
+        <FormSection darkMode={darkMode}>
+            <Box className="p-5">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    <div className='flex flex-col gap-2'>
+                    <p className={textStyles}>UserName</p>
+                        <InputField
+                            name="UserName"
                         disabled={edit}
                         darkMode={darkMode}
                         styles={{ '& .MuiInputBase-root': { height: "55px" } }}
-                        label="Full Name"
                         value={tempData.userName}
                         onChange={handleProfileChange}
-                    />
+                        />
+                    </div>
+                    <div className='flex flex-col gap-2'>
+                        <p className={textStyles}>Email</p>
                     <InputField
                         name="email"
                         disabled={edit}
                         darkMode={darkMode}
                         styles={{ '& .MuiInputBase-root': { height: "55px" } }}
-                        label="Email"
                         value={tempData.email}
                         onChange={handleProfileChange}
                     />
-
+                    </div>
                     <FormControl fullWidth variant="outlined" >
-                        <InputLabel
-                            id="gender-label"
-                            sx={{
-                                color: edit
-                                    ? (darkMode ? "#ffffff" : "#000000")
-                                    : (darkMode ? "rgb(233, 213, 255)" : "#0b6bcb"),
-                                '&.Mui-focused': {
-                                    color: darkMode ? "rgb(233, 213, 255)" : "#0b6bcb"
-                                },
-                                '&.Mui-disabled': {
-                                    color: darkMode ? "#ffffff !important" : "#000000 !important"
-                                }
-                            }}
-                        >
-                            Gender
-                        </InputLabel>
-
+                        <div className='flex flex-col gap-1'>
+                        <p className={textStyles}>Gender</p>
                         <Select
                             fullWidth
                             name="gender"
@@ -129,11 +120,14 @@ export const PersonalSection = ({ darkMode, edit, handleEdit, tempData, handlePr
                             <MenuItem value="male">Male</MenuItem>
                             <MenuItem value="female">Female</MenuItem>
                             <MenuItem value="other">Rather not say</MenuItem>
-                        </Select>
+                            </Select>
+                            </div>
                     </FormControl>
+           
                 </div>
             </Box>
-        </FormSection>
+            </FormSection>
+        </div>
     );
 };
 

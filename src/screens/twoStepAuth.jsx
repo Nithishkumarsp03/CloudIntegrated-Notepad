@@ -47,7 +47,7 @@ const TwoStepAuthentication = () => {
 
     useEffect(() => {
         if (!localStorage.getItem("otpExpiryTime")) {
-            const expiryTime = Date.now() + (300 * 1000); 
+            const expiryTime = Date.now() + (300 * 1000);
             localStorage.setItem("otpExpiryTime", expiryTime.toString());
             localStorage.setItem("otpInitiated", "true");
         }
@@ -63,7 +63,7 @@ const TwoStepAuthentication = () => {
 
     useEffect(() => {
         if (!email) {
-            navigate('/');
+            navigate('/login');
         }
 
         const handleBeforeUnload = () => {
@@ -193,15 +193,15 @@ const TwoStepAuthentication = () => {
 
     return (
         <div className={`flex items-center justify-center min-h-screen w-full relative ${darkMode
-                ? "bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900"
+            ? "bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900"
             : "bg-gradient-to-br from-blue-50 via-white to-purple-50"
             }`}>
             <ThemeToggle darkMode={darkMode} setDarkMode={setDarkMode} />
             <WaveBackground darkMode={darkMode} />
 
             <div className={`w-full max-w-md p-8 mx-4 rounded-xl rounded-t-lg shadow-xl relative z-10 ${darkMode
-                    ? "bg-gray-800/80 border border-gray-700/50"
-                    : "bg-white/90 border border-gray-200/50"
+                ? "bg-gray-800/80 border border-gray-700/50"
+                : "bg-white/90 border border-gray-200/50"
                 } backdrop-filter backdrop-blur-lg`}>
                 <div className={`absolute top-0 left-0 right-0 h-1.5 rounded-t-xl ${darkMode ? "bg-gradient-to-r from-purple-500 to-blue-500" : "bg-gradient-to-r from-blue-400 to-purple-400"
                     }`}></div>

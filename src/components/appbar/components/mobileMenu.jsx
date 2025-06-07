@@ -4,7 +4,9 @@ import { SunIcon } from "../../../assets/svgs/sun";
 import { MoonIcon } from "../../../assets/svgs/moon";
 import { ShareIcon } from "../../../assets/svgs/share";
 import { SaveIcon } from '../../../assets/svgs/save';
-import { DarkMode, LightMode } from "@mui/icons-material";
+import { AccountCircle, DarkMode, LightMode } from "@mui/icons-material";
+import { Customer } from "../../../assets";
+import { useNavigate } from "react-router-dom";
 
 export const MobileMenu = ({
     anchorEl,
@@ -13,8 +15,12 @@ export const MobileMenu = ({
     darkMode,
     toggleDarkMode,
     handleShareClick,
-    handleSaveClick
+    handleSaveClick,
 }) => {
+    const navigate = useNavigate();
+    function handleProfileClick() {
+        navigate('/profile');
+    }
     return (
         <Menu
             anchorEl={anchorEl}
@@ -35,29 +41,37 @@ export const MobileMenu = ({
             transformOrigin={{ vertical: 'top', horizontal: 'right' }}
             anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         >
-            <MenuItem onClick={toggleDarkMode} sx={{ minHeight: 'auto', padding: '8px 16px' }}>
-                <div className="flex items-center gap-2 text-md">
+            <MenuItem onClick={toggleDarkMode} sx={{ minHeight: 'auto' }}>
+                <div className="flex items-center gap-2 text-md pl-2">
                     {darkMode ?
                         <DarkMode className="text-white w-3 h-3"/> :
                         <LightMode className="w-3 h-3 text-black" />
                     }
-                    <span>{darkMode ? "Light" : "Dark"} Mode</span>
+                    <span className="pl-1">{darkMode ? "Light" : "Dark"} Mode</span>
                 </div>
             </MenuItem>
 
-            <MenuItem onClick={handleShareClick} sx={{ minHeight: 'auto', padding: '8px 16px' }}>
-                <div className="flex items-center gap-2 text-md">
+            <MenuItem onClick={handleShareClick} sx={{ minHeight: 'auto' }}>
+                <div className="flex items-center gap-2 text-md pl-0.5">
                     <ShareIcon size={16} />
-                    <span>Share</span>
+                    <span className="pl-[1px]">Share</span>
                 </div>
             </MenuItem>
 
-            <MenuItem onClick={handleSaveClick} sx={{ minHeight: 'auto', padding: '8px 16px' }}>
-                <div className="flex items-center gap-2 text-md">
+            <MenuItem onClick={handleSaveClick} sx={{ minHeight: 'auto'}}>
+                <div className="flex items-center gap-2 text-md pl-[1px]">
                     <SaveIcon size={16} />
-                    <span>Save</span>
+                    <span className="ml-[-2px]">Save</span>
                 </div>
             </MenuItem>
+
+            <MenuItem onClick={handleProfileClick} sx={{ minHeight: 'auto' }}>
+                <div className="flex items-center gap-2 text-md pl-[9px]">
+                    <AccountCircle fontSize="small" />
+                <span className="pl-1.5">Profile</span>
+                </div>
+            </MenuItem>
+
         </Menu>
     );
 };

@@ -2,6 +2,7 @@ import { StyledTooltip } from "../../toolTip";
 import { IconButton } from "@mui/material";
 import { AccountCircle } from "@mui/icons-material";
 import { Customer, SaveIcon, ShareIcon, MoonIcon, SunIcon } from "../../../assets";
+import { ButtonComponent } from "../../button";
 
 export const DesktopButtons = ({
     darkMode,
@@ -9,9 +10,14 @@ export const DesktopButtons = ({
     handleShareClick,
     handleSaveClick,
     handleProfile,
-    handleCustomerMenuOpen
+    handleCustomerMenuOpen,
+    onSave,
+    saveEditorLoading
 }) => (
     <>
+        <ButtonComponent handleClick={onSave} loading={saveEditorLoading}>
+            Save Note
+        </ButtonComponent>
         <StyledTooltip title={"Change Theme"}>
             <IconButton
                 onClick={toggleDarkMode}
@@ -33,7 +39,7 @@ export const DesktopButtons = ({
             </span>
         </StyledTooltip>
 
-        <StyledTooltip title={"Save"}>
+        <StyledTooltip title={"Download"}>
             <IconButton
                 onClick={handleSaveClick}
                 sx={{

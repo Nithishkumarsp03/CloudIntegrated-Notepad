@@ -21,7 +21,9 @@ export const AccountManagementSection = ({ darkMode, handleLogout }) => {
                                 Sign out from your account
                             </Typography>
                         </Box>
-                        <div className='text-center md:text-end w-full'>
+                        </div>
+                </Box>
+                        <div className='text-center md:text-end w-full mt-4'>
                         <ButtonComponent
                             btnText={'Logout'}
                             startIcon={<Logout />}
@@ -30,8 +32,6 @@ export const AccountManagementSection = ({ darkMode, handleLogout }) => {
                             handleClick={handleLogout}
                             />
                             </div>
-                    </div>
-                </Box>
             </Box>
         </FormSection>
     );

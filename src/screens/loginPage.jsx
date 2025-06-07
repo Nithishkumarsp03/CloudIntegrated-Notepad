@@ -8,26 +8,25 @@ import {
 import useEditorStore from '../store/globalStore';
 import { cn } from '../components/cn';
 import { useLoginStore } from '../store/loginStore';
-import { useNavbarStore } from '../store/navbarStore';
 import { VideoComponent,LoginSwitch, LoginHeader, LoginForm, SignupForm } from '../components';
 import { Snackbar } from '../components';
 
 const LoginPage = () => {
   const navigate = useNavigate();
-  const { darkMode, setDarkMode } = useEditorStore();
-  const { authentication, firstLogin, loaders, isUserLoggedIn, resetAll } = useLoginStore();
-  const { getNotes } = useNavbarStore();
-
+  const token = localStorage.getItem("token");
   useEffect(() => {
     async function getNote() {
-      if (isUserLoggedIn) {
-        const response = await getNotes();
-        const uuid = response?.data?.notes[0]?.uuid;
-        navigate(`/note-pad/${uuid}`);
+      if (token) {
+        navigate(`/`);
+      }
+      else {
+        navigate("/login")
       }
     }
     getNote();
-  },[])
+  }, []);
+  const { authentication, firstLogin, loaders, resetAll } = useLoginStore();
+  const { darkMode, setDarkMode } = useEditorStore();
 
   const [snackBar, setSnackBar] = useState({
     variant: "",
@@ -210,9 +209,7 @@ const LoginPage = () => {
           navigate('/twoStepAuth');
         }
         else if (response?.state) {
-          const response = await getNotes();
-          const uuid = response?.data?.notes[0]?.uuid;
-          navigate(`/note-pad/${uuid}`);
+          navigate(`/`);
         }
       }
     }

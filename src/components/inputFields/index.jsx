@@ -69,7 +69,7 @@ export const InputField = ({
         '& .MuiInputBase-root': {
           height: '40px',
           padding: 0,
-          paddingTop: isSearchStyle ? 0 : "5px",
+          paddingTop: isSearchStyle ? 0 : "3px",
           borderRadius: isSearchStyle ? "24px" : "6px",
           backgroundColor: darkMode
             ? (disabled ? '#374151' : '#1F2937')
@@ -106,7 +106,7 @@ export const InputField = ({
         '& .MuiFormLabel-root': {
           fontSize: '14px',
           paddingLeft: 0,
-          paddingTop: '3px',
+          paddingTop: '5px',
           margin: 0,
           transform: 'translate(14px, 5px) scale(1)',
           color: hasError

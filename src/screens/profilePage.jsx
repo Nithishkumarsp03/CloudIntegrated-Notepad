@@ -72,7 +72,7 @@ const ProfilePage = () => {
 
     const handleLogout = () => {
         localStorage.clear();
-        navigate('/');
+        navigate('/login');
     };
 
     const togglePasswordFields = () => {

@@ -5,6 +5,7 @@ import { logo } from '../../assets';
 import { cn, ShareModal, SaveModal } from "../../components";
 import { useTextEditorStore } from "../../store/textEditorStore"; 
 import { CustomerMenu, LeftSection, MobileMenu, RightSection } from "./components";
+import { useLocation } from "react-router-dom";
 
 export const Appbar = () => {
     const [customerAnchorEl, setCustomerAnchorEl] = useState(null);
@@ -15,6 +16,7 @@ export const Appbar = () => {
     const isSidebarOpen = useEditorStore(e => e.isSidebarOpen);   
     const addNoteContent = useTextEditorStore(e => e.addNoteContent);
     const isMobile = useMediaQuery("(max-width:768px)");
+    const location = useLocation();
 
     const handleCustomerMenuOpen = (event) => {
         setCustomerAnchorEl(event.currentTarget);
@@ -52,10 +54,8 @@ export const Appbar = () => {
         }
     };
 
-    const handleNoteSave = (e) => {
-        if (e === "Save Online") {  
+    const handleNoteSave = () => {
             addNoteContent();
-        }
     };
 
     return (
@@ -78,9 +78,11 @@ export const Appbar = () => {
                     "flex-row justify-between items-center px-4"
                 )}
             >
+                {location.pathname != '/' &&
                     <div className="flex justify-center mr-4 pt-1.5">
                         <img src={logo} alt="logo" className="w-[90px] h-[50px]" />
                     </div>
+                }
                 <div className="flex justify-between items-center w-full box-border">
                     <LeftSection isSidebarOpen={isSidebarOpen} />
 
@@ -93,6 +95,7 @@ export const Appbar = () => {
                         handleSaveClick={handleSaveClick}
                         handleMobileMenuOpen={handleMobileMenuOpen}
                         handleCustomerMenuOpen={handleCustomerMenuOpen}
+                        onSave={() => handleNoteSave("Save Online")}
                     />
                 </div>
             </Toolbar>
@@ -122,7 +125,6 @@ export const Appbar = () => {
             <SaveModal
                 isOpen={saveModal}
                 onClose={() => setSaveModal(false)}
-                onSave={(e) => handleNoteSave(e)}
             />
         </AppBar>
     );
