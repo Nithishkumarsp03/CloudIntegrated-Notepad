@@ -5,7 +5,7 @@ import { Facebook, Google } from '@mui/icons-material';
 import useEditorStore from '../../../store/globalStore';
 
 export const LoginButton = ({ handleGoogle, handleFacobook }) => {
-    const { darkMode } = useEditorStore();
+    const darkMode = useEditorStore(e => e.darkMode);
     return (
         <div>
             <div className="grid grid-cols-2 gap-3 md:gap-4">

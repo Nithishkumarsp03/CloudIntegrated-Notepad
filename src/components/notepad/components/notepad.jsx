@@ -69,7 +69,7 @@ export const Notepad = () => {
         <Navbar notePad={true} />
         <div className='flex flex-col gap-6 justify-center text-center pt-12 md:p-0 h-full w-full items-center my-auto'>
           <img src={NotePadImg} alt='welcome' />
-          <div className='w-full max-w-[700px] text-gray-400 mt-2'>Welcome to QuickNotes! Stay organized and capture your thoughts anytime, anywhere start by creating your first notepad now.</div>
+          <div className='w-full max-w-[700px] text-gray-400 mt-2'>Welcome to SPNotes! Stay organized and capture your thoughts anytime, anywhere start by creating a new notepad now.</div>
           <div className='w-60'>
             <ButtonComponent
               handleClick={() => setNewNote(true)}

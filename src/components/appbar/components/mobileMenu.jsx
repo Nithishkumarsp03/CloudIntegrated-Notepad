@@ -61,7 +61,7 @@ export const MobileMenu = ({
             <MenuItem onClick={handleSaveClick} sx={{ minHeight: 'auto'}}>
                 <div className="flex items-center gap-2 text-md pl-[1px]">
                     <SaveIcon size={16} />
-                    <span className="ml-[-2px]">Save</span>
+                    <span className="ml-[-2px]">Download</span>
                 </div>
             </MenuItem>
 
