@@ -20,10 +20,9 @@ import { useLoginStore } from '../../store/loginStore';
 import { useTextEditorStore } from '../../store/textEditorStore';
 import TextEditorSkeleton from './components/editorSkeleton';
 import { useNavbarStore } from '../../store/navbarStore';
-import { EmptyStateContent } from '../emptyPage';
 import { Dot } from '../../assets';
-import { TickMark } from '../../assets/svgs/tickMark';
-
+import { cn } from '../cn';
+ 
 function debounce(fn, delay) {
     let timer;
     return (...args) => {
@@ -193,13 +192,14 @@ const Texteditor = ({ onChange, noteId }) => {
     }
 
     return (
-        <div className='w-full h-full flex flex-col gap-4'>
+        <div className='relative w-full h-full flex flex-col gap-4'>
             <div
-                className="relative flex-grow overflow-auto h-full w-full text-wrap whitespace-break-spaces scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100 dark:scrollbar-thumb-purple-600 dark:scrollbar-track-gray-800 dark:bg-gray-800 bg-gray-50 border border-gray-300 dark:border-gray-800 rounded-lg cursor-text"
+                className="flex-grow overflow-auto h-full w-full text-wrap whitespace-break-spaces scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100 dark:scrollbar-thumb-purple-600 dark:scrollbar-track-gray-800 dark:bg-gray-800 bg-gray-50 border border-gray-300 dark:border-gray-800 rounded-lg cursor-text"
                 onClick={handleEditorClick}
             >
-                {saved &&
-                    <div className='absolute bottom-1 text-md right-2 dark:bg-gray-800 bg-gray-50 text-gray-400 text-md flex'>
+                    <div className={cn('absolute bottom-20 p-1 right-2 text-md z-20  w-fit h-fit text-gray-400 text-md flex opacity-0 transition-all duration-300', {                    
+                    "opacity-100" : saved
+                })}>
                         {saveEditorLoading ?
                             <>
                         <div>Saving</div>
@@ -207,10 +207,9 @@ const Texteditor = ({ onChange, noteId }) => {
                         <div className='animate-second'><Dot/></div>
                         <div className='animate-third'><Dot/></div>
                             </>
-                    :<div className='flex gap-1.5 items-center'>Saved<TickMark /></div>
+                    :<div className='flex gap-1.5 items-center'>Saved</div>
                          } 
                     </div>
-                 }  
                 <EditorContent
                     editor={editor}
                     className="h-full text-wrap whitespace-break-spaces"
