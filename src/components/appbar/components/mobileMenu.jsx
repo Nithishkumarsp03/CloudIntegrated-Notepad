@@ -1,11 +1,8 @@
 import React from "react";
 import { Menu, MenuItem } from "@mui/material";
-import { SunIcon } from "../../../assets/svgs/sun";
-import { MoonIcon } from "../../../assets/svgs/moon";
 import { ShareIcon } from "../../../assets/svgs/share";
 import { SaveIcon } from '../../../assets/svgs/save';
 import { AccountCircle, DarkMode, LightMode } from "@mui/icons-material";
-import { Customer } from "../../../assets";
 import { useNavigate } from "react-router-dom";
 
 export const MobileMenu = ({

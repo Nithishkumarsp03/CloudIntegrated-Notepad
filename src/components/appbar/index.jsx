@@ -13,10 +13,8 @@ export const Appbar = () => {
     const [saveModal, setSaveModal] = useState(false);
     const [share, setShare] = useState(false);
     const darkMode = useEditorStore(e => e.darkMode);   
-    const isSidebarOpen = useEditorStore(e => e.isSidebarOpen);   
     const addNoteContent = useTextEditorStore(e => e.addNoteContent);
     const isMobile = useMediaQuery("(max-width:768px)");
-    const location = useLocation();
 
     const handleCustomerMenuOpen = (event) => {
         setCustomerAnchorEl(event.currentTarget);
@@ -78,13 +76,8 @@ export const Appbar = () => {
                     "flex-row justify-between items-center px-4"
                 )}
             >
-                {location.pathname != '/' &&
-                    <div className="flex justify-center mr-4 pt-1.5">
-                        <img src={logo} alt="logo" className="w-[90px] h-[50px]" />
-                    </div>
-                }
                 <div className="flex justify-between items-center w-full box-border">
-                    <LeftSection isSidebarOpen={isSidebarOpen} />
+                    <LeftSection  />
 
 
                     <RightSection

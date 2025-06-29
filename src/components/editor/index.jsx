@@ -20,47 +20,54 @@ import { useLoginStore } from '../../store/loginStore';
 import { useTextEditorStore } from '../../store/textEditorStore';
 import TextEditorSkeleton from './components/editorSkeleton';
 import { useNavbarStore } from '../../store/navbarStore';
-import { Dot } from '../../assets';
-import { cn } from '../cn';
- 
-function debounce(fn, delay) {
+import { LinkModal } from '../modal';
+
+function createDebouncedFunction(fn, delay) {
     let timer;
-    return (...args) => {
+    const debouncedFn = (...args) => {
         clearTimeout(timer);
         timer = setTimeout(() => fn(...args), delay);
     };
-};
-  
-const Texteditor = ({ onChange, noteId }) => {
+
+    debouncedFn.cancel = () => {
+        clearTimeout(timer);
+    };
+
+    return debouncedFn;
+}
+
+const Texteditor = ({ onChange }) => {
     const getNoteContent = useTextEditorStore(e => e.getNoteContent);
     const loaders = useTextEditorStore(e => e.notesLoading);
     const onEditorChange = useTextEditorStore(e => e.onEditorChange);
+    const linkModal = useTextEditorStore(e => e.linkModal);
+    const noteId = useNavbarStore(e => e.noteId);
     const loginId = useLoginStore(e => e.loginId);
-    const saveEditorLoading = useTextEditorStore(e => e.saveEditorLoading);
     const addNoteContent = useTextEditorStore(e => e.addNoteContent);
     const navbarLoader = useNavbarStore(e => e.loaders);
-    const [initialContent, setInitialContent] = useState("");
-    const [isInitialized, setIsInitialized] = useState(false);
-    const [saved, setSaved] = useState(false);
-    const currentContentRef = useRef("");
+    const notesummary = useTextEditorStore(e => e.notesummary);
+
+    const [isContentLoaded, setIsContentLoaded] = useState(false);
+    const isUpdatingRef = useRef(false);
     const isToolbarActionRef = useRef(false);
 
-    useEffect(() => { 
-        if (saveEditorLoading) {
-            setSaved(true);
-        }
-        if (!saveEditorLoading) {
-            setTimeout(() => {
-                setSaved(false);
-            },[3000])
-        }
-    }, [saveEditorLoading]);
+    const debouncedSaveRef = useRef(null);
 
-    const addNote = async (notes) => {
-        await addNoteContent(notes);
-     };
+    useEffect(() => {
+        if (debouncedSaveRef.current?.cancel) {
+            debouncedSaveRef.current.cancel();
+        }
 
-    const debouncedSave = debounce(addNote,1000); 
+        const currentNoteId = noteId;
+        debouncedSaveRef.current = createDebouncedFunction(
+            async (html) => {
+                if (currentNoteId) {
+                    await addNoteContent(html, currentNoteId);
+                }
+            },
+            500
+        );
+    }, [noteId, addNoteContent]);
 
     const extensions = useMemo(() => [
         StarterKit.configure({
@@ -107,43 +114,20 @@ const Texteditor = ({ onChange, noteId }) => {
     ], []);
 
     const handleUpdate = useCallback(({ editor, transaction }) => {
-        if (!transaction.docChanged) return;
+        if (!transaction.docChanged || isUpdatingRef.current) return;
+
         onEditorChange("tabSaved", false);
         const html = editor.getHTML();
         localStorage.setItem("editorContent", html);
-        if (html) {
-            debouncedSave(html)
-        }
-     }, [onEditorChange, onChange]);
 
-    useEffect(() => {
-        async function loadNote() {
-            try {
-                let content = "Start Writing...";
-                const response = await getNoteContent(loginId, noteId);
-                const apiContent = response?.data?.notes ;
-                if (!apiContent) {
-                    content = "<p>Start writing...</p>"
-                }
-                else {
-                    content = apiContent;
-                }
-                setInitialContent(content);
-                currentContentRef.current = content;
-                setIsInitialized(true);
-            } catch (error) {
-                console.error("Error loading note:", error);
-                setInitialContent("Start Writing...");
-                setIsInitialized(true);
-            }
+        if (html && debouncedSaveRef.current) {
+            debouncedSaveRef.current(html);
         }
-
-        loadNote();
-    }, [noteId, loginId, getNoteContent]);
+    }, [onEditorChange]);
 
     const editor = useEditor({
         extensions,
-        content:"",
+        content: "",
         onUpdate: handleUpdate,
         editorProps: {
             attributes: {
@@ -156,14 +140,66 @@ const Texteditor = ({ onChange, noteId }) => {
         shouldRerenderOnTransaction: false,
     });
 
+    const handleInsertLink = useCallback(({ url, text }) => {
+        if (!editor) return;
+        if (text) {
+            editor.chain()
+                .focus()
+                .insertContent(`<a href="${url}" target="_blank">${text}</a>`)
+                .run();
+        } else {
+            editor.chain()
+                .focus()
+                .extendMarkRange('link')
+                .setLink({ href: url })
+                .run();
+        }
+    }, [editor]);
+
     useEffect(() => {
-        if (editor && isInitialized && initialContent) {
-            if (editor.getHTML() !== initialContent) {
-                editor.commands.setContent(initialContent, false);
-                currentContentRef.current = initialContent;
+        async function loadNote() {
+            if (!loginId || !noteId || !editor) return;
+            if (debouncedSaveRef.current?.cancel) {
+                debouncedSaveRef.current.cancel();
+            }
+
+            setIsContentLoaded(false);
+            isUpdatingRef.current = true;
+
+            try {
+                if (notesummary[noteId]) {
+                    editor.commands.setContent(notesummary[noteId], false);
+                } else {
+                    const response = await getNoteContent(loginId, noteId);
+                    const content = response?.data?.notes || "<p>Start Writing...</p>";
+                    editor.commands.setContent(content, false);
+                }
+
+                setIsContentLoaded(true);
+            } catch (error) {
+                console.error("Error loading note:", error);
+                editor.commands.setContent("<p>Start Writing...</p>", false);
+                setIsContentLoaded(true);
+            } finally {
+                isUpdatingRef.current = false;
             }
         }
-    }, [editor, initialContent, isInitialized]);
+
+        loadNote();
+    }, [noteId, loginId, editor, getNoteContent]);
+
+    useEffect(() => {
+        if (!editor || !isContentLoaded || isUpdatingRef.current) return;
+
+        const storeContent = notesummary[noteId];
+        if (storeContent && storeContent !== editor.getHTML()) {
+            isUpdatingRef.current = true;
+            editor.commands.setContent(storeContent, false);
+            setTimeout(() => {
+                isUpdatingRef.current = false;
+            }, 100);
+        }
+    }, [notesummary, noteId, editor, isContentLoaded]);
 
     const handleEditorClick = useCallback((event) => {
         if (event.target.closest('[data-toolbar]') ||
@@ -180,6 +216,14 @@ const Texteditor = ({ onChange, noteId }) => {
         isToolbarActionRef.current = true;
     }, []);
 
+    useEffect(() => {
+        return () => {
+            if (debouncedSaveRef.current?.cancel) {
+                debouncedSaveRef.current.cancel();
+            }
+        };
+    }, []);
+
     if (navbarLoader.isNotesLoading || loaders[noteId]) {
         return (
             <div className='w-full h-full flex flex-col gap-4'>
@@ -193,23 +237,15 @@ const Texteditor = ({ onChange, noteId }) => {
 
     return (
         <div className='relative w-full h-full flex flex-col gap-4'>
+            <LinkModal
+                isOpen={linkModal}
+                onClose={() => onEditorChange("linkModal", false)}
+                onInsertLink={e => handleInsertLink(e)}
+            />
             <div
-                className="flex-grow overflow-auto h-full w-full text-wrap whitespace-break-spaces scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100 dark:scrollbar-thumb-purple-600 dark:scrollbar-track-gray-800 dark:bg-gray-800 bg-gray-50 border border-gray-300 dark:border-gray-800 rounded-lg cursor-text"
+                className="flex-grow overflow-auto h-full w-full text-wrap  scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100 dark:scrollbar-thumb-purple-600 dark:scrollbar-track-gray-800 dark:bg-gray-800 bg-gray-50 border border-gray-300 dark:border-gray-800 rounded-lg cursor-text"
                 onClick={handleEditorClick}
             >
-                    <div className={cn('absolute bottom-20 p-1 right-2 text-md z-20  w-fit h-fit text-gray-400 text-md flex opacity-0 transition-all duration-300', {                    
-                    "opacity-100" : saved
-                })}>
-                        {saveEditorLoading ?
-                            <>
-                        <div>Saving</div>
-                        <div className='animate-first'><Dot/></div>
-                        <div className='animate-second'><Dot/></div>
-                        <div className='animate-third'><Dot/></div>
-                            </>
-                    :<div className='flex gap-1.5 items-center'>Saved</div>
-                         } 
-                    </div>
                 <EditorContent
                     editor={editor}
                     className="h-full text-wrap whitespace-break-spaces"
@@ -218,7 +254,7 @@ const Texteditor = ({ onChange, noteId }) => {
             <EditorToolKit
                 editor={editor}
                 onToolbarAction={markToolbarAction}
-                    />
+            />
         </div>
     );
 };
@@ -227,5 +263,3 @@ export default React.memo(Texteditor, (prevProps, nextProps) => {
     return prevProps.noteId === nextProps.noteId &&
         prevProps.onChange === nextProps.onChange;
 });
-
-

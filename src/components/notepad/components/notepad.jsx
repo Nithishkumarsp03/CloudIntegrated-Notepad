@@ -37,8 +37,10 @@ export const Notepad = () => {
     addNote(noteName)
       .then(response => {
         if (response?.state) {
+          console.log(response.data)
+          onNavbarChange("noteId", response?.data?.note?.id);
+          navigate(`/note-pad/${response?.data?.note?.uuid}`);
           localStorage.setItem("uuid", response?.data?.note?.uuid)
-          navigate(`/note-pad/${response?.data?.note?.uuid}`)
           showSnackbar('Note added successfully', 'success');
         } else {
           showSnackbar(response?.error || 'Failed to add note', 'error');
@@ -55,6 +57,7 @@ export const Notepad = () => {
 
   return (
     <div className="flex flex-col h-screen bg-gray-200 dark:bg-gray-900 w-full overflow-hidden relative">
+      {/* <LinkModal/> */}
       <Snackbar
         open={snackbar.open}
         onClose={handleSnackbarClose}

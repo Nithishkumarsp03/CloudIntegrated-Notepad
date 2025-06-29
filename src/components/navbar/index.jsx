@@ -9,9 +9,24 @@ import NotesMenu from "./components/notesMenu";
 import { useNavigate } from "react-router-dom";
 import { RenameModal, Snackbar, cn } from "../../components";
 
-export const Navbar = ({notePad}) => {
+export const Navbar = ({ notePad }) => {
+
     const [id, setId] = useState();
-    const { isSidebarOpen, setSearch } = useEditorStore();
+    const [localSearch, setLocalSearch] = useState("");
+    const [anchorEl, setAnchorEl] = useState(null);
+    const [openRenameModal, setOpenRenameModal] = useState({ state: false, uuid: '', note_name: '' });
+    const [newNote, setNewNote] = useState(false);
+    const [snackbar, setSnackbar] = useState({
+        open: false,
+        message: '',
+        variant: 'info'
+    });
+
+    const isMobile = useMediaQuery('(max-width: 768px)');
+    const navigate = useNavigate();
+    const open = Boolean(anchorEl);
+
+    // store
     const getNotes = useNavbarStore(e => e.getNotes);
     const data = useNavbarStore(e => e.data);
     const loaders = useNavbarStore(e => e.loaders);
@@ -22,21 +37,8 @@ export const Navbar = ({notePad}) => {
     const onNavbarChange = useNavbarStore(e => e.onNavbarChange);
     const noteId = useNavbarStore(e => e.noteId);
     const notePadVisited = useNavbarStore(e => e.notePadVisited);
-        const [localSearch, setLocalSearch] = useState("");
-        const [filter, setFilter] = useState(data);
-        const [anchorEl, setAnchorEl] = useState(null);
-        const [openRenameModal, setOpenRenameModal] = useState({ state: false, uuid: '', note_name: '' });
-        const [newNote, setNewNote] = useState(false);
-        const open = Boolean(anchorEl);
-        const isMobile = useMediaQuery('(max-width: 768px)');
-        const navigate = useNavigate();
-        const [snackbar, setSnackbar] = useState({
-            open: false,
-            message: '',
-            variant: 'info'
-        });
+    const isSidebarOpen = useNavbarStore(e => e.isSidebarOpen);
     
-
     const handleNavigate = useCallback((uuid, noteId) => {
         onNavbarChange("noteId", noteId);
         if (uuid) {
@@ -69,27 +71,10 @@ export const Navbar = ({notePad}) => {
         }
     },[]);
 
-    const filteredData = filter.filter(item =>
+    const filteredData = data.filter(item =>
         item.note_name?.toLowerCase().includes(searchquery.toLowerCase())
     );
 
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            setSearch(localSearch);
-        }, 300);
-        return () => clearTimeout(timer);
-    }, [localSearch, setSearch]);
-
-    useEffect(() => {
-        if (!localSearch) {
-            setFilter(data);
-            return;
-        }
-        const filteredData = data.filter(item =>
-            item.note_name.toLowerCase().includes(localSearch.toLowerCase())
-        );
-        setFilter(filteredData);
-    }, [localSearch, data]);
 
     const handleMenuClick = (event, uuid, note_name) => {
         setAnchorEl(event.currentTarget);
@@ -186,8 +171,6 @@ export const Navbar = ({notePad}) => {
                 <div className="h-full flex flex-col">
                     {isMobile && !isSidebarOpen && (    
                         <MobileHeader
-                            localSearch={localSearch}
-                            setLocalSearch={(e) => setLocalSearch(e)}
                         />
                     )}
 
@@ -196,7 +179,7 @@ export const Navbar = ({notePad}) => {
                         loading = {loaders.isAddLoading}
                         setNewNote={setNewNote}
                         newNote={newNote}
-                    />
+                        />
 
                     <NotesList
                         filter={filteredData}

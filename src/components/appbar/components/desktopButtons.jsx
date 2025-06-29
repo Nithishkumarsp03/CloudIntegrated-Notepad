@@ -2,7 +2,6 @@ import { StyledTooltip } from "../../toolTip";
 import { IconButton } from "@mui/material";
 import { AccountCircle } from "@mui/icons-material";
 import { Customer, SaveIcon, ShareIcon, MoonIcon, SunIcon } from "../../../assets";
-import { ButtonComponent } from "../../button";
 
 export const DesktopButtons = ({
     darkMode,
@@ -11,67 +10,67 @@ export const DesktopButtons = ({
     handleSaveClick,
     handleProfile,
     handleCustomerMenuOpen,
-    onSave,
-    saveEditorLoading
-}) => (
-    <>
-        <ButtonComponent handleClick={onSave} loading={saveEditorLoading}>
-            Save Note
-        </ButtonComponent>
-        <StyledTooltip title={"Change Theme"}>
-            <IconButton
-                onClick={toggleDarkMode}
-                sx={{ color: darkMode ? "#fff" : "#000", padding: "6px", flexShrink: 0 }}
-            >
-                {darkMode ?
-                    <SunIcon fontSize="medium" size={20} /> :
-                    <MoonIcon fontSize="medium" size={20} />
-                }
-            </IconButton>
-        </StyledTooltip>
+}) => {
 
-        <StyledTooltip title={"Share"}>
-            <span
-                className="text-black dark:text-white cursor-pointer"
-                onClick={handleShareClick}
-            >
-                <ShareIcon size={20} />
-            </span>
-        </StyledTooltip>
+    return (
+        <>
 
-        <StyledTooltip title={"Download"}>
-            <IconButton
-                onClick={handleSaveClick}
-                sx={{
-                    color: darkMode ? "#fff" : "#000",
-                    padding: "6px",
-                    flexShrink: 0,
-                    '&:hover': {
-                        backgroundColor: darkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0)'
+            <StyledTooltip title={"Change Theme"}>
+                <IconButton
+                    onClick={toggleDarkMode}
+                    sx={{ color: darkMode ? "#fff" : "#000", padding: "6px", flexShrink: 0 }}
+                >
+                    {darkMode ?
+                        <SunIcon fontSize="medium" size={20} /> :
+                        <MoonIcon fontSize="medium" size={20} />
                     }
-                }}
-            >
-                <SaveIcon size={20} />
-            </IconButton>
-        </StyledTooltip>
+                </IconButton>
+            </StyledTooltip>
 
-        <StyledTooltip title={"Customer Care"}>
-            <IconButton
-                onClick={handleCustomerMenuOpen}
-                sx={{ color: darkMode ? "#fff" : "#000", padding: "6px", flexShrink: 0, marginLeft: "7px" }}
-            >
-                <Customer fontSize="medium" />
-            </IconButton>
-        </StyledTooltip>
+            <StyledTooltip title={"Share"}>
+                <span
+                    className="text-black dark:text-white cursor-pointer"
+                    onClick={handleShareClick}
+                >
+                    <ShareIcon size={20} />
+                </span>
+            </StyledTooltip>
 
-        <StyledTooltip title={"Profile"}>
-            <IconButton
-                sx={{ color: darkMode ? "#fff" : "#000", padding: "6px", flexShrink: 0 }}
-                onClick={handleProfile}
-            >
-                <AccountCircle fontSize="medium" />
-            </IconButton>
-        </StyledTooltip>
+            <StyledTooltip title={"Download"}>
+                <IconButton
+                    onClick={handleSaveClick}
+                    sx={{
+                        color: darkMode ? "#fff" : "#000",
+                        padding: "6px",
+                        flexShrink: 0,
+                        '&:hover': {
+                            backgroundColor: darkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0)'
+                        }
+                    }}
+                >
+                    <SaveIcon size={20} />
+                </IconButton>
+            </StyledTooltip>
 
-    </>
-);
+            <StyledTooltip title={"Customer Care"}>
+                <IconButton
+                    onClick={handleCustomerMenuOpen}
+                    sx={{ color: darkMode ? "#fff" : "#000", padding: "6px", flexShrink: 0, marginLeft: "7px" }}
+                >
+                    <Customer fontSize="medium" />
+                </IconButton>
+            </StyledTooltip>
+
+            <StyledTooltip title={"Profile"}>
+                <IconButton
+                    sx={{ color: darkMode ? "#fff" : "#000", padding: "6px", flexShrink: 0 }}
+                    onClick={handleProfile}
+                >
+                    <AccountCircle fontSize="medium" />
+                </IconButton>
+            </StyledTooltip>
+
+        </>
+    )
+}
+    ;

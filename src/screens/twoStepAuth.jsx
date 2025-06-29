@@ -14,7 +14,7 @@ const TwoStepAuthentication = () => {
             if (data) {
                 const uuid = data[0]?.uuid;
                 if (uuid) {
-                    navigate(`/note-pad/${uuid}`);
+                    navigate(`/`);
                 }
             }
         }

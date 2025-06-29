@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Navbar } from "../components/navbar";
 import { useMediaQuery } from "@mui/material";
-import useEditorStore from "../store/globalStore";
 import { cn } from "../components/cn";
 import Texteditor from "../components/editor";
 import { Appbar } from "../components/appbar";
@@ -9,15 +8,8 @@ import { useNavbarStore } from "../store/navbarStore";
 
 const Main = () => {
   const isMobile = useMediaQuery('(max-width: 768px)');
-  const isSidebarOpen = useEditorStore(e => e.isSidebarOpen);
+  const isSidebarOpen = useNavbarStore(e => e.isSidebarOpen);
   const noteId = useNavbarStore(e => e.noteId);
-
-  useEffect(() => {
-    if (isMobile) {
-      useEditorStore.setState({ isSidebarOpen: true });
-    }
-  }, [isMobile]);
-
 
   return (
     <div className="flex flex-col h-screen dark:bg-gray-900 w-full overflow-hidden relative">
@@ -27,7 +19,7 @@ const Main = () => {
         <div className={cn(
           "h-full p-4 pb-2 transition-all w-full duration-300 ease-in-out",
           {
-            'w-[1258px]': !isSidebarOpen
+            'w-[calc(100%-17rem)]': !isSidebarOpen,
           }
         )}>
           <Texteditor noteId={noteId} />

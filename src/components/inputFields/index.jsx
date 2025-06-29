@@ -3,7 +3,7 @@ import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import useEditorStore from '../../store/globalStore';
 
-export const InputField = ({
+export const InputField = React.forwardRef(({
   variant = 'outlined',
   label,
   styles,
@@ -11,7 +11,6 @@ export const InputField = ({
   onKeyDown,
   placeholder,
   type = 'text',
-  ref,
   id,
   value,
   disabled = false,
@@ -25,12 +24,17 @@ export const InputField = ({
   endIcon = null,
   startIcon = null,
   isSearchStyle = false,
-}) => {
+  autocomplete = "on",
+  ...otherProps
+}, ref) => {
   const { darkMode } = useEditorStore();
+
   return (
     <TextField
       id={id}
-      ref={ref}
+      // Use inputRef instead of ref for Material-UI TextField
+      inputRef={ref}
+      autoComplete={autocomplete}
       label={isSearchStyle ? undefined : label}
       name={name}
       autoFocus={autofocus}
@@ -46,6 +50,7 @@ export const InputField = ({
       onChange={onChange}
       onKeyDown={onKeyDown}
       inputProps={inputProps}
+      {...otherProps}
       InputProps={{
         startAdornment: startIcon ? (
           <InputAdornment position="start" sx={{ ml: isSearchStyle ? 1 : 0 }}>
@@ -223,4 +228,6 @@ export const InputField = ({
       }}
     />
   );
-};
+});
+
+InputField.displayName = 'InputField';

@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { Button, TextField } from "@mui/material";
 import useEditorStore from '../../../store/globalStore';
+import { InputField } from '../../inputFields';
 
 export const LinkModal = ({ isOpen, onClose, onInsertLink, content, isContent }) => {
     const { darkMode } = useEditorStore();
     const [linkText, setLinkText] = useState('');
     const [linkUrl, setLinkUrl] = useState('https://');
 
-    // Reset form when modal opens
     React.useEffect(() => {
         if (isOpen) {
             setLinkText('');
@@ -95,42 +95,12 @@ export const LinkModal = ({ isOpen, onClose, onInsertLink, content, isContent })
                             >
                                 Link Text (optional)
                             </label>
-                            <TextField
+                            <InputField
+                                autocomplete={"off"}
                                 id="link-text"
-                                type="text"
                                 value={linkText}
                                 onChange={handleLinkTextChange}
                                 placeholder="Display text"
-                                fullWidth
-                                variant="outlined"
-                                size="small"
-                                InputProps={{
-                                    style: {
-                                        color: colors.text.primary,
-                                        backgroundColor: colors.inputBg,
-                                    }
-                                }}
-                                sx={{
-                                    '& .MuiOutlinedInput-root': {
-                                        borderRadius: "8px",
-                                        '& fieldset': {
-                                            borderColor: colors.border.default,
-                                        },
-                                        '&:hover fieldset': {
-                                            borderColor: colors.border.hover,
-                                        },
-                                        '&.Mui-focused fieldset': {
-                                            borderColor: colors.border.focus,
-                                        },
-                                    },
-                                    '& .MuiInputBase-input': {
-                                        padding: '12px 14px',
-                                        '&::placeholder': {
-                                            color: colors.text.placeholder,
-                                            opacity: 1,
-                                        },
-                                    },
-                                }}
                             />
                         </div>
 
@@ -141,43 +111,12 @@ export const LinkModal = ({ isOpen, onClose, onInsertLink, content, isContent })
                             >
                                 URL*
                             </label>
-                            <TextField
+                            <InputField
+                                autocomplete={"off"}
                                 id="link-url"
-                                type="url"
                                 value={linkUrl}
                                 onChange={handleLinkUrlChange}
                                 placeholder="https://example.com"
-                                fullWidth
-                                variant="outlined"
-                                size="small"
-                                required
-                                InputProps={{
-                                    style: {
-                                        color: colors.text.primary,
-                                        backgroundColor: colors.inputBg,
-                                    }
-                                }}
-                                sx={{
-                                    '& .MuiOutlinedInput-root': {
-                                        borderRadius: "8px",
-                                        '& fieldset': {
-                                            borderColor: colors.border.default,
-                                        },
-                                        '&:hover fieldset': {
-                                            borderColor: colors.border.hover,
-                                        },
-                                        '&.Mui-focused fieldset': {
-                                            borderColor: colors.border.focus,
-                                        },
-                                    },
-                                    '& .MuiInputBase-input': {
-                                        padding: '12px 14px',
-                                        '&::placeholder': {
-                                            color: colors.text.placeholder,
-                                            opacity: 1,
-                                        },
-                                    },
-                                }}
                             />
                         </div>
 

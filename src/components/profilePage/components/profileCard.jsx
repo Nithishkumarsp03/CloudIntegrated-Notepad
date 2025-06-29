@@ -2,14 +2,15 @@ import React, { useEffect } from 'react';
 import { Box, Typography, Avatar } from '@mui/material';
 import { Security, Notifications, AddAPhoto } from '@mui/icons-material';
 import { cn } from '../../../components';
+import { useLoginStore } from '../../../store/loginStore';
 
 export const ProfileCard = ({
     darkMode,
-    profileData,
-    notification,
     fileInputRef,
-    twoFa
 }) => {
+
+    const { twoFa, notification, userName, email } = useLoginStore();
+    
     const handleAvatarClick = () => {
         fileInputRef.current.click();
     };
@@ -61,11 +62,11 @@ export const ProfileCard = ({
 
                 <Box className="flex-1 w-full text-center md:text-left">
                     <p className={`font-medium pl-[4.5px] text-lg w-full mb-1 break-words whitespace-normal ${darkMode ? 'text-purple-100' : 'text-blue-900'}`}>
-                        {profileData.userName}
+                        {userName}
                     </p>
 
                     <Typography className={`pl-1.5 ${darkMode ? 'text-purple-300' : 'text-blue-600'}`}>
-                        {profileData.email}
+                        {email}
                     </Typography>
 
                     <div className="flex flex-wrap gap-3 mt-1 justify-center md:justify-start">
