@@ -50,41 +50,44 @@ pre {
 
 strong {
   font-family: inherit !important;
-  text-decoration: inherit;
-  font-style: inherit;
+  font-style: inherit !important;
+  font-weight: 700 !important;
+  color: inherit !important;
+  text-decoration: inherit !important;
 }
 
-u, s, em, a {
+em, i {
   font-family: inherit !important;
-  font-style: inherit;
-  text-decoration: inherit;
+  font-style: italic !important;
+  font-weight: inherit !important;
+  color: inherit !important;
+  text-decoration: inherit !important;
 }
 
 u {
   font-family: inherit !important;
-  text-decoration: underline;
-  font-style: inherit;
+  font-style: inherit !important;
+  text-decoration: underline !important;
+  font-weight: inherit !important;
+  color: inherit !important;
 }
 
 s {
   font-family: inherit !important;
-  text-decoration: line-through;
-  font-style: inherit;
-}
-
-em {
-  font-family: inherit !important;
-  font-style: italic;
-  font-style: inherit;
+  font-style: inherit !important;
+  font-weight: inherit !important;
+  color: inherit !important;
+  text-decoration: line-through !important;
 }
 
 a {
   font-family: inherit !important;
-  color: #3b82f6; 
-  text-decoration: underline;
-  font-weight: 500;
-  font-style: inherit;
+  font-style: inherit !important;
+  font-weight: inherit !important;
+  color: #3b82f6;
+  text-decoration: inherit !important;
 }
+
 
 .animate-first {
   opacity: 1;
