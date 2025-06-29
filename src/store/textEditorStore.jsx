@@ -1,80 +1,101 @@
-    import { create } from "zustand";
-    import { AddNoteSummary, FetchNoteSummary } from "../api";
-    import { useLoginStore } from "./loginStore";
-    import { useNavbarStore } from "./navbarStore";
+import { create } from "zustand";
+import { AddNoteSummary, FetchNoteSummary } from "../api";
+import { useLoginStore } from "./loginStore";
 
+export const useTextEditorStore = create((set, get) => ({
+    tabSaved: true,
+    notesummary: {},
+    notesLoading: {},
+    linkModal: false,
+    saveEditorLoading: false,
+    textNoteId: -1,
+    loaders: {
+        textEditorLoading: false,
+    },
 
-    export const useTextEditorStore = create((set, get) => ({
-        tabSaved: true,
-        notesummary: {},
-        notesLoading:{},
-        loaders: {
-            textEditorLoading: false,
-            saveEditorLoading:false
-        },
-
-        onNotesLoading: (key, bool) => {
-            set((state) => ({
-                notesLoading: {
-                    ...state.notesLoading,
-                    [key]: bool, 
-                }
-            }));
-        },
-          
-        onEditorChange: (key, value) => {
-            set({ [key]: value });
-        },
-
-        onLoadersChange: (key, value) => {
-            set((state) => ({
-                ...state,
-                loaders: {
-                    ...state.loaders,
-                    [key]: value,
-                },
-            }));
-        },
-
-        getNoteContent: async (loginId, noteId) => {
-            const { onNotesLoading, notesummary } = get();
-            onNotesLoading(noteId, true);
-            if (!notesummary[noteId]) { 
-                const response = await FetchNoteSummary(loginId, noteId);
-                if (response?.data?.notes) {
-                    const updatedData = { ...notesummary,[noteId]: response?.data?.notes };
-                    set({ notesummary: updatedData });
-                }
-                else {
-                    const updatedData = { ...notesummary, [noteId]: "<p>Start Writing...</p>" };
-                    set({ notesummary: updatedData });
-                }
-                onNotesLoading(noteId, false);
-                return response;
-            } else {
-                onNotesLoading(noteId, false);
-                const data = { data: { notes: notesummary[noteId] } };
-                return data;
+    onNotesLoading: (key, bool) => {
+        set((state) => ({
+            notesLoading: {
+                ...state.notesLoading,
+                [key]: bool,
             }
-        },
+        }));
+    },
 
-        addNoteContent: async (data) => {
-            let notes = data;
-            if (!notes) {
-                notes = localStorage.getItem("editorContent");
-            }
+    onEditorChange: (key, value) => {
+        set({ [key]: value });
+    },
+
+    onLoadersChange: (key, value) => {
+        set((state) => ({
+            ...state,
+            loaders: {
+                ...state.loaders,
+                [key]: value,
+            },
+        }));
+    },
+
+    getNoteContent: async (loginId, noteId) => {
+        const { onNotesLoading, notesummary } = get();
+        if (notesummary[noteId]) {
+            return { data: { notes: notesummary[noteId] } };
+        }
+        onNotesLoading(noteId, true);
+        try {
+            const response = await FetchNoteSummary(loginId, noteId);
+            const content = response?.data?.notes || "<p>Start Writing...</p>";
+            const updatedData = { ...notesummary, [noteId]: content };
+            set({ notesummary: updatedData });
+            onNotesLoading(noteId, false);
+            return { data: { notes: content } };
+        } catch (error) {
+            console.error("Error fetching note:", error);
+            const defaultContent = "<p>Start Writing...</p>";
+            const updatedData = { ...notesummary, [noteId]: defaultContent };
+            set({ notesummary: updatedData });
+            onNotesLoading(noteId, false);
+            return { data: { notes: defaultContent } };
+        }
+    },
+
+    addNoteContent: async (notes, noteId) => {
+        if (!notes || !noteId) return;
+
+        const { notesummary, tabSaved } = get();
+        const { loginId } = useLoginStore.getState();
+
+        const updatedData = { ...notesummary, [noteId]: notes };
+        set({ notesummary: updatedData });
+
+        if (!tabSaved) {
             set({ saveEditorLoading: true });
-            const { loginId } = useLoginStore.getState();
-            const { noteId } = useNavbarStore.getState();
-            const { notesummary, tabSaved } = get();
-            if (!tabSaved) {
+
+            try {
                 const response = await AddNoteSummary(loginId, noteId, notes);
-                const updatedData = { ...notesummary, [noteId]: notes };
-                set({ tabSaved: true, notesummary: updatedData });
-                set({ saveEditorLoading: false });
+                set({
+                    tabSaved: true,
+                    saveEditorLoading: false
+                });
                 return response;
+            } catch (error) {
+                console.error("Error saving note:", error);
+                const revertedData = { ...get().notesummary };
+                delete revertedData[noteId];
+                set({
+                    notesummary: revertedData,
+                    saveEditorLoading: false
+                });
+                throw error;
             }
-            set({ saveEditorLoading: false });
         }
 
-    }))
+        set({ saveEditorLoading: false });
+    },
+
+    updateNoteInStore: (noteId, content) => {
+        const { notesummary } = get();
+        const updatedData = { ...notesummary, [noteId]: content };
+        set({ notesummary: updatedData });
+    }
+}));

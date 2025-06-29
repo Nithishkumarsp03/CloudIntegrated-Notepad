@@ -4,7 +4,7 @@ import { Check } from '@mui/icons-material';
 import { ButtonComponent,cn } from '../../../components';
 import BackArrow from '../../../assets/svgs/backArrow';
 
-export const ProfileHeader = ({ darkMode, handleBack, handleSave }) => {
+export const ProfileHeader = ({ darkMode, handleBack, handleSave, isSaved, isProfileLoading }) => {
     return (
         <Box className={cn(
             "mb-6 p-4 sm:p-6 rounded-xl shadow-lg flex items-center justify-between",
@@ -21,7 +21,9 @@ export const ProfileHeader = ({ darkMode, handleBack, handleSave }) => {
                 </Typography>
             </Box>
             <div className='hidden md:block'>
-            <ButtonComponent
+                <ButtonComponent
+                loading={isProfileLoading}
+                disabled={isSaved}
                 btnText={'Save Changes'}
                 startIcon={<Check />}
                 styles={{ width: "fit-content" }}

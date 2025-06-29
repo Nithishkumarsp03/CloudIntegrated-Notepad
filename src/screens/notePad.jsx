@@ -3,7 +3,9 @@ import { Notepad } from '../components'
 
 const NotePad = () => {
   return (
-    <Notepad/>
+    <div>
+      <Notepad />
+    </div>
   )
 }
 

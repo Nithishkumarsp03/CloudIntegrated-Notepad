@@ -10,7 +10,7 @@ export const FetchNoteSummary = async (loginId, noteId) => {
         return { state: true, data: response?.data?.data };
     } catch (err) {
         if (!err.response) {
-            console.log("message:",err.data.message)
+            console.log("message:",err?.data?.message)
             return { state: false, message: "Network error. Please try again." };
         }
         return {

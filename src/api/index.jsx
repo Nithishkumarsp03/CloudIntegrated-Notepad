@@ -17,3 +17,6 @@ export { DeleteNote } from "./notesApi/deleteNote";
 // notesSummary
 export { FetchNoteSummary } from "./notesSummaryApi/fetchNote";
 export { AddNoteSummary } from "./notesSummaryApi/addNote";
+
+// profile
+export { EditProfile } from "./profileApi/editProfile";

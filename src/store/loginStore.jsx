@@ -1,6 +1,6 @@
 import axios from "axios";
 import { create } from "zustand";
-import { Authentication, OnboardingFlow, TwoStepAuth } from "../api";
+import { Authentication, EditProfile, OnboardingFlow, TwoStepAuth } from "../api";
 
 export const useLoginStore = create((set, get) => ({
     isUserLoggedIn: localStorage.getItem("isUserLoggedIn"),
@@ -21,7 +21,8 @@ export const useLoginStore = create((set, get) => ({
         isFlowLoading: false,
         isRegisterLoading: false,
         isLoginLoading: false,
-        isTwoStepLoading: false
+        isTwoStepLoading: false,
+        isProfileLoading: false
     },
 
     resetAll: () => {
@@ -91,6 +92,18 @@ export const useLoginStore = create((set, get) => ({
         const response = await TwoStepAuth(otp);
         return response;
     },
+
+    updateProfile: async (name, email, two_fa, password, loginId) => {
+        const { onChangeLoaders, persistStorage } = get();
+        onChangeLoaders("isProfileLoading", true);
+        const response = await EditProfile(name, email, two_fa, password, loginId);
+        persistStorage("loginId",loginId);
+        persistStorage("userName", name);
+        persistStorage("email", email);
+        persistStorage("twoFa", two_fa);
+        onChangeLoaders("isProfileLoading", false);
+        return response;
+    }
 }));
 
 export const loginStore = useLoginStore.getState;

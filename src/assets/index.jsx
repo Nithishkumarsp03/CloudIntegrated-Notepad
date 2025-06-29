@@ -20,6 +20,7 @@ import { MoonIcon } from './svgs/moon';
 import { SunIcon } from './svgs/sun';
 import NotePadImg from './notePadImg.svg';
 import { Dot } from './svgs/dot';
+import { TickMark } from './svgs/tickMark';
 export {
   Dot,
   NotePadImg,
@@ -42,5 +43,6 @@ export {
   SaveIcon,
   ShareIcon,
   MoonIcon,
-  SunIcon
+  SunIcon,
+  TickMark,
 };

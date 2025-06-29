@@ -3,62 +3,31 @@ import { useNavigate } from "react-router-dom";
 import { Box, Typography } from '@mui/material';
 import useEditorStore from '../store/globalStore';
 import { useLoginStore } from '../store/loginStore';
-import { BackgroundPattern, ButtonComponent, cn, LoginSwitch, PersonalSection, ProfileCard, ProfileHeader, SecuritySection } from '../components';
+import { BackgroundPattern, ButtonComponent, cn, LoginSwitch, PersonalSection, ProfileCard, ProfileHeader, SecuritySection, Snackbar } from '../components';
 import { AccountManagementSection, NotificationSection } from '../components/profilePage';
 import { Check } from '@mui/icons-material';
 
 const ProfilePage = () => {
     const { darkMode, setDarkMode } = useEditorStore();
-    const { twoFa, onChange, notification, userName, email, gender, phone, profilePicture } = useLoginStore();
+    const { twoFa, onChange, notification, userName, email, gender, password, loginId } = useLoginStore();
     const navigate = useNavigate();
+    const [tempTwoFa, setTempTwoFa] = useState(twoFa);
     const fileInputRef = useRef(null);
-    const [profileData, setProfileData] = useState({
-        userName: userName,
-        email: email,
-        gender: gender === "M" ? "male" : "" || gender === "F" ? "female" : "" || "Rather not say",
-        phone: phone,
-        profilePicture: profilePicture,
-        notificationsEnabled: notification,
-    });
-    const [tempData, setTempData] = useState(profileData);
     const [previewImage, setPreviewImage] = useState('');
     const [edit, setEdit] = useState(true);
-    const [showPasswordFields, setShowPasswordFields] = useState(false);
-    const [passwordData, setPasswordData] = useState({
-        oldPassword: '',
-        newPassword: ''
-    });
-    const [passwordMessage, setPasswordMessage] = useState({
-        type: '',
-        text: ''
-    });
-
-    const handleFileChange = (e) => {
-        if (e.target.files && e.target.files[0]) {
-            const selectedFile = e.target.files[0];
-            setProfileData({
-                ...profileData,
-                profilePicture: selectedFile
-            });
-            onChange("profilePicture", selectedFile);
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                setPreviewImage(event.target.result);
-            };
-            reader.readAsDataURL(selectedFile);
-        }
-    };
+    const [showPassword, setShowPassword] = useState(false);
+    const updateProfile = useLoginStore(e => e.updateProfile);
+    const isProfileLoading = useLoginStore(e => e.loaders.isProfileLoading);
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
+    const [snackbarVariant, setSnackbarVariant] = useState('info');
 
     function handleProfileChange(e) {
         const { name, value } = e.target;
         onChange(name, value);
-        setTempData(p => ({ ...p, [name]: value }));
     }
 
     function handleEdit() {
-        if (!edit) {
-            setProfileData(tempData);
-        }
         setEdit(!edit);
     }
 
@@ -66,45 +35,55 @@ const ProfilePage = () => {
         navigate(-1);
     };
 
-    const handleSave = () => {
-        console.log("save clicked")
+    const handleSave = async () => {
+        const requiredFields = {
+            userName: userName?.trim(),
+            email: email?.trim(),
+            password: password?.trim(),
+            loginId: loginId
+        };
+
+        const missingFields = [];
+        if (!requiredFields.userName) missingFields.push('Name');
+        if (!requiredFields.email) missingFields.push('Email');
+        if (!requiredFields.password) missingFields.push('Password');
+        if (!requiredFields.loginId) missingFields.push('Login ID');
+
+        if (missingFields.length > 0) {
+            setSnackbarMessage(`Please fill in the following required fields: ${missingFields.join(', ')}`);
+            setSnackbarVariant('error');
+            setSnackbarOpen(true);
+            return;
+        }
+                const response = await updateProfile(
+                    requiredFields.userName,
+                    requiredFields.email,
+                    tempTwoFa,
+                    requiredFields.password,
+                    requiredFields.loginId
+        );
+        if (response.state) {
+            setSnackbarMessage('Profile updated successfully!');
+            setSnackbarVariant('success');
+        }
+        else {
+            setSnackbarMessage('Failed to update profile. Please try again.');
+            setSnackbarVariant('error');
+        }
+        setSnackbarOpen(true);
     };
+
+    function handleTwoFa() {
+        setTempTwoFa(!tempTwoFa);
+    }
 
     const handleLogout = () => {
         localStorage.clear();
         navigate('/login');
     };
 
-    const togglePasswordFields = () => {
-        setShowPasswordFields(!showPasswordFields);
-        setPasswordMessage({ type: '', text: '' });
-        setPasswordData({ oldPassword: '', newPassword: '' });
-    };
-
-    const handlePasswordChange = () => {
-        if (passwordData.oldPassword === profileData.password) {
-            setProfileData({
-                ...profileData,
-                password: passwordData.newPassword
-            });
-
-            setPasswordMessage({
-                type: 'success',
-                text: 'Password updated successfully!'
-            });
-
-            setPasswordData({ oldPassword: '', newPassword: '' });
-
-            setTimeout(() => {
-                setShowPasswordFields(false);
-                setPasswordMessage({ type: '', text: '' });
-            }, 3000);
-        } else {
-            setPasswordMessage({
-                type: 'error',
-                text: 'Current password is incorrect. Please try again.'
-            });
-        }
+    const handleSnackbarClose = () => {
+        setSnackbarOpen(false);
     };
 
     return (
@@ -112,12 +91,22 @@ const ProfilePage = () => {
             "max-h-screen overflow-x-hidden relative scrollbar-none pt-16 lg:pt-0",
             darkMode ? "bg-gradient-to-b from-gray-900 to-gray-800" : "bg-gradient-to-b from-blue-50 to-purple-50"
         )}>
+            <Snackbar
+                message={snackbarMessage}
+                variant={snackbarVariant}
+                open={snackbarOpen}
+                onClose={handleSnackbarClose}
+                autoHideDuration={6000}
+                vertical="top"
+                horizontal="center"
+            />
             <LoginSwitch setDarkMode={setDarkMode} darkMode={darkMode} />
             <BackgroundPattern darkMode={darkMode} />
 
             <Box className="relative z-10 max-w-4xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
                 <Box className="relative z-30 mb-6">
                     <ProfileHeader
+                        isProfileLoading={isProfileLoading}
                         darkMode={darkMode}
                         handleBack={handleBack}
                         handleSave={handleSave}
@@ -128,37 +117,29 @@ const ProfilePage = () => {
                     <Box className="relative z-10">
                         <ProfileCard
                             darkMode={darkMode}
-                            profileData={profileData}
                             twoFa={twoFa}
                             notification={notification}
                             previewImage={previewImage}
                             fileInputRef={fileInputRef}
-                            handleFileChange={handleFileChange}
                         />
                     </Box>
 
-                    {/* Other Sections */}
                     <Box className="relative z-10">
                         <PersonalSection
                             darkMode={darkMode}
                             edit={edit}
                             handleEdit={handleEdit}
-                            tempData={tempData}
                             handleProfileChange={handleProfileChange}
                         />
                     </Box>
 
                     <Box className="relative z-10">
                         <SecuritySection
+                            edit={showPassword}
+                            setEdit={() => setShowPassword(!showPassword)}
                             darkMode={darkMode}
-                            twoFa={JSON.parse(twoFa)}
-                            onChange={onChange}
-                            showPasswordFields={showPasswordFields}
-                            togglePasswordFields={togglePasswordFields}
-                            passwordMessage={passwordMessage}
-                            passwordData={passwordData}
-                            setPasswordData={setPasswordData}
-                            handlePasswordChange={handlePasswordChange}
+                            twoFa={JSON.parse(tempTwoFa)}
+                            handleTwoFa={handleTwoFa}
                         />
                     </Box>
 
@@ -186,6 +167,7 @@ const ProfilePage = () => {
                         startIcon={<Check />}
                         styles={{ width: "fit-content" }}
                         darkMode={darkMode}
+                        onClick={handleSave}
                     />
                 </Box>
 
@@ -200,4 +182,4 @@ const ProfilePage = () => {
     );
 };
 
-export default ProfilePage; 
+export default ProfilePage;

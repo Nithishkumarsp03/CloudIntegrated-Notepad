@@ -5,7 +5,7 @@ import { logo } from "../../../assets";
 
 const NoteActions = ({ setNewNote, newNote, loading, notePad }) => {
     return (
-        <div className="px-4 pb-4 flex gap-4">
+        <div className="px-4 pb-4 flex gap-4 mb-3">
             {!notePad ? (
                 <ButtonComponent
                     btnText="New Note"

@@ -1,14 +1,10 @@
 import { StyledTooltip } from "../../toolTip";
 import { IconButton } from "@mui/material";
-import { AccountCircle, MoreVert } from "@mui/icons-material";
+import { MoreVert } from "@mui/icons-material";
 import { Customer } from "../../../assets";
-import { ButtonComponent } from "../../button";
 
 export const MobileButtons = ({ darkMode, handleMobileMenuOpen, handleProfile, handleCustomerMenuOpen, onSave, saveEditorLoading }) => (
     <>
-        <ButtonComponent handleClick={onSave} loading={saveEditorLoading}>
-            Save Note
-        </ButtonComponent>
         <IconButton
             onClick={handleMobileMenuOpen}
             sx={{ color: darkMode ? "#fff" : "#000", padding: "6px", flexShrink: 0 }}
