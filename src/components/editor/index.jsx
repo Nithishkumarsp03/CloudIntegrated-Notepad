@@ -118,6 +118,7 @@ const Texteditor = ({ onChange }) => {
 
         onEditorChange("tabSaved", false);
         const html = editor.getHTML();
+        console.log(html)
         localStorage.setItem("editorContent", html);
 
         if (html && debouncedSaveRef.current) {
