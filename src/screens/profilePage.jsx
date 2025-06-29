@@ -1,26 +1,36 @@
 import React, { useState, useRef } from 'react';
 import { useNavigate } from "react-router-dom";
 import { Box, Typography } from '@mui/material';
-import useEditorStore from '../store/globalStore';
 import { useLoginStore } from '../store/loginStore';
 import { BackgroundPattern, ButtonComponent, cn, LoginSwitch, PersonalSection, ProfileCard, ProfileHeader, SecuritySection, Snackbar } from '../components';
 import { AccountManagementSection, NotificationSection } from '../components/profilePage';
 import { Check } from '@mui/icons-material';
+import useEditorStore from '../store/globalStore';
 
 const ProfilePage = () => {
-    const { darkMode, setDarkMode } = useEditorStore();
-    const { twoFa, onChange, notification, userName, email, gender, password, loginId } = useLoginStore();
+    
+    const twoFa = useLoginStore(state => state.twoFa);
+    const onChange = useLoginStore(state => state.onChange);
+    const notification = useLoginStore(state => state.notification);
+    const userName = useLoginStore(state => state.userName);
+    const email = useLoginStore(state => state.email);
+    const gender = useLoginStore(state => state.gender);
+    const password = useLoginStore(state => state.password);
+    const loginId = useLoginStore(state => state.loginId);
+    const updateProfile = useLoginStore(state => state.updateProfile);
+    const darkMode = useEditorStore(state => state.darkMode);
+
     const navigate = useNavigate();
-    const [tempTwoFa, setTempTwoFa] = useState(twoFa);
     const fileInputRef = useRef(null);
-    const [previewImage, setPreviewImage] = useState('');
+
     const [edit, setEdit] = useState(true);
+    const [tempTwoFa, setTempTwoFa] = useState(twoFa);
+    const [previewImage, setPreviewImage] = useState('');
     const [showPassword, setShowPassword] = useState(false);
-    const updateProfile = useLoginStore(e => e.updateProfile);
-    const isProfileLoading = useLoginStore(e => e.loaders.isProfileLoading);
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
     const [snackbarVariant, setSnackbarVariant] = useState('info');
+
 
     function handleProfileChange(e) {
         const { name, value } = e.target;
@@ -36,31 +46,19 @@ const ProfilePage = () => {
     };
 
     const handleSave = async () => {
-        const requiredFields = {
-            userName: userName?.trim(),
-            email: email?.trim(),
-            password: password?.trim(),
-            loginId: loginId
-        };
 
-        const missingFields = [];
-        if (!requiredFields.userName) missingFields.push('Name');
-        if (!requiredFields.email) missingFields.push('Email');
-        if (!requiredFields.password) missingFields.push('Password');
-        if (!requiredFields.loginId) missingFields.push('Login ID');
-
-        if (missingFields.length > 0) {
-            setSnackbarMessage(`Please fill in the following required fields: ${missingFields.join(', ')}`);
+        if (!password) {
+            setSnackbarMessage(`Please fill in the following required fields: Password`);
             setSnackbarVariant('error');
             setSnackbarOpen(true);
             return;
         }
                 const response = await updateProfile(
-                    requiredFields.userName,
-                    requiredFields.email,
+                    userName,
+                    email,
                     tempTwoFa,
-                    requiredFields.password,
-                    requiredFields.loginId
+                    password,
+                    loginId
         );
         if (response.state) {
             setSnackbarMessage('Profile updated successfully!');
@@ -100,14 +98,12 @@ const ProfilePage = () => {
                 vertical="top"
                 horizontal="center"
             />
-            <LoginSwitch setDarkMode={setDarkMode} darkMode={darkMode} />
-            <BackgroundPattern darkMode={darkMode} />
+            <LoginSwitch />
+            <BackgroundPattern />
 
             <Box className="relative z-10 max-w-4xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
                 <Box className="relative z-30 mb-6">
                     <ProfileHeader
-                        isProfileLoading={isProfileLoading}
-                        darkMode={darkMode}
                         handleBack={handleBack}
                         handleSave={handleSave}
                     />
@@ -116,7 +112,6 @@ const ProfilePage = () => {
                 <Box className="relative z-20 space-y-8">
                     <Box className="relative z-10">
                         <ProfileCard
-                            darkMode={darkMode}
                             twoFa={twoFa}
                             notification={notification}
                             previewImage={previewImage}
@@ -126,7 +121,6 @@ const ProfilePage = () => {
 
                     <Box className="relative z-10">
                         <PersonalSection
-                            darkMode={darkMode}
                             edit={edit}
                             handleEdit={handleEdit}
                             handleProfileChange={handleProfileChange}
@@ -137,7 +131,6 @@ const ProfilePage = () => {
                         <SecuritySection
                             edit={showPassword}
                             setEdit={() => setShowPassword(!showPassword)}
-                            darkMode={darkMode}
                             twoFa={JSON.parse(tempTwoFa)}
                             handleTwoFa={handleTwoFa}
                         />
@@ -145,7 +138,6 @@ const ProfilePage = () => {
 
                     <Box className="relative z-10">
                         <NotificationSection
-                            darkMode={darkMode}
                             notification={notification}
                             onChange={onChange}
                         />
@@ -153,25 +145,21 @@ const ProfilePage = () => {
 
                     <Box className="relative z-10">
                         <AccountManagementSection
-                            darkMode={darkMode}
                             handleLogout={handleLogout}
                         />
                     </Box>
                 </Box>
 
-                {/* Mobile Save Button */}
                 <Box className='md:hidden block pt-5 text-end relative z-20'>
                     <ButtonComponent
                         type='button'
                         btnText={'Save Changes'}
                         startIcon={<Check />}
                         styles={{ width: "fit-content" }}
-                        darkMode={darkMode}
                         onClick={handleSave}
                     />
                 </Box>
 
-                {/* Footer */}
                 <Box className="mt-2 md:mt-8 text-center relative z-10">
                     <Typography variant="caption" className={darkMode ? "text-gray-400" : "text-gray-500"}>
                         © 2025 NotePad App • <span className="cursor-pointer hover:underline">Terms</span> • <span className="cursor-pointer hover:underline">Privacy</span>

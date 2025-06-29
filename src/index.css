@@ -12,6 +12,11 @@
     width: 0;
 }
 
+::-webkit-scrollbar {
+  display: none;
+  width: 0px;
+}
+
   .scrollbar-thin::-webkit-scrollbar {
     width: 8px;
   }

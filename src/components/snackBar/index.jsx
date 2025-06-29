@@ -12,7 +12,7 @@ export const Snackbar = ({
     horizontal = 'center',
     action = null,
 }) => {
-    const { darkMode } = useEditorStore();
+    const darkMode = useEditorStore(state => state.darkMode);
     const [isVisible, setIsVisible] = useState(open);
 
     useEffect(() => {

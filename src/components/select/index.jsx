@@ -1,5 +1,6 @@
 import React from 'react';
 import { Select as MuiSelect, MenuItem } from '@mui/material';
+import useEditorStore from '../../store/globalStore';
 
 export const CustomSelect = ({
     options,
@@ -8,7 +9,7 @@ export const CustomSelect = ({
     width = '160px',
     label,
 }) => {
-    const darkMode = document.documentElement.classList.contains("dark");
+    const darkMode = useEditorStore(state => state.darkMode);
     return (
         <div>
             {label && (

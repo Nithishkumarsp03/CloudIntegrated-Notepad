@@ -4,11 +4,22 @@ import { Edit, Check } from '@mui/icons-material';
 import { InputField, ButtonComponent } from '../../../components';
 import FormSection from './formSection';
 import { useLoginStore } from '../../../store/loginStore';
+import useEditorStore from '../../../store/globalStore';
 
-export const PersonalSection = ({ darkMode, edit, handleEdit }) => {
+export const PersonalSection = ({ edit, handleEdit }) => {
+
+    const darkMode = useEditorStore(state => state.darkMode);
+
     const textStyles = `pl-0.5 !text-sm ${darkMode ? 'text-purple-200' : 'text-black'}`;
-    const { notification, userName, email, gender, phone, profilePicture, onChange } = useLoginStore();
-    const [profileData, setProfileData] = useState({
+    const notification = useLoginStore(state => state.notification);
+    const userName = useLoginStore(state => state.userName);
+    const email = useLoginStore(state => state.email);
+    const gender = useLoginStore(state => state.gender);
+    const phone = useLoginStore(state => state.phone);
+    const profilePicture = useLoginStore(state => state.profilePicture);
+    const onChange = useLoginStore(state => state.onChange);
+    
+        const [profileData, setProfileData] = useState({
         userName: userName,
         email: email,
         gender: gender === "M" ? "male" : gender === "F" ? "female" : "other",

@@ -13,8 +13,6 @@ import { Snackbar } from '../components';
 import { useLoginStore } from '../store/loginStore';
 import useEditorStore from '../store/globalStore';
 import { logo } from '../assets';
-
-// Import the new components
 import StepIndicator from '../components/onBoarding/components/stepIndicator';
 import WelcomeStep from '../components/onBoarding/components/welcomeStep';
 import PersonaSelectionStep from '../components/onBoarding/components/personaSelection';
@@ -23,9 +21,22 @@ import CompletionStep from '../components/onBoarding/components/complete';
 import ThemeToggle from '../components/onBoarding/components/theme';
 
 const OnboardingFlow = () => {
+  // nav
   const navigate = useNavigate();
-  const { darkMode, setDarkMode } = useEditorStore();
-  const { getOnBoardingFlow, loaders, onChange, authentication, twoFa, isUserLoggedIn } = useLoginStore();
+
+  // store
+  const darkMode = useEditorStore(state => state.darkMode);
+  const setDarkMode = useEditorStore(state => state.setDarkMode);
+  const getOnBoardingFlow = useLoginStore(state => state.getOnBoardingFlow);
+  const loaders = useLoginStore(state => state.loaders);
+  const email = useLoginStore(state => state.email);
+  const onChange = useLoginStore(state => state.onChange);
+  const authentication = useLoginStore(state => state.authentication);
+  const twoFa = useLoginStore(state => state.twoFa);
+  const isUserLoggedIn = useLoginStore(state => state.isUserLoggedIn);
+
+
+
   const [step, setStep] = useState(0);
   const [selectedPersona, setSelectedPersona] = useState(null);
   const [gender, setGender] = useState('');
@@ -37,7 +48,6 @@ const OnboardingFlow = () => {
     message: ""
   });
   const [timeoutDuration, setTimeoutDuration] = useState(0);
-  const email = localStorage.getItem("email");
 
   if (!email) {
     navigate('/login');
@@ -86,7 +96,6 @@ const OnboardingFlow = () => {
           });
         }, timeoutDuration);
       } else {
-        // Set the personas directly from response
         setPersonas(response?.data || []);
       }
     };
@@ -199,7 +208,6 @@ const OnboardingFlow = () => {
       "h-screen w-screen overflow-hidden",
       darkMode ? "bg-gray-900" : "bg-blue-50"
     )}>
-      {/* Background decorative elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
         <div className={cn(
           "absolute -top-20 -left-20 w-96 h-96 rounded-full opacity-5",
@@ -211,14 +219,12 @@ const OnboardingFlow = () => {
         )}></div>
       </div>
 
-      {/* Theme Toggle */}
       <ThemeToggle
         darkMode={darkMode}
         onToggle={() => setDarkMode(!darkMode)}
         isMobile={isMobile}
       />
 
-      {/* Main Content */}
       <Box className="h-full flex flex-col justify-center items-center px-3 md:px-6 relative z-10">
         <Box className={cn(
           "w-full max-w-3xl rounded-xl shadow-lg",
@@ -227,7 +233,6 @@ const OnboardingFlow = () => {
             ? "bg-gray-800/90 border border-gray-700"
             : "bg-white/90 border border-gray-100"
         )}>
-          {/* Header */}
           <div className={`mb-4 md:mb-8 text-center`}>
             <div className='flex w-full mb-1'>
               <div className={`w-16 md:w-20 text-left`}>
@@ -260,7 +265,6 @@ const OnboardingFlow = () => {
             </Typography>
           </div>
 
-          {/* Step Content */}
           <div className={cn(
             isMobile ? "min-h-[250px]" : "min-h-[340px]",
             "overflow-y-auto scrollbar-none"
@@ -268,7 +272,6 @@ const OnboardingFlow = () => {
             {renderStepContent()}
           </div>
 
-          {/* Navigation Button */}
           <div className="mt-4 md:mt-8 flex justify-end">
             <ButtonComponent
               loading={loaders.isRegisterLoading}
@@ -280,7 +283,6 @@ const OnboardingFlow = () => {
             />
           </div>
 
-          {/* Mobile Step Indicator */}
           {isMobile && (
             <StepIndicator
               steps={steps}
@@ -290,7 +292,6 @@ const OnboardingFlow = () => {
           )}
         </Box>
 
-        {/* Desktop Step Indicator */}
         {!isMobile && (
           <StepIndicator
             steps={steps}

@@ -2,12 +2,10 @@ import React, { forwardRef } from "react";
 import { cn } from "../../cn";
 
 export const CodeInput = forwardRef(({
-    index,
     value,
     onChange,
     onPaste,
     onKeyDown,
-    darkMode
 }, ref) => {
     return (
         <input

@@ -2,8 +2,12 @@ import React from 'react';
 import { Box, Typography, FormControlLabel } from '@mui/material';
 import { ProfileSwitch } from '../../../components';
 import FormSection from './formSection';
+import useEditorStore from '../../../store/globalStore';
 
-export const NotificationSection = ({ darkMode, notification, onChange }) => {
+export const NotificationSection = ({ notification, onChange }) => {
+
+    const darkMode = useEditorStore(state => state.darkMode);
+
     return (
         <FormSection title="Notification Preferences" darkMode={darkMode}>
             <Box className="p-5">

@@ -3,14 +3,7 @@ import { EmptyStateIcon } from './emptystateIcon';
 import { NoteCreationForm } from './notecreationForm';
 import { InfoBox } from './infoBox';
 
-export const EmptyStateContent = ({
-    showInput,
-    setShowInput,
-    noteName,
-    setNoteName,
-    handleCreateNote,
-    darkMode
-}) => {
+export const EmptyStateContent = () => {
     return (
         <div className="relative z-10 text-center max-w-md px-4 py-8 rounded-xl bg-white/90 dark:bg-gray-800/90 shadow-xl border border-gray-200 dark:border-gray-700 backdrop-blur-sm">
             <div className="mb-6">
@@ -24,12 +17,6 @@ export const EmptyStateContent = ({
             </div>
 
             <NoteCreationForm
-                showInput={showInput}
-                setShowInput={setShowInput}
-                noteName={noteName}
-                setNoteName={setNoteName}
-                handleCreateNote={handleCreateNote}
-                darkMode={darkMode}
             />
 
             <InfoBox />

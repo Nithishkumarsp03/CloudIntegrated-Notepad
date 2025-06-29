@@ -3,8 +3,12 @@ import { Box, Typography } from '@mui/material';
 import { Logout } from '@mui/icons-material';
 import { ButtonComponent, cn } from '../../../components';
 import FormSection from './formSection';
+import useEditorStore from '../../../store/globalStore';
 
-export const AccountManagementSection = ({ darkMode, handleLogout }) => {
+export const AccountManagementSection = ({ handleLogout }) => {
+
+    const darkMode = useEditorStore(state => state.darkMode);
+
     return (
         <FormSection title="Account Management" darkMode={darkMode}>
             <Box className="p-5">

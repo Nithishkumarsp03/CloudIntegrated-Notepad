@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { ButtonComponent, InputField, ProfileSwitch, cn } from '../../../components';
 import FormSection from './formSection';
 import { useLoginStore } from '../../../store/loginStore';
+import useEditorStore from '../../../store/globalStore';
 
 const passwordValidation = {
     minLength: 8,
@@ -29,15 +30,13 @@ const validatePassword = (password) => {
 
 
 export const SecuritySection = ({
-    darkMode,
     twoFa,
     handleTwoFa,
     passwordMessage = { type: null, text: '' },
     edit,
     setEdit
 }) => {
-
-    const persistStorage = useLoginStore(e => e.persistStorage);
+    const darkMode = useEditorStore(state => state.darkMode);
     const onChange = useLoginStore(e => e.onChange);
     const ref2 = useRef(null);
     const ref3 = useRef(null);
