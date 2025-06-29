@@ -16,7 +16,6 @@ const TextEditorDisplay = () => {
     };
 
     useEffect(() => {
-
         if (typeof window !== 'undefined') {
             const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
             setDarkMode(isDarkMode);

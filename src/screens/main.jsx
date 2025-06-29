@@ -1,13 +1,10 @@
-import React, { useState, useEffect } from "react";
 import { Navbar } from "../components/navbar";
-import { useMediaQuery } from "@mui/material";
 import { cn } from "../components/cn";
 import Texteditor from "../components/editor";
 import { Appbar } from "../components/appbar";
 import { useNavbarStore } from "../store/navbarStore";
 
 const Main = () => {
-  const isMobile = useMediaQuery('(max-width: 768px)');
   const isSidebarOpen = useNavbarStore(e => e.isSidebarOpen);
   const noteId = useNavbarStore(e => e.noteId);
 

@@ -7,7 +7,10 @@ import { useLoginStore } from "../store/loginStore";
 import { useNavbarStore } from "../store/navbarStore";
 
 const TwoStepAuthentication = () => {
-    const { isUserLoggedIn, twoStepAuth, authentication } = useLoginStore();
+    const isUserLoggedIn = useLoginStore(state => state.isUserLoggedIn);
+    const twoStepAuth = useLoginStore(state => state.twoStepAuth);
+    const authentication = useLoginStore(state => state.authentication);
+        
     useEffect(() => {
         if (isUserLoggedIn) {
             let data = JSON.parse(localStorage.getItem("notes"));
@@ -39,7 +42,6 @@ const TwoStepAuthentication = () => {
         return 300;
     });
     const [isTimerRunning, setIsTimerRunning] = useState(true);
-
     const { darkMode, setDarkMode } = useEditorStore();
     const { getNotes } = useNavbarStore();
     const email = localStorage.getItem("email");

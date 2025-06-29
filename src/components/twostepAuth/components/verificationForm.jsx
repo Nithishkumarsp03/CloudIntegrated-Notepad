@@ -17,7 +17,7 @@ export const VerificationForm = ({
     const [verificationCode, setVerificationCode] = useState(["", "", "", "", "", ""]);
     const [errorMessage, setErrorMessage] = useState("");
     const inputRefs = useRef(Array(6).fill(null));
-    const { loaders } = useLoginStore();
+    const loaders = useLoginStore(state => state.loaders);
 
     const handleCodeChange = (index, value) => {
         if (!/^\d*$/.test(value)) return;

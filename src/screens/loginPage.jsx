@@ -12,8 +12,15 @@ import { VideoComponent,LoginSwitch, LoginHeader, LoginForm, SignupForm } from '
 import { Snackbar } from '../components';
 
 const LoginPage = () => {
+
+  // nav
   const navigate = useNavigate();
+  const isMobile = useMediaQuery('(max-width:768px)');
+
+  // token
   const token = localStorage.getItem("token");
+
+  // validate login
   useEffect(() => {
     async function getNote() {
       if (token) {
@@ -25,9 +32,18 @@ const LoginPage = () => {
     }
     getNote();
   }, []);
-  const { authentication, firstLogin, loaders, resetAll } = useLoginStore();
-  const { darkMode, setDarkMode } = useEditorStore();
 
+  // login store
+  const authentication = useLoginStore(e => e.authentication);
+  const firstLogin = useLoginStore(e => e.firstLogin);
+  const loaders = useLoginStore(e => e.loaders);
+  const resetAll = useLoginStore(e => e.resetAll);
+
+  // editor store
+  const darkMode = useEditorStore(e => e.darkMode);
+  const setDarkMode = useEditorStore(e => e.setDarkMode);
+
+  // states
   const [snackBar, setSnackBar] = useState({
     variant: "",
     state: false,
@@ -56,7 +72,6 @@ const LoginPage = () => {
     }
   });
 
-  const isMobile = useMediaQuery('(max-width:768px)');
   const updateFormState = (field, value) => {
     setFormState(prev => ({
       ...prev,

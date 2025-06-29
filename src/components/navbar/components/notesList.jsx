@@ -9,7 +9,7 @@ import { useNavbarStore } from "../../../store/navbarStore";
 const NotesList = ({ filter, isMobile, id, setId, handleMenuClick, loading, handleuuid }) => {
     const tabSaved = useTextEditorStore(e => e.tabSaved);
     const addNoteContent = useTextEditorStore(e => e.addNoteContent);
-    const { noteId } = useNavbarStore();
+    const noteId = useNavbarStore(e => e.noteId);
     const handleClick = (uuid, note_id) => {
         localStorage.setItem("uuid", uuid);
         localStorage.setItem("note_id", note_id);

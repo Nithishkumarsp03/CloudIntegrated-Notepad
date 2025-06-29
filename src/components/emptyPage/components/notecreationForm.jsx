@@ -3,17 +3,33 @@ import { Add } from '@mui/icons-material';
 import { InputField } from '../../inputFields';
 import { ButtonComponent } from '../../button';
 import { useNavbarStore } from '../../../store/navbarStore';
+import { useNavigate } from 'react-router-dom';
+import useEditorStore from '../../../store/globalStore';
 
-export const NoteCreationForm = ({
-    showInput,
-    setShowInput,
-    noteName,
-    setNoteName,
-    handleCreateNote,
-    darkMode
-}) => {
+export const NoteCreationForm = () => {
+
+    // states
+    const [showInput, setShowInput] = React.useState(false);
+    const [noteName, setNoteName] = React.useState("");
+
+    // ref
     const inputRef = useRef(null);
-    const { loaders } = useNavbarStore();
+    const navigate = useNavigate();
+
+    // store
+    const loaders = useNavbarStore(e => e.loaders);
+    const addNote = useNavbarStore(e => e.addNote);
+    const addNewTab = useEditorStore(e => e.addNewTab);
+
+    const handleCreateNote = async () => {
+        if (noteName && noteName.trim() !== '') {
+            addNewTab(noteName);
+            setNoteName('');
+            await addNote(noteName);
+            navigate(`/`);
+        }
+    };
+
     const handleKeyPress = (e) => {
         if (e.key === 'Enter') {
             handleCreateNote();
@@ -22,21 +38,12 @@ export const NoteCreationForm = ({
         }
     };
 
-    const toggleInputField = () => {
-        setShowInput(true);
-    };
-
-    useEffect(() => {
-        if (showInput && inputRef.current) {
-            inputRef.current.focus();
-        }
-    }, [showInput]);
-
     return (
         <>
             {showInput ? (
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-6 animate-fadeIn">
                     <InputField
+                        autofocus
                         ref={inputRef}
                         type='text'
                         placeholder={"Enter Note Name"}
@@ -46,22 +53,23 @@ export const NoteCreationForm = ({
                     />
 
                     <div>
-                    <ButtonComponent
-                        btnText="Create"
-                        startIcon={<Add />}
-                        handleClick={handleCreateNote}
+                        <ButtonComponent
+                            loading={loaders.isAddLoading}
+                            btnText="Create"
+                            startIcon={<Add />}
+                            handleClick={handleCreateNote}
                         />
                     </div>
                 </div>
             ) : (
                 <div className='text-center'>
                     <ButtonComponent
-                    btnText="Create New Note"
-                    startIcon={<Add />}
-                    loading={loaders.isAddLoading}
-                    handleClick={toggleInputField}
-                        />
-                    </div>
+                        btnText="Create New Note"
+                        startIcon={<Add />}
+                        loading={loaders.isAddLoading}
+                        handleClick={() => setShowInput(!showInput)}
+                    />
+                </div>
             )}
         </>
     );

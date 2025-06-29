@@ -28,8 +28,6 @@ export const ButtonComponent = ({
   });
 
   const darkMode = useEditorStore(e => e.darkMode);
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   useEffect(() => {
     let animTimeout;

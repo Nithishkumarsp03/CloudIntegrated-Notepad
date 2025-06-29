@@ -4,8 +4,13 @@ import { cn } from '../../cn';
 import { ProfileSwitch } from '../../switch';
 import { SunIcon } from '../../../assets/svgs/sun';
 import { MoonIcon } from '../../../assets/svgs/moon';
+import useEditorStore from '../../../store/globalStore';
 
-export const LoginSwitch = ({ isMobile, toggleLeftPanel, setDarkMode, darkMode }) => {
+export const LoginSwitch = ({ isMobile, toggleLeftPanel}) => {
+    
+    const darkMode = useEditorStore(state => state.darkMode);
+    const setDarkMode = useEditorStore(state => state.setDarkMode);
+
     return (
         <div>
             {isMobile && (

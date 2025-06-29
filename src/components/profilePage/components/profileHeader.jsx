@@ -3,8 +3,10 @@ import { Box, Typography } from '@mui/material';
 import { Check } from '@mui/icons-material';
 import { ButtonComponent,cn } from '../../../components';
 import BackArrow from '../../../assets/svgs/backArrow';
+import useEditorStore from '../../../store/globalStore';
 
-export const ProfileHeader = ({ darkMode, handleBack, handleSave, isSaved, isProfileLoading }) => {
+export const ProfileHeader = ({ handleBack, handleSave, isSaved }) => {
+    const darkMode = useEditorStore(state => state.darkMode);
     return (
         <Box className={cn(
             "mb-6 p-4 sm:p-6 rounded-xl shadow-lg flex items-center justify-between",
@@ -22,7 +24,6 @@ export const ProfileHeader = ({ darkMode, handleBack, handleSave, isSaved, isPro
             </Box>
             <div className='hidden md:block'>
                 <ButtonComponent
-                loading={isProfileLoading}
                 disabled={isSaved}
                 btnText={'Save Changes'}
                 startIcon={<Check />}
