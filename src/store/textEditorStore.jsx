@@ -97,5 +97,13 @@ export const useTextEditorStore = create((set, get) => ({
         const { notesummary } = get();
         const updatedData = { ...notesummary, [noteId]: content };
         set({ notesummary: updatedData });
-    }
+    },
+
+    downloadPDF: (title, content) => {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        doc.text(content, 10, 10);
+        doc.save(`${title || "note"}.pdf`);
+      } 
+      
 }));

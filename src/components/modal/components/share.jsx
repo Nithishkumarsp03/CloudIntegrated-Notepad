@@ -24,8 +24,12 @@ import {
 import useEditorStore from "../../../store/globalStore";
 import { CopyIcon } from '../../../assets/svgs/copy';
 import { InputField, ButtonComponent } from '../../../components';
+import { useNavbarStore } from '../../../store/navbarStore';
 
-export const ShareModal = ({ isOpen, onClose, shareLink = "https://in.search.yahoo.com/search?fr=mcafee&type=E211IN1589G0&p=link+notepad" }) => {
+export const ShareModal = ({ isOpen, onClose }) => {
+    const uuid = useNavbarStore(state => state.currentNote);
+    console.log(uuid)
+    const shareLink = `http://note-pad-lemon.vercel.app/share/${uuid}`;
     const { darkMode } = useEditorStore();
     const theme = useTheme();
     const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));

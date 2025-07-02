@@ -12,7 +12,6 @@ import { RenameModal, Snackbar, cn } from "../../components";
 export const Navbar = ({ notePad }) => {
 
     const [id, setId] = useState();
-    const [localSearch, setLocalSearch] = useState("");
     const [anchorEl, setAnchorEl] = useState(null);
     const [openRenameModal, setOpenRenameModal] = useState({ state: false, uuid: '', note_name: '' });
     const [newNote, setNewNote] = useState(false);
@@ -41,7 +40,9 @@ export const Navbar = ({ notePad }) => {
     
     const handleNavigate = useCallback((uuid, noteId) => {
         onNavbarChange("noteId", noteId);
+        onNavbarChange("currentNote", uuid);
         if (uuid) {
+            onNavbarChange("cuurentNote", uuid);
             navigate(`/note-pad/${uuid}`);
         }
     }, [navigate, onNavbarChange]);
