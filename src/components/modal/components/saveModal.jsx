@@ -17,13 +17,20 @@ import CloseIcon from '@mui/icons-material/Close';
 import DownloadOutlinedIcon from '@mui/icons-material/DownloadOutlined';
 import useEditorStore from '../../../store/globalStore';
 import { ButtonComponent } from '../../../components';
+import { useNavbarStore } from '../../../store/navbarStore';
+import { useTextEditorStore } from '../../../store/textEditorStore';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 
-export const SaveModal = ({ isOpen, onClose, onSave, currentFileName }) => {
+export const SaveModal = ({ isOpen, onClose, currentFileName }) => {
     const { darkMode } = useEditorStore();
     const theme = useTheme();
     const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
     const [fileName, setFileName] = useState(currentFileName || '');
     const [fileFormat, setFileFormat] = useState('pdf');
+    const noteId = useNavbarStore(state => state.noteId);
+    const notesummary = useTextEditorStore(state => state.notesummary);
+    const noteRef = React.useRef();
 
     useEffect(() => {
         if (isOpen) {
@@ -32,8 +39,20 @@ export const SaveModal = ({ isOpen, onClose, onSave, currentFileName }) => {
         }
     }, [isOpen, currentFileName]);
 
-    const handleSubmit = (e) => {
-        onSave(e);
+    const handleSubmit = async (e) => {
+        if (!noteRef.current) return;
+
+        const canvas = await html2canvas(noteRef.current, {
+            scale: 3,
+            backgroundColor: '#fff'
+        });
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+        pdf.save(`${fileName || 'note'}.pdf`);
+        
         onClose();
     };
 
@@ -65,6 +84,9 @@ export const SaveModal = ({ isOpen, onClose, onSave, currentFileName }) => {
                 }
             }}
         >
+            <div ref={noteRef} style={{ position: 'absolute', left: '-9999px', top: 0 }}>
+                <div dangerouslySetInnerHTML={{ __html: notesummary[noteId] }} />
+            </div>
             <DialogTitle sx={{
                 p: 0,
                 mb: 3,
@@ -132,24 +154,8 @@ export const SaveModal = ({ isOpen, onClose, onSave, currentFileName }) => {
                                     }
                                 }}
                             />
-                            <FormControlLabel
-                                value="Docx"
-                                control={<Radio
-                                    sx={{
-                                        color: darkMode ? '#86EFAC' : '#10B981',
-                                        '&.Mui-checked': {
-                                            color: darkMode ? '#86EFAC' : '#10B981'
-                                        }
-                                    }}
-                                />}
-                                label="DOCX"
-                                sx={{
-                                    '& .MuiFormControlLabel-label': {
-                                        color: darkMode ? 'grey.300' : 'grey.800'
-                                    }
-                                }}
-                            />
-                            <FormControlLabel
+                           
+                            {/* <FormControlLabel
                                 value="txt"
                                 control={<Radio
                                     sx={{
@@ -165,7 +171,7 @@ export const SaveModal = ({ isOpen, onClose, onSave, currentFileName }) => {
                                         color: darkMode ? 'grey.300' : 'grey.800'
                                     }
                                 }}
-                            />
+                            /> */}
                         </RadioGroup>
                     </Box>
 

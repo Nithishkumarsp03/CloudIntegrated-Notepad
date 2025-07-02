@@ -1,13 +1,16 @@
     import axios from "axios";
-    import { useLoginStore } from "../../store/loginStore";
+    
+import { useLoginStore } from "../../store/loginStore";
+    
+
 
     export const AuthLogin = async (email, password) => {
         const { onChange, onChangeLoaders, persistStorage } = useLoginStore.getState(); 
         try {
             onChangeLoaders("isLoginLoading", true);
             const response = await axios.post("https://backend-notepad.vercel.app/notepad/v1/api/auth/login", {
-                email,
-                password
+                email:email,
+                password:password
             });
             if (response?.data?.["two-fa"]) {
                 persistStorage("twoStepToken", response?.data?.["two-fa"]);

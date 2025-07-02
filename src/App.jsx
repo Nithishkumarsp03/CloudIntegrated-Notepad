@@ -8,7 +8,7 @@ import ForgotPassword from './screens/forgotPassword';
 import OnboardingFlow from './screens/onBoardingFlow';
 import EmptyStatePage from './screens/emptyPage';
 import TwoStepAuthentication from './screens/twoStepAuth';
-import TextEditorDisplay from './screens/editorDisplay';
+import { ShareNote } from './screens/editorDisplay';
 import NotePad from './screens/notePad';
 
 function App() {
@@ -20,12 +20,12 @@ function App() {
           <Route path='/onBoarding-flow' element={<OnboardingFlow />} />
           <Route path='/forgotPassword' element={<ForgotPassword />} />
           <Route path='/twoStepAuth' element={<TwoStepAuthentication />} />
+          <Route path='/share/:id' element={<ShareNote/>} />
           <Route element={<Protect />}>
             <Route path='/' element={<NotePad />} />
             <Route path='/profile' element={<ProfilePage />} />
             <Route path='/notes' element={<EmptyStatePage />} />
             <Route path='/note-pad/:id' element={<Main />} />
-            <Route path='/shareEditor/:id' element={<TextEditorDisplay />} />
           </Route>
         </Routes>
       </BrowserRouter>
