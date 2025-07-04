@@ -141,9 +141,9 @@ export const SaveModal = ({ isOpen, onClose, currentFileName }) => {
                                 value="pdf"
                                 control={<Radio
                                     sx={{
-                                        color: darkMode ? '#86EFAC' : '#10B981',
+                                        color: !darkMode ? '#2563EB' : '#7C3AED',
                                         '&.Mui-checked': {
-                                            color: darkMode ? '#86EFAC' : '#10B981'
+                                            color: !darkMode ? '#2563EB' : '#7C3AED'
                                         }
                                     }}
                                 />}
@@ -194,6 +194,7 @@ export const SaveModal = ({ isOpen, onClose, currentFileName }) => {
                                 minWidth: '100px',
                                 height: '40px',
                                 backgroundColor: darkMode ? '#374151' : '#E5E7EB',
+                                borderColor: darkMode ? '#374151' : '#E5E7EB',
                                 color: darkMode ? '#F3F4F6' : '#111827',
                                 borderRadius: '8px',
                                 textTransform: 'none',
@@ -201,31 +202,18 @@ export const SaveModal = ({ isOpen, onClose, currentFileName }) => {
                                 fontSize: '0.875rem',
                                 '&:hover': {
                                     backgroundColor: darkMode ? '#4B5563' : '#D1D5DB',
-                                    boxShadow: 'none'
-                                }
+                                    borderColor: darkMode ? '#4B5563' : '#D1D5DB',
+                                },
+                                "&:active": {
+                                    backgroundColor: darkMode ? '#1F2937' : '#9CA3AF',
+                                    borderColor: darkMode ? '#1F2937' : '#9CA3AF',
+                                },
                             }}
                         />
 
                         <ButtonComponent
                             btnText="Download"
                             handleClick={() => handleSubmit('Download')}
-                            styles={{
-                                minWidth: '150px',
-                                height: '40px',
-                                backgroundColor: darkMode ? '#059669' : '#10B981',
-                                color: 'white',
-                                borderRadius: '8px',
-                                textTransform: 'none',
-                                fontWeight: 500,
-                                fontSize: '0.875rem',
-                                '&:hover': {
-                                    backgroundColor: darkMode ? '#047857' : '#059669',
-                                    boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
-                                },
-                                '&:active': {
-                                    backgroundColor: darkMode ? '#065F46' : '#047857'
-                                }
-                            }}
                         />
                     </Box>
                 </div>

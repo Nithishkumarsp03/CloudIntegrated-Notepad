@@ -26,7 +26,8 @@ export const LeftSection = () => {
                 autocomplete={"off"}
                 isSearchStyle
                 startIcon={<SearchIcon className="dark:text-white w-10 text-gray-400" />}
-                placeholder={"Search..."}
+                    placeholder={"Search..."}
+                    onChange = {e => onNavbarChange("searchquery", e.target.value)}
             /></div>  
         </div>
     );

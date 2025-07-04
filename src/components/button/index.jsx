@@ -11,7 +11,6 @@ export const ButtonComponent = ({
   startIcon,
   handleClick,
   endIcon,
-  imgAnim = false,
   className = "",
   isRipple = true,
   type = "text",
@@ -21,55 +20,27 @@ export const ButtonComponent = ({
   loading = false,
   onKey,
 }) => {
-  const [iconState, setIconState] = useState({
-    hover: false,
-    animate: false,
-    mouseEnter: false
-  });
 
   const darkMode = useEditorStore(e => e.darkMode);
-
-  useEffect(() => {
-    let animTimeout;
-    if (iconState.animate) {
-      animTimeout = setTimeout(() => {
-        setIconState(prev => ({ ...prev, animate: false }));
-      }, 1000);
-    }
-    return () => clearTimeout(animTimeout);
-  }, [iconState.animate]);
 
   const colors = {
     light: {
       primary: "#2563EB",
       hover: "#3B82F6",
       active: "#1D4ED8",
-      shadow: "0 4px 6px rgba(37, 99, 235, 0.2)",
-      hoverShadow: "0 6px 12px rgba(37, 99, 235, 0.25)",
+      shadow: "0 4px 6px -1px rgba(37, 99, 235, 0.2)",
+      hoverShadow: "0 6px 8px -1px rgba(37, 99, 235, 0.25)",
     },
     dark: {
       primary: "#7C3AED",
       hover: "#6D28D9",
       active: "#5B21B6",
-      shadow: "0 4px 8px rgba(124, 58, 237, 0.3)",
-      hoverShadow: "0 6px 14px rgba(124, 58, 237, 0.35)",
+      shadow: "0 4px 6px -1px rgba(124, 58, 237, 0.3)",
+      hoverShadow: "0 6px 8px -1px rgba(124, 58, 237, 0.35)",
     }
   };
 
   const currentColors = darkMode ? colors.dark : colors.light;
-
-  function handleOnClick() {
-    if (loading) return;
-
-    if (iconState.mouseEnter) {
-      setIconState(prev => ({ ...prev, animate: true, mouseEnter: false }));
-    }
-    setIconState(prev => ({ ...prev, hover: false }));
-
-    if (handleClick) {
-      handleClick();
-    }
-  }
 
   return (
     <Button
@@ -85,11 +56,14 @@ export const ButtonComponent = ({
         backgroundColor: currentColors.primary,
         color: "white",
         borderRadius: "8px",
+        border: `1px solid ${darkMode ? '#6B46C1' : '#1E40AF'}`,
         padding: '8px 20px',
         fontSize: '14px',
+        fontFamily: 'monospace',
+        fontWeight: 'medium',
         textTransform: 'none',
         boxShadow: currentColors.shadow,
-        transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+        transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
         cursor: loading ? "default" : "pointer",
         position: "relative",
         overflow: "hidden",
@@ -97,50 +71,38 @@ export const ButtonComponent = ({
 
         "&:hover": {
           backgroundColor: currentColors.hover,
-          transform: loading ? "none" : "translateY(-2px)",
+          borderColor: darkMode ? '#8B5CF6' : '#2563CA',
+          transform: loading ? "none" : "translateY(-1px)",
           boxShadow: currentColors.hoverShadow,
         },
 
         "&:active": {
           backgroundColor: currentColors.active,
+          borderColor: darkMode ? '#5B21B6' : '#1D4ED8',
           transform: loading ? "none" : "translateY(0px)",
           boxShadow: currentColors.shadow,
         },
 
         "& .MuiButton-startIcon": {
           marginRight: "8px",
-          transition: "transform 0.2s ease",
           "& svg": {
             fontSize: "20px"
           }
         },
 
-        "&:hover .MuiButton-startIcon": {
-          transform: loading ? "none" : "scale(1.05)",
-        },
-
         "&.Mui-disabled": {
-          backgroundColor: darkMode ? "rgba(124, 58, 237, 0.4)" : "rgba(37, 99, 235, 0.4)",
-          color: "rgba(255, 255, 255, 0.7)",
+          backgroundColor: darkMode ? "rgba(124, 58, 237, 0.4)" : "rgba(37, 99, 235, 0.6)",
+          borderColor: darkMode ? "rgba(107, 70, 193, 0.4)" : "rgba(30, 64, 175, 0.6)",
+          color: darkMode ? "rgba(255, 255, 255, 0.7)" : "rgba(255, 255, 255, 0.9)",
           boxShadow: "none",
         },
         ...styles
       }}
       startIcon={loading ? null : startIcon}
-      endIcon={!imgAnim && !loading && endIcon ? endIcon : null}
+      endIcon={!loading && endIcon ? endIcon : null}
       variant={variant}
       fullWidth={fullWidth}
-      onClick={handleOnClick}
-      onMouseEnter={() => {
-        if (!loading) {
-          setIconState(prev => ({ ...prev, hover: true, mouseEnter: true }));
-        }
-      }}
-      onMouseLeave={() => {
-        if (!loading) {
-          setIconState(prev => ({ ...prev, hover: false, mouseEnter: false }));
-        }
-      }}
+      onClick={handleClick}
     >
       {loading ? (
         <div className="flex items-center justify-center">

@@ -1,12 +1,13 @@
 import axios from "axios";
 import { useLoginStore } from "../../store/loginStore";
+import { AUTH_URL } from "../globalApi";
 
 export const AuthRegister = async (userName, email, password, twoFa, gender, categoryId ) => {
     const { onChange, onChangeLoaders } = useLoginStore.getState(); 
     const g = gender === "male" ? "M" : gender === "female" ? "F" : "other";
     try {
         onChangeLoaders("isRegisterLoading",true);
-        const response = await axios.post("https://backend-notepad.vercel.app/notepad/v1/api/auth/register", {
+        const response = await axios.post(`${AUTH_URL}/register`, {
             name: userName,
             email,
             password,

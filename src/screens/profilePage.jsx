@@ -14,7 +14,6 @@ const ProfilePage = () => {
     const notification = useLoginStore(state => state.notification);
     const userName = useLoginStore(state => state.userName);
     const email = useLoginStore(state => state.email);
-    const gender = useLoginStore(state => state.gender);
     const password = useLoginStore(state => state.password);
     const loginId = useLoginStore(state => state.loginId);
     const updateProfile = useLoginStore(state => state.updateProfile);

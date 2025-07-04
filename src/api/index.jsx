@@ -4,6 +4,7 @@ export { AuthRegister } from "./authApi/register";
 export { AuthLogin } from "./authApi/login";
 export { Authentication } from "./authApi/auth";
 export { TwoStepAuth } from "./authApi/twoStepAuth";
+export { ResetPassword } from './authApi/resetPassword';
 
 // onb0arding flow
 export { OnboardingFlow } from "./authApi/onboardingFlow";
@@ -20,3 +21,6 @@ export { AddNoteSummary } from "./notesSummaryApi/addNote";
 
 // profile
 export { EditProfile } from "./profileApi/editProfile";
+
+// share 
+export { ShareNote } from './shareApi/share';

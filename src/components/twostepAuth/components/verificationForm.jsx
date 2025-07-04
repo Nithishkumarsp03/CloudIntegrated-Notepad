@@ -14,7 +14,7 @@ export const VerificationForm = ({
     handleResendCode,
     handleBackToLogin
 }) => {
-    const [verificationCode, setVerificationCode] = useState(["", "", "", "", "", ""]);
+    const [verificationCode, setVerificationCode] = useState([]);
     const [errorMessage, setErrorMessage] = useState("");
     const inputRefs = useRef(Array(6).fill(null));
     const loaders = useLoginStore(state => state.loaders);
@@ -50,6 +50,12 @@ export const VerificationForm = ({
         inputRefs.current[lastIndex].focus();
     };
 
+    useEffect(() => { 
+        if (verificationCode.length == 6) {
+            handleVerificationSubmit(new Event("submit"));
+        }
+    },[verificationCode]);
+ 
     const handleVerificationSubmit = async (e) => {
         e.preventDefault();
         if (verificationCode.join("").length !== 6) {
@@ -163,7 +169,7 @@ export const VerificationForm = ({
                 )}
 
                 <ButtonComponent
-                    btnText="Verify"
+                    btnText={loaders.isTwoStepLoading ? "Verifying" : "Verify"}
                     type="submit"
                     loading={loaders?.isTwoStepLoading}
                     disabled={secondsRemaining === 0}

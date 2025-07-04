@@ -1,6 +1,7 @@
     import axios from "axios";
     
 import { useLoginStore } from "../../store/loginStore";
+import { AUTH_URL } from "../globalApi";
     
 
 
@@ -8,7 +9,7 @@ import { useLoginStore } from "../../store/loginStore";
         const { onChange, onChangeLoaders, persistStorage } = useLoginStore.getState(); 
         try {
             onChangeLoaders("isLoginLoading", true);
-            const response = await axios.post("https://backend-notepad.vercel.app/notepad/v1/api/auth/login", {
+            const response = await axios.post(`${AUTH_URL}/login`, {
                 email:email,
                 password:password
             });

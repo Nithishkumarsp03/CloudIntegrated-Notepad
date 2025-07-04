@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useLoginStore } from "../../store/loginStore";
+import { AUTH_URL } from "../globalApi";
 
 export const TwoStepAuth = async (otp) => {
     const { email, otpToken, onChange, onChangeLoaders } = useLoginStore.getState();
@@ -7,7 +8,7 @@ export const TwoStepAuth = async (otp) => {
     try {
         onChangeLoaders("isTwoStepLoading", true);
         const response = await axios.post(
-            "https://backend-notepad.vercel.app/notepad/v1/api/auth/check-otp",
+            `${AUTH_URL}/check-otp`,
             {
                 email: email,
                 otp: otp,

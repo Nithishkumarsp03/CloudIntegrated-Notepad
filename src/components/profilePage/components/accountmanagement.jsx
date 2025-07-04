@@ -4,10 +4,13 @@ import { Logout } from '@mui/icons-material';
 import { ButtonComponent, cn } from '../../../components';
 import FormSection from './formSection';
 import useEditorStore from '../../../store/globalStore';
+import { LogoutModal } from '../../modal';
 
 export const AccountManagementSection = ({ handleLogout }) => {
 
     const darkMode = useEditorStore(state => state.darkMode);
+
+    const [modal,setModal] = React.useState(false);
 
     return (
         <FormSection title="Account Management" darkMode={darkMode}>
@@ -33,10 +36,15 @@ export const AccountManagementSection = ({ handleLogout }) => {
                             startIcon={<Logout />}
                             darkMode={darkMode}
                             styles={{ width: "fit-content" }}
-                            handleClick={handleLogout}
+                            handleClick={() => setModal(true)}
                             />
                             </div>
             </Box>
+            <LogoutModal
+                open={modal}
+                onConfirm={handleLogout}
+                onClose={() => setModal(false)}
+            />
         </FormSection>
     );
 };

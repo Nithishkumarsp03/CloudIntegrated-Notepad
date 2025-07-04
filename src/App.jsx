@@ -10,8 +10,17 @@ import EmptyStatePage from './screens/emptyPage';
 import TwoStepAuthentication from './screens/twoStepAuth';
 import { ShareNote } from './screens/editorDisplay';
 import NotePad from './screens/notePad';
+import { useLoginStore } from './store/loginStore';
+import { useEffect } from 'react';
 
 function App() {
+  const timer = useLoginStore(state => state.timer);
+  const runTimer = useLoginStore(state => state.runTimer);
+
+  useEffect(() => {
+    runTimer();
+  }, [timer]);
+  
   return (
     <div className="w-screen h-screen">
       <BrowserRouter>

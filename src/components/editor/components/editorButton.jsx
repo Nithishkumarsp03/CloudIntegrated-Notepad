@@ -8,6 +8,7 @@ const EditorButton = ({ handleClick, btnText, classes, handlePressed }) => {
     minWidth: "44px",
     padding: "11px 6px 11px 8px",
     backgroundColor: "#F3F4F6",
+    borderColor: "#9CA3AF",
     color: "#9CA3AF",
     borderRadius: "12px",
     boxShadow: 0,
@@ -25,6 +26,7 @@ const EditorButton = ({ handleClick, btnText, classes, handlePressed }) => {
   const darkStyles = {
     minWidth: "44px",
     padding: "11px 6px 11px 8px",
+    borderColor:"#1F2937",
     borderRadius: "12px",
     backgroundColor: "#1F2937",
     color: "#A1A1AA",

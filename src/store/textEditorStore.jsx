@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { AddNoteSummary, FetchNoteSummary } from "../api";
+import { AddNoteSummary, FetchNoteSummary, ShareNote } from "../api";
 import { useLoginStore } from "./loginStore";
 
 export const useTextEditorStore = create((set, get) => ({
@@ -104,6 +104,11 @@ export const useTextEditorStore = create((set, get) => ({
         const doc = new jsPDF();
         doc.text(content, 10, 10);
         doc.save(`${title || "note"}.pdf`);
-      } 
+    },
+    
+    getShareNote: async (uuid) => {
+        const response = await ShareNote(uuid);
+        return response;
+    }
       
 }));
