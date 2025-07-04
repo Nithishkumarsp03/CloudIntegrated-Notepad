@@ -8,7 +8,6 @@ export const VideoComponent = ({
     darkMode,
     isLogin,
     isMobile,
-    showLeftPanel,
     toggleLeftPanel
 }) => {
     const [videoLoaded, setVideoLoaded] = React.useState(false);
@@ -73,14 +72,14 @@ export const VideoComponent = ({
                 </div>
 
                 <Typography
-                    variant="h3"
+                    variant="h4"
                     className={cn(
-                        "text-white font-bold mb-2 md:mb-4 text-center tracking-wide pt-2",
-                        isMobile ? "text-3xl" : "text-4xl md:text-5xl"
+                        "text-white font-bold mb-2 md:mb-4 text-center tracking-wide pt-5",
+                        isMobile ? "text-2xl" : "text-2xl md:text-2xl"
                     )}
                     style={{ textShadow: "0 2px 4px rgba(0,0,0,0.3)" }}
                 >
-                    NotePad
+                    SPNotz
                 </Typography>
 
                 <Typography

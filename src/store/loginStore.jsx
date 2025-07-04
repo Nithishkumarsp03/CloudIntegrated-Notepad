@@ -93,10 +93,10 @@ export const useLoginStore = create((set, get) => ({
         return response;
     },
 
-    updateProfile: async (name, email, two_fa, password, loginId) => {
+    updateProfile: async (name, email, two_fa, loginId) => {
         const { onChangeLoaders, persistStorage } = get();
         onChangeLoaders("isProfileLoading", true);
-        const response = await EditProfile(name, email, two_fa, password, loginId);
+        const response = await EditProfile(name, email, two_fa, loginId);
         persistStorage("loginId",loginId);
         persistStorage("userName", name);
         persistStorage("email", email);

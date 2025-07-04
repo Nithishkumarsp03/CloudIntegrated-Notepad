@@ -1,4 +1,3 @@
-
 import React from 'react';
 import {
     Box,
@@ -29,8 +28,44 @@ export const LoginForm = ({
     switchAuthMode
 }) => {
     const navLoaders = useNavbarStore(e => e.loaders);
+
+    // Validation function
+    const validateForm = () => {
+        const errors = {};
+
+        if (!loginEmail || loginEmail.trim() === '') {
+            errors.email = 'Email is required';
+        } else if (!/\S+@\S+\.\S+/.test(loginEmail)) {
+            errors.email = 'Please enter a valid email';
+        }
+
+        if (!loginPass || loginPass.trim() === '') {
+            errors.password = 'Password is required';
+        } else if (loginPass.length < 6) {
+            errors.password = 'Password must be at least 6 characters';
+        }
+
+        return errors;
+    };
+
+    // Enhanced form submit handler
+    const handleFormSubmitWithValidation = (e) => {
+        e.preventDefault();
+
+        const errors = validateForm();
+
+        // Update form state with errors
+        updateFormState('errors', errors);
+        updateFormState('formSubmitted', true);
+
+        // Only submit if no errors
+        if (Object.keys(errors).length === 0) {
+            handleFormSubmit(e);
+        }
+    };
+
     return (
-        <form onSubmit={handleFormSubmit}>
+        <form onSubmit={handleFormSubmitWithValidation}>
             <div className="space-y-4 md:space-y-5">
                 <InputField
                     autofocus
@@ -49,6 +84,8 @@ export const LoginForm = ({
                     type={formState.showPassword ? 'text' : 'password'}
                     value={loginPass}
                     onChange={e => handleFieldChange("loginPass", e.target.value)}
+                    hasError={formState.formSubmitted && !!formState.errors.password}
+                    errorMessage={formState.errors.password}
                     endIcon={
                         <div
                             onClick={handleTogglePasswordVisibility}
@@ -58,7 +95,7 @@ export const LoginForm = ({
                                 <VisibilityOff sx={{ color: darkMode ? 'rgb(233, 213, 255)' : '#0b6bcb' }} /> :
                                 <Visibility sx={{ color: darkMode ? 'rgb(233, 213, 255)' : '#0b6bcb' }} />
                             }
-                        </div>  
+                        </div>
                     }
                 />
 
@@ -94,8 +131,8 @@ export const LoginForm = ({
 
                 <ButtonComponent
                     type="submit"
-                    loading={loaders.isLoginLoading || navLoaders.isNotesLoading}
-                    btnText="Log In"
+                    loading={loaders.isLoginLoading}
+                    btnText={loaders.isLoginLoading ? 'logging in' : 'Log in'}
                     startIcon={<Login />}
                     darkMode={darkMode}
                     styles={{ width: "100%", marginTop: "16px" }}
@@ -106,7 +143,7 @@ export const LoginForm = ({
                     <Typography className={`px-2 md:px-4 text-xs md:text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
                         or continue with
                     </Typography>
-                    <div className={`flex-grow h-px ${darkMode ? 'b g-gray-700' : 'bg-gray-200'}`}></div>
+                    <div className={`flex-grow h-px ${darkMode ? 'bg-gray-700' : 'bg-gray-200'}`}></div>
                 </div>
             </div>
             <LoginButton />
@@ -125,4 +162,3 @@ export const LoginForm = ({
         </form>
     );
 };
-

@@ -23,18 +23,7 @@ const NotesList = ({ filter, isMobile, id, setId, handleMenuClick, loading, hand
             setId(uuid);
         }
     };
-    useEffect(() => {
-        const handleBeforeUnload = (e) => {
-            if (!tabSaved) {
-                e.preventDefault();
-                e.returnValue = ''; 
-            }
-        };
-        window.addEventListener('beforeunload', handleBeforeUnload);    
-        return () => {
-            window.removeEventListener('beforeunload', handleBeforeUnload);
-        };
-    }, [tabSaved]);
+
 
     const renderSkeletons = () => {
         return Array(4).fill(0).map((_, index) => (

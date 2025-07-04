@@ -1,4 +1,4 @@
-import React, { useRef, useState, useCallback } from 'react';
+import React, { useRef, useState, useCallback, useEffect } from 'react';
 import { Box, Typography, FormControlLabel, Alert } from '@mui/material';
 import { Security, Visibility, VisibilityOff } from '@mui/icons-material';
 import { Link } from "react-router-dom";
@@ -6,107 +6,70 @@ import { ButtonComponent, InputField, ProfileSwitch, cn } from '../../../compone
 import FormSection from './formSection';
 import { useLoginStore } from '../../../store/loginStore';
 import useEditorStore from '../../../store/globalStore';
+import { ResetModal } from '../../modal';
+import { ResetPassword } from '../../../api';
 
-const passwordValidation = {
-    minLength: 8,
-    hasUpperCase: /[A-Z]/,
-    hasLowerCase: /[a-z]/,
-    hasNumbers: /\d/,
-    hasSpecialChar: /[!@#$%^&*(),.?":{}|<>]/,
-};
+export const SecuritySection = () => {
 
-const validatePassword = (password) => {
-    const errors = [];
-
-    if (password.length < passwordValidation.minLength) {
-        errors.push(`Password must be at least ${passwordValidation.minLength} characters long`);
-    }
-    if (!passwordValidation.hasUpperCase.test(password)) {
-        errors.push('Password must contain at least one uppercase letter');
-    }
-
-    return errors;
-};
-
-
-export const SecuritySection = ({
-    twoFa,
-    handleTwoFa,
-    passwordMessage = { type: null, text: '' },
-    edit,
-    setEdit
-}) => {
     const darkMode = useEditorStore(state => state.darkMode);
     const onChange = useLoginStore(e => e.onChange);
-    const ref2 = useRef(null);
-    const ref3 = useRef(null);
-
-    const [password, setPassword] = useState({
-        newPassword: "",
-        showNewPassword: false,
-        confirmPassword: "",
-        showConfirmPassword: false,
+    const twoFa = JSON.parse(useLoginStore(e => e.twoFa));
+    const loginId = useLoginStore(e => e.loginId);
+    const [passwordSent, setPasswordSent] = useState({
+        loading: false,
+        msg: "change Password",
+        sent: false
+    })
+    const [secondsRemaining, setSecondsRemaining] = useState(() => {
+        const time = localStorage.getItem("timer");
+        if (time) {
+            setPasswordSent(p => ({ ...p, sent: true }));
+            setPasswordSent(p => ({ ...p, msg: `Please wait ${formatTime(secondsRemaining)} to try again` }))
+            return parseInt(time, 10);
+        }
+        else { return 0; };
     });
+    
+    const [passwordModel, setPasswordModel] = useState(false);
 
-    const [validationErrors, setValidationErrors] = useState([]);
-    const [confirmPasswordError, setConfirmPasswordError] = useState('');
-
-    const handlePasswordChange = useCallback((input) => {
-        const { name, value } = input.target;
-        setPassword(prev => ({ ...prev, [name]: value }));
-        if (name === 'newPassword') {
-            const errors = validatePassword(value);
-            setValidationErrors(errors);
-        }
-
-        if (name === 'confirmPassword') {
-            if (value && value !== password.newPassword) {
-                setConfirmPasswordError('Passwords do not match');
-            } else {
-                setConfirmPasswordError('');
-            }
-        }
-
-        if (name === 'newPassword' && password.confirmPassword) {
-            if (password.confirmPassword !== value) {
-                setConfirmPasswordError('Passwords do not match');
-            } else {
-                setConfirmPasswordError('');
-            }
-        }
-    }, [password.newPassword, password.confirmPassword]);
-
-    const handleConfirmPasswordChange = () => { 
-        setEdit();
-        onChange("password",password.newPassword);
+    const handleTwoFa = () => {
+        onChange("twoFa", !twoFa);
+        localStorage.setItem("twoFa", !twoFa);
     };
 
-    const handlePasswordField = useCallback(() => {
-        setPassword({
-            oldPassword: "",
-            newPassword: "",
-            confirmPassword: "",
-            showOldPassword: false,
-            showNewPassword: false,
-            showConfirmPassword: false,
-        });
-        setValidationErrors([]);
-        setConfirmPasswordError('');
-        setEdit();
-    }, [edit]);
-
-    const togglePasswordVisibility = useCallback((field, ref) => {
-        setPassword(prev => ({ ...prev, [field]: !prev[field] }));
-        if (ref?.current) {
-            setTimeout(() => ref.current.focus(), 0);
+    const formatTime = (totalSeconds) => {
+        const minutes = Math.floor(totalSeconds / 60);
+        let seconds = totalSeconds % 60;
+        if (seconds <= 9) {
+            seconds = `0${seconds}`;
         }
-    }, []);
+        else {
+            seconds = `${seconds}`
+        }
+        return `${minutes}:${seconds}`;
+      };
 
-    const isFormValid =
-        password.newPassword &&
-        password.confirmPassword &&
-        validationErrors.length === 0 &&
-        !confirmPasswordError;
+    useEffect(() => {
+        if (secondsRemaining <= 0) {
+            setPasswordSent(p => ({ ...p, msg: "Change password", sent: false }));
+            return;
+        };
+        const timer = setInterval(() => {
+            setSecondsRemaining(p => p - 1);
+            localStorage.setItem("timer", secondsRemaining);
+            setPasswordSent(p => ({ ...p, msg: `Please wait ${formatTime(secondsRemaining)} to try again` }))
+        }, 1000);
+        return () => clearInterval(timer); 
+        
+    }, [secondsRemaining]);
+
+    async function handleResetPassword() {
+        setPasswordSent(p => ({ ...p,msg:"Sending link to email", loading: true }));
+        const response = await ResetPassword(loginId);
+        setPasswordSent(p => ({ ...p, sent:true, loading: false, msg: `Please wait ${formatTime(secondsRemaining)} to try again` }));
+        setSecondsRemaining(300);
+        localStorage.setItem("timer", 10);
+    }   
 
     return (
         <FormSection title="Security Settings" darkMode={darkMode}>
@@ -171,133 +134,24 @@ export const SecuritySection = ({
                             </Typography>
                         </Box>
                         <ButtonComponent
-                            btnText={edit ? 'Cancel' : 'Change password'}
+                            btnText={passwordSent.msg}
                             darkMode={darkMode}
                             styles={{ width: "fit-content" }}
-                            handleClick={handlePasswordField}
+                            handleClick={() => setPasswordModel(true)}
+                            loading={passwordSent.loading}
+                            disabled={passwordSent.sent}
                         />
                     </div>
 
-                    {edit && (
-                        <Box className={cn(
-                            "mt-4 pt-4 border-t",
-                            darkMode ? "border-gray-600" : "border-gray-200"
-                        )}>
-                            {passwordMessage?.type && (
-                                <Alert
-                                    severity={passwordMessage.type}
-                                    className="mb-4"
-                                    sx={{
-                                        backgroundColor: darkMode
-                                            ? passwordMessage.type === 'success' ? 'rgba(46, 125, 50, 0.2)' : undefined
-                                            : passwordMessage.type === 'success' ? 'rgba(237, 247, 237, 1)' : undefined,
-                                        color: darkMode
-                                            ? passwordMessage.type === 'success' ? '#81c784' : undefined
-                                            : passwordMessage.type === 'success' ? '#2e7d32' : undefined
-                                    }}
-                                >
-                                    {passwordMessage.text}
-                                </Alert>
-                            )}
-
-                            <div className="grid grid-cols-1 gap-4">
-
-                                <InputField
-                                    ref={ref2}
-                                    name="newPassword"
-                                    darkMode={darkMode}
-                                    styles={{
-                                        '& .MuiInputBase-root': {
-                                            height: "43px"
-                                        }
-                                    }}
-                                    label="New Password"
-                                    type={password.showNewPassword ? "text" : "password"}
-                                    value={password.newPassword}
-                                    onChange={handlePasswordChange}
-                                    error={validationErrors.length > 0}
-                                    endIcon={
-                                        <div
-                                            onClick={() => togglePasswordVisibility('showNewPassword', ref2)}
-                                            className={cn('cursor-pointer pr-2 pb-0.5', {
-                                                'hidden': !password.newPassword
-                                            })}
-                                        >
-                                            {password.showNewPassword ?
-                                                <VisibilityOff sx={{ color: darkMode ? 'rgb(233, 213, 255)' : '#0b6bcb' }} /> :
-                                                <Visibility sx={{ color: darkMode ? 'rgb(233, 213, 255)' : '#0b6bcb' }} />
-                                            }
-                                        </div>
-                                    }
-                                />
-                            
-                                {/* Password Validation Errors */}
-                                {validationErrors.length > 0 && (
-                                    <Box className="mt-[-px]">
-                                        {validationErrors.map((error, index) => (
-                                            <Typography
-                                                key={index}
-                                                variant="caption"
-                                                className="block text-red-500 mt-1"
-                                            >
-                                                • {error}
-                                            </Typography>
-                                        ))}
-                                    </Box>
-                                )}
-
-                                <InputField
-                                    ref={ref3}
-                                    name="confirmPassword"
-                                    darkMode={darkMode}
-                                    styles={{
-                                        '& .MuiInputBase-root': {
-                                            height: "43px"
-                                        }
-                                    }}
-                                    label="Confirm New Password"
-                                    type={password.showConfirmPassword ? "text" : "password"}
-                                    value={password.confirmPassword}
-                                    onChange={handlePasswordChange}
-                                    error={!!confirmPasswordError}
-                                    helperText={confirmPasswordError}
-                                    endIcon={
-                                        <div
-                                            onClick={() => togglePasswordVisibility('showConfirmPassword', ref3)}
-                                            className={cn('cursor-pointer pr-2 pb-0.5', {
-                                                'hidden': !password.confirmPassword
-                                            })}
-                                        >
-                                            {password.showConfirmPassword ?
-                                                <VisibilityOff sx={{ color: darkMode ? 'rgb(233, 213, 255)' : '#0b6bcb' }} /> :
-                                                <Visibility sx={{ color: darkMode ? 'rgb(233, 213, 255)' : '#0b6bcb' }} />
-                                            }
-                                        </div>
-                                    }
-                                />
-
-                                <div className="flex flex-wrap justify-between items-center gap-4 mt-2">
-                                    <Link to='/forgotPassword'>
-                                        <Typography
-                                            variant="body2"
-                                            className={`cursor-pointer hover:underline ${darkMode ? 'text-purple-300' : 'text-blue-600'}`}
-                                        >
-                                            Forgot Password?
-                                        </Typography>
-                                    </Link>
-                                    <ButtonComponent
-                                        btnText={"Update Password"}
-                                        darkMode={darkMode}
-                                        styles={{ width: "fit-content" }}
-                                        handleClick={handleConfirmPasswordChange}
-                                        disabled={!isFormValid}
-                                    />
-                                </div>
-                            </div>
-                        </Box>
-                    )}
                 </Box>
             </Box>
+            <ResetModal
+                open={passwordModel}
+                onClose={() => setPasswordModel(false)}
+                onConfirm={handleResetPassword}
+                loading={passwordSent.loading}
+                sent={passwordSent.sent}
+            />
         </FormSection>
     );
 };

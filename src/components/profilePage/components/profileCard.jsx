@@ -9,11 +9,10 @@ export const ProfileCard = ({
     fileInputRef,
 }) => {
     const darkMode = useEditorStore(state => state.darkMode);
-    const twoFa = useLoginStore(state => state.twoFa);
+    const twoFa = JSON.parse(useLoginStore(state => state.twoFa));
     const notification = useLoginStore(state => state.notification);
     const userName = useLoginStore(state => state.userName);
     const email = useLoginStore(state => state.email);
-        
     const handleAvatarClick = () => {
         fileInputRef.current.click();
     };
