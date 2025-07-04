@@ -1,8 +1,7 @@
-import React, { useRef, useState, useCallback, useEffect } from 'react';
-import { Box, Typography, FormControlLabel, Alert } from '@mui/material';
-import { Security, Visibility, VisibilityOff } from '@mui/icons-material';
-import { Link } from "react-router-dom";
-import { ButtonComponent, InputField, ProfileSwitch, cn } from '../../../components';
+import React, { useState, useEffect } from 'react';
+import { Box, Typography, FormControlLabel} from '@mui/material';
+import { Security} from '@mui/icons-material';
+import { ButtonComponent, ProfileSwitch, cn } from '../../../components';
 import FormSection from './formSection';
 import { useLoginStore } from '../../../store/loginStore';
 import useEditorStore from '../../../store/globalStore';
@@ -15,20 +14,13 @@ export const SecuritySection = () => {
     const onChange = useLoginStore(e => e.onChange);
     const twoFa = JSON.parse(useLoginStore(e => e.twoFa));
     const loginId = useLoginStore(e => e.loginId);
+    const startTimer = useLoginStore(e => e.startTimer);
+    const timer = useLoginStore(e => e.timer);
     const [passwordSent, setPasswordSent] = useState({
         loading: false,
         msg: "change Password",
         sent: false
     })
-    const [secondsRemaining, setSecondsRemaining] = useState(() => {
-        const time = localStorage.getItem("timer");
-        if (time) {
-            setPasswordSent(p => ({ ...p, sent: true }));
-            setPasswordSent(p => ({ ...p, msg: `Please wait ${formatTime(secondsRemaining)} to try again` }))
-            return parseInt(time, 10);
-        }
-        else { return 0; };
-    });
     
     const [passwordModel, setPasswordModel] = useState(false);
 
@@ -50,25 +42,19 @@ export const SecuritySection = () => {
       };
 
     useEffect(() => {
-        if (secondsRemaining <= 0) {
+        if (timer <= 0) {
             setPasswordSent(p => ({ ...p, msg: "Change password", sent: false }));
             return;
         };
-        const timer = setInterval(() => {
-            setSecondsRemaining(p => p - 1);
-            localStorage.setItem("timer", secondsRemaining);
-            setPasswordSent(p => ({ ...p, msg: `Please wait ${formatTime(secondsRemaining)} to try again` }))
-        }, 1000);
-        return () => clearInterval(timer); 
+            setPasswordSent(p => ({ ...p, msg: `Please wait ${formatTime(timer)} to try again`,sent:true }))
         
-    }, [secondsRemaining]);
+    }, [timer]);
 
     async function handleResetPassword() {
         setPasswordSent(p => ({ ...p,msg:"Sending link to email", loading: true }));
-        const response = await ResetPassword(loginId);
-        setPasswordSent(p => ({ ...p, sent:true, loading: false, msg: `Please wait ${formatTime(secondsRemaining)} to try again` }));
-        setSecondsRemaining(300);
-        localStorage.setItem("timer", 10);
+        await ResetPassword(loginId);
+        setPasswordSent(p => ({ ...p, sent: true, loading: false, msg: `Please wait ${formatTime(timer)} to try again` }));
+        startTimer(300);
     }   
 
     return (
