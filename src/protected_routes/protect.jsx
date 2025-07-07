@@ -1,9 +1,9 @@
-import { Navigate, Outlet, useLocation } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 import LoginPage from '../screens/loginPage';
-import { useEffect } from 'react';
+import { useLoginStore } from '../store/loginStore';
 
 const Protect = () => {
-    const token = localStorage.getItem("token");
+    const token = useLoginStore(e => e.token);
     return token  ? <Outlet /> : <LoginPage />;
 }
 

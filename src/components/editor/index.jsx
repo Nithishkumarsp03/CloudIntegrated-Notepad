@@ -21,6 +21,7 @@ import { useTextEditorStore } from '../../store/textEditorStore';
 import TextEditorSkeleton from './components/editorSkeleton';
 import { useNavbarStore } from '../../store/navbarStore';
 import { LinkModal } from '../modal';
+import { useSecureStorageStore } from '../../hooks';
 
 function createDebouncedFunction(fn, delay) {
     let timer;
@@ -46,12 +47,11 @@ const Texteditor = ({ onChange }) => {
     const addNoteContent = useTextEditorStore(e => e.addNoteContent);
     const navbarLoader = useNavbarStore(e => e.loaders);
     const notesummary = useTextEditorStore(e => e.notesummary);
-
     const [isContentLoaded, setIsContentLoaded] = useState(false);
     const isUpdatingRef = useRef(false);
     const isToolbarActionRef = useRef(false);
-
-    const debouncedSaveRef = useRef(null);
+    const { setItem } = useSecureStorageStore();
+    const debouncedSaveRef = useRef(null);  
 
     useEffect(() => {
         if (debouncedSaveRef.current?.cancel) {
@@ -118,8 +118,7 @@ const Texteditor = ({ onChange }) => {
 
         onEditorChange("tabSaved", false);
         const html = editor.getHTML();
-        console.log(html)
-        localStorage.setItem("editorContent", html);
+        setItem("editorContent", html);
 
         if (html && debouncedSaveRef.current) {
             debouncedSaveRef.current(html);

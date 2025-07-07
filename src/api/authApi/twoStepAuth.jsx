@@ -4,6 +4,7 @@ import { AUTH_URL } from "../globalApi";
 
 export const TwoStepAuth = async (otp) => {
     const { email, otpToken, onChange, onChangeLoaders } = useLoginStore.getState();
+    const persistStorage = useLoginStore(e => e.persistStorage);
 
     try {
         onChangeLoaders("isTwoStepLoading", true);
@@ -24,11 +25,10 @@ export const TwoStepAuth = async (otp) => {
 
         const userData = response?.data?.userData;
         const token = response?.data?.token;
-        localStorage.setItem("token", token);
-        localStorage.setItem("userName", userData?.name);
-        localStorage.setItem("gender", userData?.gender);
-        localStorage.setItem("loginId", userData?.id);
-        onChange("isUserLoggedIn", true);
+        persistStorage("token", token);
+        persistStorage("userName", userData?.name);
+        persistStorage("gender", userData?.gender);
+        persistStorage("loginId", userData?.id);
         onChange("token", token);
         onChange("userName", userData?.name);
         onChange("gender", userData?.gender);

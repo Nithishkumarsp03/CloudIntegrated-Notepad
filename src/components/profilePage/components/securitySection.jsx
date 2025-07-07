@@ -7,6 +7,7 @@ import { useLoginStore } from '../../../store/loginStore';
 import useEditorStore from '../../../store/globalStore';
 import { ResetModal } from '../../modal';
 import { ResetPassword } from '../../../api';
+import { useSecureStorageStore } from '../../../hooks';
 
 export const SecuritySection = () => {
 
@@ -16,6 +17,8 @@ export const SecuritySection = () => {
     const loginId = useLoginStore(e => e.loginId);
     const startTimer = useLoginStore(e => e.startTimer);
     const timer = useLoginStore(e => e.timer);
+    const { setItem, getItem } = useSecureStorageStore(); 
+    
     const [passwordSent, setPasswordSent] = useState({
         loading: false,
         msg: "change Password",
@@ -27,13 +30,13 @@ export const SecuritySection = () => {
     useEffect(() => {
         if (!timer) {
             onChange("timer", 0);
-            localStorage.setItem("timer", 0);
+            setItem("timer", 0);
         }
      },[]);
 
     const handleTwoFa = () => {
         onChange("twoFa", !twoFa);
-        localStorage.setItem("twoFa", !twoFa);
+        setItem("twoFa", !twoFa);
     };
 
     const formatTime = (totalSeconds) => {

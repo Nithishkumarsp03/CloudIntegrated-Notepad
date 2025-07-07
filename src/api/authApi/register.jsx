@@ -3,7 +3,8 @@ import { useLoginStore } from "../../store/loginStore";
 import { AUTH_URL } from "../globalApi";
 
 export const AuthRegister = async (userName, email, password, twoFa, gender, categoryId ) => {
-    const { onChange, onChangeLoaders } = useLoginStore.getState(); 
+    const { onChangeLoaders } = useLoginStore.getState(); 
+    const persistStorage = useLoginStore(e => e.persistStorage);
     const g = gender === "male" ? "M" : gender === "female" ? "F" : "other";
     try {
         onChangeLoaders("isRegisterLoading",true);
@@ -18,20 +19,12 @@ export const AuthRegister = async (userName, email, password, twoFa, gender, cat
 
         const token = response?.data?.token;
         const userData = response?.data?.user;
-        localStorage.setItem("token", response?.data?.token);
-        localStorage.setItem("userName", userData?.name);
-        localStorage.setItem("gender", userData?.gender);
-        localStorage.setItem("loginId", userData?.id);
-        localStorage.setItem("isUserLoggedIn", true);
-        localStorage.setItem("token", token);
-        localStorage.setItem("twoFa", `${twoFa}`);
-        onChange("twoFa", `${twoFa}`);
-        onChange("token", response?.data?.token);
-        onChange("userName", userData?.name);
-        onChange("gender", userData?.gender);
-        onChange("loginId", userData?.id);
-        onChange("token", token);
-        onChange("isUserLoggedIn", true);
+        persistStorage("token", response?.data?.token);
+        persistStorage("userName", userData?.name);
+        persistStorage("gender", userData?.gender);
+        persistStorage("loginId", userData?.id);
+        persistStorage("token", token);
+        persistStorage("twoFa", `${twoFa}`);
         return {
             status: true,
             message: response?.data?.message,

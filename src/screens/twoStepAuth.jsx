@@ -5,15 +5,19 @@ import { useNavigate } from "react-router-dom";
 import useEditorStore from "../store/globalStore";
 import { useLoginStore } from "../store/loginStore";
 import { useNavbarStore } from "../store/navbarStore";
+import { useSecureStorageStore } from "../hooks";
 
 const TwoStepAuthentication = () => {
-    const isUserLoggedIn = useLoginStore(state => state.isUserLoggedIn);
     const twoStepAuth = useLoginStore(state => state.twoStepAuth);
     const authentication = useLoginStore(state => state.authentication);
-        
+    const setItem = useSecureStorageStore(e => e.setItem);
+    const getItem = useSecureStorageStore(e => e.getItem);
+
+    const token = getItem("token");    
+
     useEffect(() => {
-        if (isUserLoggedIn) {
-            let data = JSON.parse(localStorage.getItem("notes"));
+        if (token) {
+            let data = JSON.parse(getItem("notes"));
             if (data) {
                 const uuid = data[0]?.uuid;
                 if (uuid) {
@@ -31,7 +35,7 @@ const TwoStepAuthentication = () => {
         title: ""
     });
     const [secondsRemaining, setSecondsRemaining] = useState(() => {
-        const expiryTimeString = localStorage.getItem("otpExpiryTime");
+        const expiryTimeString = getItem("otpExpiryTime");
         if (expiryTimeString) {
             const expiryTime = parseInt(expiryTimeString);
             const now = Date.now();
@@ -44,22 +48,22 @@ const TwoStepAuthentication = () => {
     const [isTimerRunning, setIsTimerRunning] = useState(true);
     const { darkMode, setDarkMode } = useEditorStore();
     const { getNotes } = useNavbarStore();
-    const email = localStorage.getItem("email");
+    const email = getItem("email");
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (!localStorage.getItem("otpExpiryTime")) {
+        if (!getItem("otpExpiryTime")) {
             const expiryTime = Date.now() + (300 * 1000);
-            localStorage.setItem("otpExpiryTime", expiryTime.toString());
-            localStorage.setItem("otpInitiated", "true");
+            setItem("otpExpiryTime", expiryTime.toString());
+            setItem("otpInitiated", "true");
         }
     }, []);
 
     useEffect(() => {
         if (secondsRemaining > 0) {
             const expiryTime = Date.now() + (secondsRemaining * 1000);
-            localStorage.setItem("otpExpiryTime", expiryTime.toString());
-            localStorage.setItem("otpInitiated", "true");
+            setItem("otpExpiryTime", expiryTime.toString());
+            setItem("otpInitiated", "true");
         }
     }, [secondsRemaining]);
 
@@ -88,7 +92,7 @@ const TwoStepAuthentication = () => {
 
     useEffect(() => {
         const checkAndRequestOtp = async () => {
-            const otpInitiated = localStorage.getItem("otpInitiated");
+            const otpInitiated = getItem("otpInitiated");
             if (!otpInitiated) {
                 await handleResendCode();
             }
@@ -141,8 +145,8 @@ const TwoStepAuthentication = () => {
                 setIsTimerRunning(true);
 
                 const expiryTime = Date.now() + (300 * 1000);
-                localStorage.setItem("otpExpiryTime", expiryTime.toString());
-                localStorage.setItem("otpInitiated", "true");
+                setItem("otpExpiryTime", expiryTime.toString());
+                setItem("otpInitiated", "true");
                 return true;
             } else {
                 setSnackbar({

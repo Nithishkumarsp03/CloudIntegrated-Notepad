@@ -4,14 +4,17 @@ import useEditorStore from "../store/globalStore";
 import { useNavbarStore } from "../store/navbarStore";
 import { BackgroundDecorations, BackgroundPattern, EmptyStateContent, Footer, PageBorders } from "../components";
 import { useLoginStore } from "../store/loginStore";
+import { useSecureStorageStore } from "../hooks";
 
 const EmptyStatePage = () => {
   const navigate = useNavigate();
-  const isUserLoggedIn = useLoginStore(e => e.isUserLoggedIn);
+  const { setItem, getItem } = useSecureStorageStore(); 
+  
+  const token = getItem("token");
 
   useEffect(() => {
-    if (isUserLoggedIn) {
-      let data = JSON.parse(localStorage.getItem("notes"));
+    if (token) {
+      let data = getItem("notes");
       if (data) {
         const uuid = data[0]?.uuid;
         if (uuid) {

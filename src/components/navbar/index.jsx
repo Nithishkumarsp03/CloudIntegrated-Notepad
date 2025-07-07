@@ -8,6 +8,7 @@ import NotesList from "./components/notesList";
 import NotesMenu from "./components/notesMenu";
 import { useNavigate } from "react-router-dom";
 import { RenameModal, Snackbar, cn } from "../../components";
+import { useSecureStorageStore } from "../../hooks";
 
 export const Navbar = ({ notePad }) => {
 
@@ -37,6 +38,7 @@ export const Navbar = ({ notePad }) => {
     const noteId = useNavbarStore(e => e.noteId);
     const notePadVisited = useNavbarStore(e => e.notePadVisited);
     const isSidebarOpen = useNavbarStore(e => e.isSidebarOpen);
+    const { getItem } = useSecureStorageStore(); 
     
     const handleNavigate = useCallback((uuid, noteId) => {
         onNavbarChange("noteId", noteId);
@@ -50,7 +52,7 @@ export const Navbar = ({ notePad }) => {
     useEffect(() => {
         async function getNote() {
             const response = await getNotes();
-            const localUuid = localStorage.getItem("uuid");
+            const localUuid = getItem("uuid");
             if (localUuid && noteId && !notePad) {
                     handleNavigate(localUuid,noteId);
                     setId(localUuid);
@@ -66,7 +68,7 @@ export const Navbar = ({ notePad }) => {
             getNote();
         }
         if (notePadVisited && !notePad) {
-            const localUuid = localStorage.getItem("uuid");
+            const localUuid = getItem("uuid");
             setId(localUuid);
             onNavbarChange("noteId", noteId);
         }

@@ -10,15 +10,18 @@ import { cn } from '../components/cn';
 import { useLoginStore } from '../store/loginStore';
 import { VideoComponent,LoginSwitch, LoginHeader, LoginForm, SignupForm } from '../components';
 import { Snackbar } from '../components';
+import { useSecureStorageStore } from '../hooks';
 
 const LoginPage = () => {
 
+  const setItem = useSecureStorageStore(e => e.setItem); 
+  
   // nav
   const navigate = useNavigate();
   const isMobile = useMediaQuery('(max-width:768px)');
 
   // token
-  const token = localStorage.getItem("token");
+  const token = useLoginStore(e => e.token);
 
   // validate login
   useEffect(() => {
@@ -130,7 +133,7 @@ const LoginPage = () => {
     if (!name && !formState.isLogin) return "Name is required";
     if (name && name.length < 2) return "Name must be at least 2 characters";
     return "";
-  };
+  };  
 
   const validateEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -220,7 +223,7 @@ const LoginPage = () => {
           })
         }
         if (response?.twoFa) {
-          localStorage.setItem("otpExpiryTime", 10);
+          setItem("otpExpiryTime", 10);
           navigate('/twoStepAuth');
         }
         else if (response?.state) {
@@ -276,7 +279,7 @@ const LoginPage = () => {
         variant={snackBar.variant}
         open={snackBar.state}
         message={snackBar.msg}
-        onClose={() => setSnackBar(p => ({ ...p, state: false }))}
+        onClose={() => setSnackBar(p => ({...p,state:false}))}
         loading={false}
       />
       {(!isMobile || formState.showLeftPanel) && (
