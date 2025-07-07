@@ -12,6 +12,7 @@ import { ShareNote } from './screens/editorDisplay';
 import NotePad from './screens/notePad';
 import { useLoginStore } from './store/loginStore';
 import { useEffect } from 'react';
+import { Toaster } from "sonner";
 
 function App() {
   const timer = useLoginStore(state => state.timer);
@@ -24,6 +25,7 @@ function App() {
   return (
     <div className="w-screen h-screen">
       <BrowserRouter>
+        <Toaster position="top-center" richColors />
         <Routes>
           <Route path='/login' element={<LoginPage />} />
           <Route path='/onBoarding-flow' element={<OnboardingFlow />} />

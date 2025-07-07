@@ -133,7 +133,7 @@ const LoginPage = () => {
     if (!name && !formState.isLogin) return "Name is required";
     if (name && name.length < 2) return "Name must be at least 2 characters";
     return "";
-  };
+  };  
 
   const validateEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -279,7 +279,7 @@ const LoginPage = () => {
         variant={snackBar.variant}
         open={snackBar.state}
         message={snackBar.msg}
-        onClose={() => setSnackBar(p => ({ ...p, state: false }))}
+        onClose={() => setSnackBar(p => ({...p,state:false}))}
         loading={false}
       />
       {(!isMobile || formState.showLeftPanel) && (
