@@ -24,6 +24,13 @@ export const SecuritySection = () => {
     
     const [passwordModel, setPasswordModel] = useState(false);
 
+    useEffect(() => {
+        if (!timer) {
+            onChange("timer", 0);
+            localStorage.setItem("timer", 0);
+        }
+     },[]);
+
     const handleTwoFa = () => {
         onChange("twoFa", !twoFa);
         localStorage.setItem("twoFa", !twoFa);
