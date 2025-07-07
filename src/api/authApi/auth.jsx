@@ -1,9 +1,11 @@
+import { useSecureStorageStore } from "../../hooks";
 import { useLoginStore } from "../../store/loginStore";
 import { AuthLogin } from './login';
 import { AuthRegister } from "./register";
 
 export const Authentication = async (type) => {
     const { email, userName, password, twoFa, gender, categoryId } = useLoginStore.getState();
+    const { removeItem } = useSecureStorageStore.getState();
     try {
         if (type === "login") {
             const response = await AuthLogin(email, password);
@@ -15,6 +17,6 @@ export const Authentication = async (type) => {
         }
     }
     finally {
-        localStorage.removeItem("password");
+        removeItem("password");
     }   
 };

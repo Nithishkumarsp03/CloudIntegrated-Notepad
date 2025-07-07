@@ -5,7 +5,7 @@ import { ButtonComponent,cn } from '../../../components';
 import BackArrow from '../../../assets/svgs/backArrow';
 import useEditorStore from '../../../store/globalStore';
 
-export const ProfileHeader = ({ handleBack, handleSave, isSaved }) => {
+export const ProfileHeader = ({ handleBack, handleSave, isSaved, loading }) => {
     const darkMode = useEditorStore(state => state.darkMode);
     return (
         <Box className={cn(
@@ -24,6 +24,7 @@ export const ProfileHeader = ({ handleBack, handleSave, isSaved }) => {
             </Box>
             <div className='hidden md:block'>
                 <ButtonComponent
+                    loading={loading}
                 disabled={isSaved}
                 btnText={'Save Changes'}
                 startIcon={<Check />}

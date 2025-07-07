@@ -1,24 +1,25 @@
 import { create } from "zustand";
 import { Authentication, EditProfile, OnboardingFlow, TwoStepAuth } from "../api";
 
+import { useSecureStorageStore } from "../hooks";
+
 export const useLoginStore = create((set, get) => ({
-    isUserLoggedIn: localStorage.getItem("isUserLoggedIn"),
-    userName: localStorage.getItem("userName"),
-    email: localStorage.getItem("email"),
-    gender: localStorage.getItem("gender"),
-    password: localStorage.getItem("password"),
-    twoFa: JSON.parse(localStorage.getItem("twoFa")),
+    userName: useSecureStorageStore.getState().getItem("userName"),
+    email: useSecureStorageStore.getState().getItem("email"),
+    gender: useSecureStorageStore.getState().getItem("gender"),
+    password: useSecureStorageStore.getState().getItem("password"),
+    twoFa: useSecureStorageStore.getState().getItem("twoFa"),
     notification: false,
-    categoryId: localStorage.getItem("categoryId"),
+    categoryId: useSecureStorageStore.getState().getItem("categoryId"),
     onBoardingData: [],
     firstLogin: false,
-    loginId: localStorage.getItem("loginId"),
-    token: localStorage.getItem("token"),
-    otpToken: localStorage.getItem("otpToken"),
-    onBoardingData: localStorage.getItem("onBoardingData"),
+    loginId: useSecureStorageStore.getState().getItem("loginId"),
+    token: useSecureStorageStore.getState().getItem("token"),
+    otpToken: useSecureStorageStore.getState().getItem("otpToken"),
+    onBoardingData: useSecureStorageStore.getState().getItem("onBoardingData"),
     timer: parseInt(localStorage.getItem("timer"), 10),
     intervalId: null,
-    
+
     startTimer: (time) => {
         localStorage.setItem("timer", time.toString());
         set({ timer: time });
@@ -71,7 +72,7 @@ export const useLoginStore = create((set, get) => ({
     },
 
     persistStorage: (key, value) => {
-        localStorage.setItem(key, value);
+        useSecureStorageStore.getState().setItem(key, value);
         set({[key]:value})
     },
 
@@ -93,10 +94,10 @@ export const useLoginStore = create((set, get) => ({
         if (type === "set") {
             if (name) {
                 onChange("userName", name);
-                localStorage.setItem("userName", name);
+                useSecureStorageStore.getState().setItem("userName", name);
             }
-            localStorage.setItem("email", email);
-            localStorage.setItem("password", password);
+            useSecureStorageStore.getState().setItem("email", email);
+            useSecureStorageStore.getState().setItem("password", password);
             onChange("email", email);
             onChange("password", password);
             return;
@@ -114,7 +115,7 @@ export const useLoginStore = create((set, get) => ({
         }
         const response = await OnboardingFlow();  
         set({ onBoardingData: response });
-        localStorage.setItem("onBoardingData",JSON.stringify(response));
+        useSecureStorageStore.getState().setItem("onBoardingData",JSON.stringify(response));
         return response;
     },
 

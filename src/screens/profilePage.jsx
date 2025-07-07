@@ -6,6 +6,7 @@ import { BackgroundPattern, ButtonComponent, cn, LoginSwitch, PersonalSection, P
 import { AccountManagementSection, NotificationSection } from '../components/profilePage';
 import { Check } from '@mui/icons-material';
 import useEditorStore from '../store/globalStore';
+import { useSecureStorageStore } from '../hooks';
 
 const ProfilePage = () => {
     
@@ -18,7 +19,7 @@ const ProfilePage = () => {
     const loginId = useLoginStore(state => state.loginId);
     const updateProfile = useLoginStore(state => state.updateProfile);
     const darkMode = useEditorStore(state => state.darkMode);
-
+    const { setItem, getItem, clear } = useSecureStorageStore(); 
     const navigate = useNavigate();
     const fileInputRef = useRef(null);
 
@@ -29,7 +30,7 @@ const ProfilePage = () => {
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
     const [snackbarVariant, setSnackbarVariant] = useState('info');
-
+    const [loading, setLoading] = useState(false);
 
     function handleProfileChange(e) {
         const { name, value } = e.target;
@@ -45,20 +46,14 @@ const ProfilePage = () => {
     };
 
     const handleSave = async () => {
-
-        if (!password) {
-            setSnackbarMessage(`Please fill in the following required fields: Password`);
-            setSnackbarVariant('error');
-            setSnackbarOpen(true);
-            return;
-        }
+        setLoading(true);
                 const response = await updateProfile(
                     userName,
                     email,
                     tempTwoFa,
-                    password,
                     loginId
         );
+        setLoading(false);
         if (response.state) {
             setSnackbarMessage('Profile updated successfully!');
             setSnackbarVariant('success');
@@ -75,7 +70,8 @@ const ProfilePage = () => {
     }
 
     const handleLogout = () => {
-        localStorage.clear();
+        onChange("token", null);
+        clear();
         navigate('/login');
     };
 
@@ -103,6 +99,7 @@ const ProfilePage = () => {
             <Box className="relative z-10 max-w-4xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
                 <Box className="relative z-30 mb-6">
                     <ProfileHeader
+                        loading={loading}
                         handleBack={handleBack}
                         handleSave={handleSave}
                     />
