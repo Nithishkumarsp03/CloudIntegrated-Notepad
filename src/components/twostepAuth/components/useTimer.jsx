@@ -1,10 +1,8 @@
 import { useState, useEffect } from 'react';
-import { useSecureStorageStore } from '../../../hooks';
 
 export const useTimer = (initialSeconds = 300) => {
-        const { setItem, getItem } = useSecureStorageStore(); 
-        const [secondsRemaining, setSecondsRemaining] = useState(() => {
-        const expiryTimeString = getItem("otpExpiryTime");
+    const [secondsRemaining, setSecondsRemaining] = useState(() => {
+        const expiryTimeString = localStorage.getItem("otpExpiryTime");
         if (expiryTimeString) {
             const expiryTime = parseInt(expiryTimeString);
             const now = Date.now();
