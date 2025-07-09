@@ -19,12 +19,11 @@ import PersonaSelectionStep from '../components/onBoarding/components/personaSel
 import AdditionalSettingsStep from '../components/onBoarding/components/additional';
 import CompletionStep from '../components/onBoarding/components/complete';
 import ThemeToggle from '../components/onBoarding/components/theme';
-import { useSecureStorageStore } from '../hooks';
 
 const OnboardingFlow = () => {
   // nav
   const navigate = useNavigate();
-    const { setItem, getItem } = useSecureStorageStore(); 
+
   // store
   const darkMode = useEditorStore(state => state.darkMode);
   const setDarkMode = useEditorStore(state => state.setDarkMode);
@@ -34,7 +33,8 @@ const OnboardingFlow = () => {
   const onChange = useLoginStore(state => state.onChange);
   const authentication = useLoginStore(state => state.authentication);
   const twoFa = useLoginStore(state => state.twoFa);
-  const token = getItem("token");
+  const isUserLoggedIn = useLoginStore(state => state.isUserLoggedIn);
+
 
 
   const [step, setStep] = useState(0);
@@ -54,8 +54,8 @@ const OnboardingFlow = () => {
   }
 
   useEffect(() => {
-    if (token) {
-      let data = getItem("notes");
+    if (isUserLoggedIn) {
+      let data = JSON.parse(localStorage.getItem("notes"));
       if (data) {
         const uuid = data[0]?.uuid;
         if (uuid) {
@@ -63,7 +63,7 @@ const OnboardingFlow = () => {
         }
       }
     }
-  }, [navigate]);
+  }, [isUserLoggedIn, navigate]);
 
   const handleGenderSelect = (e) => {
     setGender(e.target.value);
@@ -122,7 +122,7 @@ const OnboardingFlow = () => {
   ];
 
   const handlePersonaSelect = (persona) => {
-    setItem("categoryId", persona.id);
+    localStorage.setItem("categoryId", persona.id);
     onChange("categoryId", persona.id);
     setSelectedPersona(persona);
   };

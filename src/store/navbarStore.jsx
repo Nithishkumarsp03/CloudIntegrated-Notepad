@@ -1,16 +1,14 @@
     import { create } from "zustand";
     import { useLoginStore } from './loginStore';
     import { AddNote, DeleteNote, EditNote, GetNotes } from "../api";
-import { useSecureStorageStore } from "../hooks";
 
-    
 export const useNavbarStore = create((set, get) => ({
     isSideBarOpen: false,
     data: [],
     currentNote:"",
     notePadVisited:false,
     searchquery: "",
-    noteId: useSecureStorageStore.getState().getItem("note_Id"),
+    noteId:localStorage.getItem("note_id"),
     loaders: {
         isNotesLoading: false,
         isAddLoading: false,

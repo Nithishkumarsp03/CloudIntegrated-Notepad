@@ -7,7 +7,6 @@ import { ButtonComponent } from '../../button';
 import { RenameModal } from '../../modal';
 import { Snackbar } from '../../snackBar';
 import { useNavigate } from 'react-router-dom';
-import { useSecureStorageStore } from '../../../hooks';
 
 export const Notepad = () => {
   const navigate = useNavigate();
@@ -20,7 +19,6 @@ export const Notepad = () => {
     variant: 'info'
   });
   const loaders = useNavbarStore(e => e.loaders);
-    const { setItem, getItem } = useSecureStorageStore(); 
 
   const showSnackbar = (message, variant = 'info') => {
     setSnackbar({
@@ -42,7 +40,7 @@ export const Notepad = () => {
           console.log(response.data)
           onNavbarChange("noteId", response?.data?.note?.id);
           navigate(`/note-pad/${response?.data?.note?.uuid}`);
-          setItem("uuid", response?.data?.note?.uuid)
+          localStorage.setItem("uuid", response?.data?.note?.uuid)
           showSnackbar('Note added successfully', 'success');
         } else {
           showSnackbar(response?.error || 'Failed to add note', 'error');
