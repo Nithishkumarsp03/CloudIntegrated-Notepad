@@ -101,6 +101,7 @@ export const useLoginStore = create((set, get) => ({
             onChange("password", password);
             return;
         }
+        console.log(password)
         const response = await Authentication(type,password);
         return response;
     },
@@ -124,6 +125,7 @@ export const useLoginStore = create((set, get) => ({
     },
 
     updateProfile: async (name, email, two_fa, loginId) => {
+        console.log(name,email,two_fa,loginId)
         const { onChangeLoaders, persistStorage } = get();
         onChangeLoaders("isProfileLoading", true);
         const response = await EditProfile(name, email, two_fa, loginId);

@@ -8,11 +8,10 @@ import useEditorStore from '../../../store/globalStore';
 import { ResetModal } from '../../modal';
 import { ResetPassword } from '../../../api';
 
-export const SecuritySection = () => {
+export const SecuritySection = ({tempTwoFa,setTempTwoFa}) => {
 
     const darkMode = useEditorStore(state => state.darkMode);
     const onChange = useLoginStore(e => e.onChange);
-    const twoFa = JSON.parse(useLoginStore(e => e.twoFa));
     const loginId = useLoginStore(e => e.loginId);
     const startTimer = useLoginStore(e => e.startTimer);
     const timer = useLoginStore(e => e.timer);
@@ -32,8 +31,9 @@ export const SecuritySection = () => {
      },[]);
 
     const handleTwoFa = () => {
-        onChange("twoFa", !twoFa);
-        localStorage.setItem("twoFa", !twoFa);
+        setTempTwoFa(!tempTwoFa);
+        onChange("twoFa", !tempTwoFa);
+        localStorage.setItem("twoFa", !tempTwoFa);
     };
 
     const formatTime = (totalSeconds) => {
@@ -69,7 +69,7 @@ export const SecuritySection = () => {
             <Box className="p-5">
                 <Box className={cn(
                     "p-4 rounded-lg mb-4 border transition-all duration-300",
-                    twoFa
+                    tempTwoFa
                         ? darkMode ? "bg-purple-900/20 border-purple-700" : "bg-blue-50 border-blue-200"
                         : darkMode ? "bg-gray-700/50 border-gray-600" : "bg-gray-50 border-gray-200"
                 )}>
@@ -77,7 +77,7 @@ export const SecuritySection = () => {
                         control={
                             <ProfileSwitch
                                 className="mr-2 ml-1"
-                                checked={twoFa}
+                                checked={tempTwoFa}
                                 onChange={handleTwoFa}
                             />
                         }
@@ -96,7 +96,7 @@ export const SecuritySection = () => {
                     <Box className={cn(
                         "mt-4 pt-4 border-t overflow-hidden transition-all duration-300",
                         darkMode ? "border-purple-700/50" : "border-blue-200",
-                        twoFa ? 'max-h-[500px]' : "opacity-0 max-h-0 mt-0 pt-0"
+                        tempTwoFa ? 'max-h-[500px]' : "opacity-0 max-h-0 mt-0 pt-0"
                     )}>
                         <div className={cn(
                             "p-4 rounded-lg",

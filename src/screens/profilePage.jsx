@@ -29,7 +29,7 @@ const ProfilePage = () => {
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
     const [snackbarVariant, setSnackbarVariant] = useState('info');
-
+    console.log("temp",tempTwoFa)
 
     function handleProfileChange(e) {
         const { name, value } = e.target;
@@ -45,18 +45,10 @@ const ProfilePage = () => {
     };
 
     const handleSave = async () => {
-
-        if (!password) {
-            setSnackbarMessage(`Please fill in the following required fields: Password`);
-            setSnackbarVariant('error');
-            setSnackbarOpen(true);
-            return;
-        }
                 const response = await updateProfile(
                     userName,
                     email,
                     tempTwoFa,
-                    password,
                     loginId
         );
         if (response.state) {
@@ -130,8 +122,9 @@ const ProfilePage = () => {
                         <SecuritySection
                             edit={showPassword}
                             setEdit={() => setShowPassword(!showPassword)}
-                            twoFa={JSON.parse(tempTwoFa)}
                             handleTwoFa={handleTwoFa}
+                            tempTwoFa={tempTwoFa}
+                            setTempTwoFa={(e) => setTempTwoFa(e)}
                         />
                     </Box>
 

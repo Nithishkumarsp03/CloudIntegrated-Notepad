@@ -2,6 +2,7 @@ import axios from "axios";
 import { PROFILE_URL } from "../globalApi";
 
 export const EditProfile = async (name, email, two_fa, loginId) => { 
+    
     try {
         const response = await axios.post(`${PROFILE_URL}/editprofile`, {
             name,
