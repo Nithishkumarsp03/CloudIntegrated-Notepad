@@ -2,6 +2,7 @@
     
 import { useLoginStore } from "../../store/loginStore";
 import { AUTH_URL } from "../globalApi";
+import secureLocalStorage from "react-secure-storage";
     
 
 
@@ -44,7 +45,7 @@ import { AUTH_URL } from "../globalApi";
             };
         }
         finally {
-            localStorage.removeItem("twoStepToken");
+            secureLocalStorage.removeItem("twoStepToken");
             onChangeLoaders("isLoginLoading", false);
         }
     };

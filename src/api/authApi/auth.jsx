@@ -1,3 +1,4 @@
+import secureLocalStorage from "react-secure-storage";
 import { useLoginStore } from "../../store/loginStore";
 import { AuthLogin } from './login';
 import { AuthRegister } from "./register";
@@ -15,6 +16,6 @@ export const Authentication = async (type) => {
         }
     }
     finally {
-        localStorage.removeItem("password");
+        secureLocalStorage.removeItem("password");
     }   
 };

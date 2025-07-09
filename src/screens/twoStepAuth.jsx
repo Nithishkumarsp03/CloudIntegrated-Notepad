@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import useEditorStore from "../store/globalStore";
 import { useLoginStore } from "../store/loginStore";
 import { useNavbarStore } from "../store/navbarStore";
+import secureLocalStorage from "react-secure-storage";
 
 const TwoStepAuthentication = () => {
     const isUserLoggedIn = useLoginStore(state => state.isUserLoggedIn);
@@ -13,7 +14,7 @@ const TwoStepAuthentication = () => {
         
     useEffect(() => {
         if (isUserLoggedIn) {
-            let data = JSON.parse(localStorage.getItem("notes"));
+            let data = JSON.parse(secureLocalStorage.getItem("notes"));
             if (data) {
                 const uuid = data[0]?.uuid;
                 if (uuid) {
@@ -31,7 +32,7 @@ const TwoStepAuthentication = () => {
         title: ""
     });
     const [secondsRemaining, setSecondsRemaining] = useState(() => {
-        const expiryTimeString = localStorage.getItem("otpExpiryTime");
+        const expiryTimeString = secureLocalStorage.getItem("otpExpiryTime");
         if (expiryTimeString) {
             const expiryTime = parseInt(expiryTimeString);
             const now = Date.now();
@@ -44,22 +45,22 @@ const TwoStepAuthentication = () => {
     const [isTimerRunning, setIsTimerRunning] = useState(true);
     const { darkMode, setDarkMode } = useEditorStore();
     const { getNotes } = useNavbarStore();
-    const email = localStorage.getItem("email");
+    const email = secureLocalStorage.getItem("email");
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (!localStorage.getItem("otpExpiryTime")) {
+        if (!secureLocalStorage.getItem("otpExpiryTime")) {
             const expiryTime = Date.now() + (300 * 1000);
-            localStorage.setItem("otpExpiryTime", expiryTime.toString());
-            localStorage.setItem("otpInitiated", "true");
+            secureLocalStorage.setItem("otpExpiryTime", expiryTime.toString());
+            secureLocalStorage.setItem("otpInitiated", "true");
         }
     }, []);
 
     useEffect(() => {
         if (secondsRemaining > 0) {
             const expiryTime = Date.now() + (secondsRemaining * 1000);
-            localStorage.setItem("otpExpiryTime", expiryTime.toString());
-            localStorage.setItem("otpInitiated", "true");
+            secureLocalStorage.setItem("otpExpiryTime", expiryTime.toString());
+            secureLocalStorage.setItem("otpInitiated", "true");
         }
     }, [secondsRemaining]);
 
@@ -73,8 +74,8 @@ const TwoStepAuthentication = () => {
         };
 
         const handlePopState = () => {
-            localStorage.removeItem('otpExpiryTime');
-            localStorage.removeItem('otpInitiated');
+            secureLocalStorage.removeItem('otpExpiryTime');
+            secureLocalStorage.removeItem('otpInitiated');
         };
 
         window.addEventListener('beforeunload', handleBeforeUnload);
@@ -88,7 +89,7 @@ const TwoStepAuthentication = () => {
 
     useEffect(() => {
         const checkAndRequestOtp = async () => {
-            const otpInitiated = localStorage.getItem("otpInitiated");
+            const otpInitiated = secureLocalStorage.getItem("otpInitiated");
             if (!otpInitiated) {
                 await handleResendCode();
             }
@@ -141,8 +142,8 @@ const TwoStepAuthentication = () => {
                 setIsTimerRunning(true);
 
                 const expiryTime = Date.now() + (300 * 1000);
-                localStorage.setItem("otpExpiryTime", expiryTime.toString());
-                localStorage.setItem("otpInitiated", "true");
+                secureLocalStorage.setItem("otpExpiryTime", expiryTime.toString());
+                secureLocalStorage.setItem("otpInitiated", "true");
                 return true;
             } else {
                 setSnackbar({
@@ -182,8 +183,8 @@ const TwoStepAuthentication = () => {
     };
 
     const clearOtpData = () => {
-        localStorage.removeItem('otpExpiryTime');
-        localStorage.removeItem('otpInitiated');
+        secureLocalStorage.removeItem('otpExpiryTime');
+        secureLocalStorage.removeItem('otpInitiated');
     };
 
     const handleCloseSnackbar = () => {

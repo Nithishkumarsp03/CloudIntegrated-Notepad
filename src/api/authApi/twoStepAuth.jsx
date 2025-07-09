@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useLoginStore } from "../../store/loginStore";
 import { AUTH_URL } from "../globalApi";
+import secureLocalStorage from "react-secure-storage";
 
 export const TwoStepAuth = async (otp) => {
     const { email, otpToken, onChange, onChangeLoaders } = useLoginStore.getState();
@@ -24,10 +25,10 @@ export const TwoStepAuth = async (otp) => {
 
         const userData = response?.data?.userData;
         const token = response?.data?.token;
-        localStorage.setItem("token", token);
-        localStorage.setItem("userName", userData?.name);
-        localStorage.setItem("gender", userData?.gender);
-        localStorage.setItem("loginId", userData?.id);
+        secureLocalStorage.setItem("token", token);
+        secureLocalStorage.setItem("userName", userData?.name);
+        secureLocalStorage.setItem("gender", userData?.gender);
+        secureLocalStorage.setItem("loginId", userData?.id);
         onChange("isUserLoggedIn", true);
         onChange("token", token);
         onChange("userName", userData?.name);

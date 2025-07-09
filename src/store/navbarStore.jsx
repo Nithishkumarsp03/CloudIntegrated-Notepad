@@ -1,6 +1,7 @@
     import { create } from "zustand";
     import { useLoginStore } from './loginStore';
     import { AddNote, DeleteNote, EditNote, GetNotes } from "../api";
+import secureLocalStorage from "react-secure-storage";
 
 export const useNavbarStore = create((set, get) => ({
     isSideBarOpen: false,
@@ -8,7 +9,7 @@ export const useNavbarStore = create((set, get) => ({
     currentNote:"",
     notePadVisited:false,
     searchquery: "",
-    noteId:localStorage.getItem("note_id"),
+    noteId:JSON.parse(secureLocalStorage.getItem("note_id")),
     loaders: {
         isNotesLoading: false,
         isAddLoading: false,

@@ -19,6 +19,7 @@ import PersonaSelectionStep from '../components/onBoarding/components/personaSel
 import AdditionalSettingsStep from '../components/onBoarding/components/additional';
 import CompletionStep from '../components/onBoarding/components/complete';
 import ThemeToggle from '../components/onBoarding/components/theme';
+import secureLocalStorage from 'react-secure-storage';
 
 const OnboardingFlow = () => {
   // nav
@@ -55,7 +56,7 @@ const OnboardingFlow = () => {
 
   useEffect(() => {
     if (isUserLoggedIn) {
-      let data = JSON.parse(localStorage.getItem("notes"));
+      let data = JSON.parse(secureLocalStorage.getItem("notes"));
       if (data) {
         const uuid = data[0]?.uuid;
         if (uuid) {
@@ -122,7 +123,7 @@ const OnboardingFlow = () => {
   ];
 
   const handlePersonaSelect = (persona) => {
-    localStorage.setItem("categoryId", persona.id);
+    secureLocalStorage.setItem("categoryId", persona.id);
     onChange("categoryId", persona.id);
     setSelectedPersona(persona);
   };

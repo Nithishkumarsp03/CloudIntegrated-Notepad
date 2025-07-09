@@ -4,6 +4,7 @@ import useEditorStore from "../store/globalStore";
 import { useNavbarStore } from "../store/navbarStore";
 import { BackgroundDecorations, BackgroundPattern, EmptyStateContent, Footer, PageBorders } from "../components";
 import { useLoginStore } from "../store/loginStore";
+import secureLocalStorage from "react-secure-storage";
 
 const EmptyStatePage = () => {
   const navigate = useNavigate();
@@ -11,7 +12,7 @@ const EmptyStatePage = () => {
 
   useEffect(() => {
     if (isUserLoggedIn) {
-      let data = JSON.parse(localStorage.getItem("notes"));
+      let data = JSON.parse(secureLocalStorage.getItem("notes"));
       if (data) {
         const uuid = data[0]?.uuid;
         if (uuid) {

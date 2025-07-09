@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
+import secureLocalStorage from 'react-secure-storage';
 
 export const useTimer = (initialSeconds = 300) => {
     const [secondsRemaining, setSecondsRemaining] = useState(() => {
-        const expiryTimeString = localStorage.getItem("otpExpiryTime");
+        const expiryTimeString = secureLocalStorage.getItem("otpExpiryTime");
         if (expiryTimeString) {
             const expiryTime = parseInt(expiryTimeString);
             const now = Date.now();

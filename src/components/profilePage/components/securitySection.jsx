@@ -7,6 +7,7 @@ import { useLoginStore } from '../../../store/loginStore';
 import useEditorStore from '../../../store/globalStore';
 import { ResetModal } from '../../modal';
 import { ResetPassword } from '../../../api';
+import secureLocalStorage from 'react-secure-storage';
 
 export const SecuritySection = ({tempTwoFa,setTempTwoFa}) => {
 
@@ -26,14 +27,14 @@ export const SecuritySection = ({tempTwoFa,setTempTwoFa}) => {
     useEffect(() => {
         if (!timer) {
             onChange("timer", 0);
-            localStorage.setItem("timer", 0);
+            secureLocalStorage.setItem("timer", 0);
         }
      },[]);
 
     const handleTwoFa = () => {
         setTempTwoFa(!tempTwoFa);
         onChange("twoFa", !tempTwoFa);
-        localStorage.setItem("twoFa", !tempTwoFa);
+        secureLocalStorage.setItem("twoFa", !tempTwoFa);
     };
 
     const formatTime = (totalSeconds) => {
@@ -63,7 +64,7 @@ export const SecuritySection = ({tempTwoFa,setTempTwoFa}) => {
         setPasswordSent(p => ({ ...p, sent: true, loading: false, msg: `Please wait ${formatTime(timer)} to try again` }));
         startTimer(300);
     }   
-
+    console.log(tempTwoFa)
     return (
         <FormSection title="Security Settings" darkMode={darkMode}>
             <Box className="p-5">

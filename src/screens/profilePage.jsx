@@ -6,6 +6,7 @@ import { BackgroundPattern, ButtonComponent, cn, LoginSwitch, PersonalSection, P
 import { AccountManagementSection, NotificationSection } from '../components/profilePage';
 import { Check } from '@mui/icons-material';
 import useEditorStore from '../store/globalStore';
+import secureLocalStorage from 'react-secure-storage';
 
 const ProfilePage = () => {
     
@@ -14,7 +15,6 @@ const ProfilePage = () => {
     const notification = useLoginStore(state => state.notification);
     const userName = useLoginStore(state => state.userName);
     const email = useLoginStore(state => state.email);
-    const password = useLoginStore(state => state.password);
     const loginId = useLoginStore(state => state.loginId);
     const updateProfile = useLoginStore(state => state.updateProfile);
     const darkMode = useEditorStore(state => state.darkMode);
@@ -67,7 +67,7 @@ const ProfilePage = () => {
     }
 
     const handleLogout = () => {
-        localStorage.clear();
+        secureLocalStorage.clear();
         navigate('/login');
     };
 
@@ -123,7 +123,7 @@ const ProfilePage = () => {
                             edit={showPassword}
                             setEdit={() => setShowPassword(!showPassword)}
                             handleTwoFa={handleTwoFa}
-                            tempTwoFa={tempTwoFa}
+                            tempTwoFa={JSON.parse(tempTwoFa)}
                             setTempTwoFa={(e) => setTempTwoFa(e)}
                         />
                     </Box>

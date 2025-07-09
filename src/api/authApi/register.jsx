@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useLoginStore } from "../../store/loginStore";
 import { AUTH_URL } from "../globalApi";
+import secureLocalStorage from "react-secure-storage";
 
 export const AuthRegister = async (userName, email, password, twoFa, gender, categoryId ) => {
     const { onChange, onChangeLoaders } = useLoginStore.getState(); 
@@ -18,13 +19,13 @@ export const AuthRegister = async (userName, email, password, twoFa, gender, cat
 
         const token = response?.data?.token;
         const userData = response?.data?.user;
-        localStorage.setItem("token", response?.data?.token);
-        localStorage.setItem("userName", userData?.name);
-        localStorage.setItem("gender", userData?.gender);
-        localStorage.setItem("loginId", userData?.id);
-        localStorage.setItem("isUserLoggedIn", true);
-        localStorage.setItem("token", token);
-        localStorage.setItem("twoFa", `${twoFa}`);
+        secureLocalStorage.setItem("token", response?.data?.token);
+        secureLocalStorage.setItem("userName", userData?.name);
+        secureLocalStorage.setItem("gender", userData?.gender);
+        secureLocalStorage.setItem("loginId", userData?.id);
+        secureLocalStorage.setItem("isUserLoggedIn", true);
+        secureLocalStorage.setItem("token", token);
+        secureLocalStorage.setItem("twoFa", `${twoFa}`);
         onChange("twoFa", `${twoFa}`);
         onChange("token", response?.data?.token);
         onChange("userName", userData?.name);

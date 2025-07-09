@@ -5,16 +5,17 @@ import NoteItem from "./noteItems";
 import { Skeleton } from "@mui/material";
 import { useTextEditorStore } from "../../../store/textEditorStore";
 import { useNavbarStore } from "../../../store/navbarStore";
+import secureLocalStorage from "react-secure-storage";
 
 const NotesList = ({ filter, isMobile, id, setId, handleMenuClick, loading, handleuuid }) => {
     const tabSaved = useTextEditorStore(e => e.tabSaved);
     const addNoteContent = useTextEditorStore(e => e.addNoteContent);
     const noteId = useNavbarStore(e => e.noteId);
     const handleClick = (uuid, note_id) => {
-        localStorage.setItem("uuid", uuid);
-        localStorage.setItem("note_id", note_id);
+        secureLocalStorage.setItem("uuid", uuid);
+        secureLocalStorage.setItem("note_id", note_id);
         if (!tabSaved) {
-            const notes = localStorage.getItem("editorContent");
+            const notes = secureLocalStorage.getItem("editorContent");
             addNoteContent(noteId, notes);
             handleuuid(uuid, note_id);
             setId(uuid);

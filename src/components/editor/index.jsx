@@ -21,6 +21,7 @@ import { useTextEditorStore } from '../../store/textEditorStore';
 import TextEditorSkeleton from './components/editorSkeleton';
 import { useNavbarStore } from '../../store/navbarStore';
 import { LinkModal } from '../modal';
+import secureLocalStorage from 'react-secure-storage';
 
 function createDebouncedFunction(fn, delay) {
     let timer;
@@ -119,7 +120,7 @@ const Texteditor = ({ onChange }) => {
         onEditorChange("tabSaved", false);
         const html = editor.getHTML();
         console.log(html)
-        localStorage.setItem("editorContent", html);
+        secureLocalStorage.setItem("editorContent", html);
 
         if (html && debouncedSaveRef.current) {
             debouncedSaveRef.current(html);

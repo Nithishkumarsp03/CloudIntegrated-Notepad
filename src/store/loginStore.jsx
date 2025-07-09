@@ -1,26 +1,27 @@
 import { create } from "zustand";
 import { Authentication, EditProfile, OnboardingFlow, TwoStepAuth } from "../api";
+import secureLocalStorage from "react-secure-storage";
 
 export const useLoginStore = create((set, get) => ({
-    isUserLoggedIn: localStorage.getItem("isUserLoggedIn"),
-    userName: localStorage.getItem("userName"),
-    email: localStorage.getItem("email"),
-    gender: localStorage.getItem("gender"),
-    password: localStorage.getItem("password"),
-    twoFa: JSON.parse(localStorage.getItem("twoFa")),
+    isUserLoggedIn: secureLocalStorage.getItem("isUserLoggedIn"),
+    userName: secureLocalStorage.getItem("userName"),
+    email: secureLocalStorage.getItem("email"),
+    gender: secureLocalStorage.getItem("gender"),
+    password: secureLocalStorage.getItem("password"),
+    twoFa: JSON.parse(secureLocalStorage.getItem("twoFa")),
     notification: false,
-    categoryId: localStorage.getItem("categoryId"),
+    categoryId: secureLocalStorage.getItem("categoryId"),
     onBoardingData: [],
     firstLogin: false,
-    loginId: localStorage.getItem("loginId"),
-    token: localStorage.getItem("token"),
-    otpToken: localStorage.getItem("otpToken"),
-    onBoardingData: localStorage.getItem("onBoardingData"),
-    timer: parseInt(localStorage.getItem("timer"), 10),
+    loginId: secureLocalStorage.getItem("loginId"),
+    token: secureLocalStorage.getItem("token"),
+    otpToken: secureLocalStorage.getItem("otpToken"),
+    onBoardingData: secureLocalStorage.getItem("onBoardingData"),
+    timer: parseInt(secureLocalStorage.getItem("timer"), 10),
     intervalId: null,
     
     startTimer: (time) => {
-        localStorage.setItem("timer", time.toString());
+        secureLocalStorage.setItem("timer", time.toString());
         set({ timer: time });
         set({ intervalId: null });
         get().runTimer()
@@ -35,11 +36,11 @@ export const useLoginStore = create((set, get) => ({
             const currentTime = get().timer;
             if (currentTime <= 1) {
                 clearInterval(get().intervalId);
-                localStorage.setItem("timer", "0");
+                secureLocalStorage.setItem("timer", "0");
                 set({ timer: 0, intervalId: null });
             } else {
                 const updatedTime = currentTime - 1;
-                localStorage.setItem("timer", updatedTime.toString());
+                secureLocalStorage.setItem("timer", updatedTime.toString());
                 set({ timer: updatedTime });
             }
         }, 1000);
@@ -56,7 +57,7 @@ export const useLoginStore = create((set, get) => ({
     },
 
     resetAll: () => {
-        localStorage.clear();
+        secureLocalStorage.clear();
         set({
             loginName: "",
             loginEmail: "",
@@ -71,7 +72,7 @@ export const useLoginStore = create((set, get) => ({
     },
 
     persistStorage: (key, value) => {
-        localStorage.setItem(key, value);
+        secureLocalStorage.setItem(key, value);
         set({[key]:value})
     },
 
@@ -93,10 +94,10 @@ export const useLoginStore = create((set, get) => ({
         if (type === "set") {
             if (name) {
                 onChange("userName", name);
-                localStorage.setItem("userName", name);
+                secureLocalStorage.setItem("userName", name);
             }
-            localStorage.setItem("email", email);
-            localStorage.setItem("password", password);
+            secureLocalStorage.setItem("email", email);
+            secureLocalStorage.setItem("password", password);
             onChange("email", email);
             onChange("password", password);
             return;
@@ -115,7 +116,7 @@ export const useLoginStore = create((set, get) => ({
         }
         const response = await OnboardingFlow();  
         set({ onBoardingData: response });
-        localStorage.setItem("onBoardingData",JSON.stringify(response));
+        secureLocalStorage.setItem("onBoardingData",JSON.stringify(response));
         return response;
     },
 

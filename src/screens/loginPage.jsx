@@ -10,6 +10,7 @@ import { cn } from '../components/cn';
 import { useLoginStore } from '../store/loginStore';
 import { VideoComponent,LoginSwitch, LoginHeader, LoginForm, SignupForm } from '../components';
 import { Snackbar } from '../components';
+import secureLocalStorage from 'react-secure-storage';
 
 const LoginPage = () => {
 
@@ -18,7 +19,7 @@ const LoginPage = () => {
   const isMobile = useMediaQuery('(max-width:768px)');
 
   // token
-  const token = localStorage.getItem("token");
+  const token = secureLocalStorage.getItem("token");
 
   // validate login
   useEffect(() => {
@@ -220,7 +221,7 @@ const LoginPage = () => {
           })
         }
         if (response?.twoFa) {
-          localStorage.setItem("otpExpiryTime", 10);
+          secureLocalStorage.setItem("otpExpiryTime", 10);
           navigate('/twoStepAuth');
         }
         else if (response?.state) {
