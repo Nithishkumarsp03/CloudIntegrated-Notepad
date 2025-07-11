@@ -29,7 +29,7 @@ const ProfilePage = () => {
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
     const [snackbarVariant, setSnackbarVariant] = useState('info');
-    console.log("temp",tempTwoFa)
+    const [loading, setLoading] = useState(false);
 
     function handleProfileChange(e) {
         const { name, value } = e.target;
@@ -45,12 +45,14 @@ const ProfilePage = () => {
     };
 
     const handleSave = async () => {
+        setLoading(true);
                 const response = await updateProfile(
                     userName,
                     email,
                     tempTwoFa,
                     loginId
         );
+        setLoading(false)
         if (response.state) {
             setSnackbarMessage('Profile updated successfully!');
             setSnackbarVariant('success');
@@ -95,6 +97,7 @@ const ProfilePage = () => {
             <Box className="relative z-10 max-w-4xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
                 <Box className="relative z-30 mb-6">
                     <ProfileHeader
+                        loading={loading}
                         handleBack={handleBack}
                         handleSave={handleSave}
                     />

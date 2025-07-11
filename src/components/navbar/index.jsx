@@ -38,28 +38,30 @@ export const Navbar = ({ notePad }) => {
     const noteId = useNavbarStore(e => e.noteId);
     const notePadVisited = useNavbarStore(e => e.notePadVisited);
     const isSidebarOpen = useNavbarStore(e => e.isSidebarOpen);
-    
+
     const handleNavigate = useCallback((uuid, noteId) => {
         onNavbarChange("noteId", noteId);
         onNavbarChange("currentNote", uuid);
         if (uuid) {
-            onNavbarChange("cuurentNote", uuid);
+            onNavbarChange("currentNote", uuid);
             navigate(`/note-pad/${uuid}`);
         }
     }, [navigate, onNavbarChange]);
-    
+
     useEffect(() => {
         async function getNote() {
             const response = await getNotes();
             const localUuid = secureLocalStorage.getItem("uuid");
             if (localUuid && noteId && !notePad) {
-                    handleNavigate(localUuid,noteId);
-                    setId(localUuid);
-                    onNavbarChange("noteId", noteId);
-                }
-                else if (!notePad) {
-                    setId(response?.data?.notes[0]?.uuid);
-                    onNavbarChange("noteId", response?.data?.notes[0]?.id);
+                handleNavigate(localUuid, noteId);
+                onNavbarChange("currentNote", localUuid);
+                setId(localUuid);
+                onNavbarChange("noteId", noteId);
+            }
+            else if (!notePad) {
+                setId(response?.data?.notes[0]?.uuid);
+                onNavbarChange("currentNote", response?.data?.note[0]?.uuid);
+                onNavbarChange("noteId", response?.data?.notes[0]?.id);
             }
 
         }
@@ -71,7 +73,7 @@ export const Navbar = ({ notePad }) => {
             setId(localUuid);
             onNavbarChange("noteId", noteId);
         }
-    },[]);
+    }, []);
 
     const filteredData = data.filter(item =>
         item.note_name?.toLowerCase().includes(searchquery.toLowerCase())
@@ -171,17 +173,17 @@ export const Navbar = ({ notePad }) => {
                 )}
             >
                 <div className="h-full flex flex-col">
-                    {isMobile && !isSidebarOpen && (    
+                    {isMobile && !isSidebarOpen && (
                         <MobileHeader
                         />
                     )}
 
                     <NoteActions
                         notePad={notePad}
-                        loading = {loaders.isAddLoading}
+                        loading={loaders.isAddLoading}
                         setNewNote={setNewNote}
                         newNote={newNote}
-                        />
+                    />
 
                     <NotesList
                         filter={filteredData}
