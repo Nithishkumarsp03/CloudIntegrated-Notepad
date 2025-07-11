@@ -29,7 +29,7 @@ import { useNavbarStore } from '../../../store/navbarStore';
 export const ShareModal = ({ isOpen, onClose }) => {
     const uuid = useNavbarStore(state => state.currentNote);
     console.log(uuid)
-    const shareLink = `http://spnotz-lemon.vercel.app/share/${uuid}`;
+    const shareLink = `http://spnotz.vercel.app/share/${uuid}`;
     const { darkMode } = useEditorStore();
     const theme = useTheme();
     const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
