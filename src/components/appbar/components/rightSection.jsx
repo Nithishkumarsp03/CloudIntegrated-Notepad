@@ -17,6 +17,7 @@ export const RightSection = ({
 }) => {
     const navigate = useNavigate();
     const saveEditorLoading = useTextEditorStore(e => e.saveEditorLoading);
+    
     const handleProfile = () => {
         navigate('/profile');
     };

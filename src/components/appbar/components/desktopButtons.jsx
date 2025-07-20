@@ -2,6 +2,7 @@ import { StyledTooltip } from "../../toolTip";
 import { IconButton } from "@mui/material";
 import { AccountCircle } from "@mui/icons-material";
 import { Customer, SaveIcon, ShareIcon, MoonIcon, SunIcon } from "../../../assets";
+import { useParams } from "react-router-dom";
 
 export const DesktopButtons = ({
     darkMode,
@@ -11,7 +12,7 @@ export const DesktopButtons = ({
     handleProfile,
     handleCustomerMenuOpen,
 }) => {
-
+    const params = useParams();    
     return (
         <>
 
@@ -26,16 +27,16 @@ export const DesktopButtons = ({
                     }
                 </IconButton>
             </StyledTooltip>
-
-            <StyledTooltip title={"Share"}>
-                <span
-                    className="text-black dark:text-white cursor-pointer"
-                    onClick={handleShareClick}
-                >
-                    <ShareIcon size={20} />
-                </span>
-            </StyledTooltip>
-
+            {params?.id &&
+                <StyledTooltip title={"Share"}>
+                    <span
+                        className="text-black dark:text-white cursor-pointer"
+                        onClick={handleShareClick}
+                    >
+                        <ShareIcon size={20} />
+                    </span>
+                </StyledTooltip>
+            }
             <StyledTooltip title={"Download"}>
                 <IconButton
                     onClick={handleSaveClick}

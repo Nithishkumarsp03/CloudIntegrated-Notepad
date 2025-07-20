@@ -10,7 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { RenameModal, Snackbar, cn } from "../../components";
 import secureLocalStorage from "react-secure-storage";
 
-export const Navbar = ({ notePad }) => {
+export const Navbar = ({ notePad,share = true }) => {
 
     const [id, setId] = useState();
     const [anchorEl, setAnchorEl] = useState(null);

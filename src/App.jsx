@@ -26,6 +26,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path='/login' element={<LoginPage />} />
+          
           <Route path='/onBoarding-flow' element={<OnboardingFlow />} />
           <Route path='/forgotPassword' element={<ForgotPassword />} />
           <Route path='/twoStepAuth' element={<TwoStepAuthentication />} />

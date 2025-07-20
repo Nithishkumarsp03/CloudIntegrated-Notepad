@@ -3,7 +3,7 @@ import { Menu, MenuItem } from "@mui/material";
 import { ShareIcon } from "../../../assets/svgs/share";
 import { SaveIcon } from '../../../assets/svgs/save';
 import { AccountCircle, DarkMode, LightMode } from "@mui/icons-material";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 export const MobileMenu = ({
     anchorEl,
@@ -15,6 +15,7 @@ export const MobileMenu = ({
     handleSaveClick,
 }) => {
     const navigate = useNavigate();
+    const params = useParams();
     function handleProfileClick() {
         navigate('/profile');
     }
@@ -47,13 +48,14 @@ export const MobileMenu = ({
                     <span className="pl-1">{darkMode ? "Light" : "Dark"} Mode</span>
                 </div>
             </MenuItem>
-
-            <MenuItem onClick={handleShareClick} sx={{ minHeight: 'auto' }}>
-                <div className="flex items-center gap-2 text-md pl-0.5">
-                    <ShareIcon size={16} />
-                    <span className="pl-[1px]">Share</span>
-                </div>
-            </MenuItem>
+            {params?.id &&
+                <MenuItem onClick={handleShareClick} sx={{ minHeight: 'auto' }}>
+                    <div className="flex items-center gap-2 text-md pl-0.5">
+                        <ShareIcon size={16} />
+                        <span className="pl-[1px]">Share</span>
+                    </div>
+                </MenuItem>
+            }
 
             <MenuItem onClick={handleSaveClick} sx={{ minHeight: 'auto'}}>
                 <div className="flex items-center gap-2 text-md pl-[1px]">

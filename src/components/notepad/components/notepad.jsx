@@ -6,11 +6,12 @@ import { NotePadImg } from '../../../assets';
 import { ButtonComponent } from '../../button';
 import { RenameModal } from '../../modal';
 import { Snackbar } from '../../snackBar';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import secureLocalStorage from 'react-secure-storage';
 
 export const Notepad = () => {
   const navigate = useNavigate();
+  const params = useParams();
   const onNavbarChange = useNavbarStore(e => e.onNavbarChange);
   const addNote = useNavbarStore(e => e.addNote);
   const [newNote, setNewNote] = useState(false);
