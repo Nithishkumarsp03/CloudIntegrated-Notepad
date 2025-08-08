@@ -13,14 +13,17 @@ const Main = () => {
       <Appbar noteId={noteId} />
       <div className="flex flex-1 overflow-hidden relative">
         <Navbar />
-        <div className={cn(
-          "h-full p-4 pb-2 transition-all w-full duration-300 ease-in-out",
-          {
-            'w-[calc(100%-17rem)]': !isSidebarOpen,
-          }
-        )}>
+        <div
+          className={cn(
+            "h-full p-4 pb-2 transition-all w-full duration-300 ease-in-out",
+            {
+              "sm:w-[calc(100%-17rem)]": !isSidebarOpen,
+            }
+          )}
+        >
           <Texteditor noteId={noteId} />
         </div>
+
       </div>
     </div>
   );

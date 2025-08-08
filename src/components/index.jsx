@@ -48,3 +48,6 @@ export { Appbar } from './appbar';
 export { cn } from './cn';
 export { ButtonComponent } from './button';
 export { InputField } from './inputFields';
+
+// lottie animations
+export  { NoData } from './lottieAnimations/noData'

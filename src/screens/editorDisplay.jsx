@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
+    NoData,
     ProfileSwitch
 } from '../components';
 import useEditorStore from '../store/globalStore';
@@ -133,14 +134,22 @@ export const ShareNote = () => {
                         />
 
                         {!noteData && (
-                            <p className='italic dark:text-gray-400 text-gray-500'>
-                                No content to display.
-                            </p>
+                                <div className='border rounded-lg p-8 text-center flex flex-col gap-4 shadow-md dark:border-gray-700 dark:bg-gray-800/95 dark:text-white border-gray-200 bg-white/95 text-gray-800 backdrop-blur-sm'>
+                                    <div className='flex justify-center'>
+                                        <NoData />
+                                    </div>
+                                    <p className='italic dark:text-gray-400 text-gray-500'>
+                                        No notes found.
+                                    </p>
+                                </div>
                         )}
                     </div>
                 ) : (
-                    <div className='border rounded-lg p-8 shadow-md dark:border-gray-700 dark:bg-gray-800/95 dark:text-white border-gray-200 bg-white/95 text-gray-800 backdrop-blur-sm'>
-                        <p className='italic dark:text-gray-400 text-gray-500'>
+                    <div className='border rounded-lg p-8 text-center flex flex-col gap-4 shadow-md dark:border-gray-700 dark:bg-gray-800/95 dark:text-white border-gray-200 bg-white/95 text-gray-800 backdrop-blur-sm'>
+                                <div className='flex justify-center'>    
+                                    <NoData />
+                                    </div>
+                                <p className='italic dark:text-gray-400 text-gray-500'>
                             No notes found.
                         </p>
                     </div>

@@ -177,13 +177,14 @@ export const Navbar = ({ notePad,share = true }) => {
                         <MobileHeader
                         />
                     )}
-
-                    <NoteActions
+                    <div className="mt-4 sm:mt-0">
+                        <NoteActions
                         notePad={notePad}
                         loading={loaders.isAddLoading}
                         setNewNote={setNewNote}
                         newNote={newNote}
                     />
+                    </div>
 
                     <NotesList
                         filter={filteredData}
