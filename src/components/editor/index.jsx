@@ -112,18 +112,37 @@ const Texteditor = ({ onChange }) => {
         Highlight,
         Underline,
         ResizableImage,
+        // EmptyParagraphHandler, // Removed the custom extension for simplicity
     ], []);
 
     const handleUpdate = useCallback(({ editor, transaction }) => {
         if (!transaction.docChanged || isUpdatingRef.current) return;
 
         onEditorChange("tabSaved", false);
-        const html = editor.getHTML();
-        console.log(html)
-        secureLocalStorage.setItem("editorContent", html);
 
-        if (html && debouncedSaveRef.current) {
-            debouncedSaveRef.current(html);
+        // Enhanced handling for empty paragraphs and spaces
+        let htmlContent = editor.getHTML();
+
+        // Replace completely empty paragraphs with paragraphs containing a zero-width space
+        htmlContent = htmlContent.replace(/<p><\/p>/g, '<p>&#8203;</p>');
+
+        // Ensure paragraphs with only whitespace are preserved
+        htmlContent = htmlContent.replace(/<p>(\s+)<\/p>/g, '<p>$1&#8203;</p>');
+
+        // Handle multiple spaces within paragraphs
+        htmlContent = htmlContent.replace(/(<p[^>]*>)(.*?)(<\/p>)/g, (match, opening, content, closing) => {
+            // Replace multiple spaces with non-breaking spaces, but keep at least one regular space
+            const processedContent = content.replace(/  +/g, (spaces) => {
+                return spaces.split('').map((_, index) =>
+                    index === 0 ? ' ' : '&nbsp;'
+                ).join('');
+            });
+            return opening + processedContent + closing;
+        });
+
+        secureLocalStorage.setItem("editorContent", htmlContent);
+        if (htmlContent && debouncedSaveRef.current) {
+            debouncedSaveRef.current(htmlContent);
         }
     }, [onEditorChange]);
 
@@ -133,7 +152,7 @@ const Texteditor = ({ onChange }) => {
         onUpdate: handleUpdate,
         editorProps: {
             attributes: {
-                class: "w-full outline-none p-4 dark:text-white",
+                class: "w-full outline-none p-4 dark:text-white whitespace-pre-wrap", // Added whitespace-pre-wrap
                 spellcheck: "false",
             },
         },
@@ -245,12 +264,12 @@ const Texteditor = ({ onChange }) => {
                 onInsertLink={e => handleInsertLink(e)}
             />
             <div
-                className="flex-grow overflow-auto h-full w-full text-wrap  scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100 dark:scrollbar-thumb-purple-600 dark:scrollbar-track-gray-800 dark:bg-gray-800 bg-gray-50 border border-gray-300 dark:border-gray-800 rounded-lg cursor-text"
+                className="flex-grow overflow-auto h-full w-full text-wrap scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100 dark:scrollbar-thumb-purple-600 dark:scrollbar-track-gray-800 dark:bg-gray-800 bg-gray-50 border border-gray-300 dark:border-gray-800 rounded-lg cursor-text"
                 onClick={handleEditorClick}
             >
                 <EditorContent
                     editor={editor}
-                    className="h-full text-wrap whitespace-break-spaces"
+                    className="h-full text-wrap whitespace-pre-wrap" // Added whitespace-pre-wrap
                 />
             </div>
             <EditorToolKit

@@ -15,7 +15,7 @@ export const ShareNote = () => {
     const darkMode = useEditorStore(state => state.darkMode);
     const setDarkMode = useEditorStore(state => state.setDarkMode);
     const shareNote = useTextEditorStore(state => state.getShareNote);
-    console.log(params);
+
 
     useEffect(() => {
         async function getNote() {
@@ -41,15 +41,17 @@ export const ShareNote = () => {
             </div>
 
             <div className="relative z-10 py-8 px-4 h-full">
-                <div className="flex justify-between items-center mb-6">
+                <div className="flex gap-4 justify-between items-center mb-6">
                     <div className="flex items-center gap-3">
-                        <img src={logo} className="h-[72px]" />
-                        <span className="text-[25px] font-semibold font-mono dark:text-white text-gray-800">SPNotz</span>
+                        <img src={logo} className="h-[50px]  md:h-[72px]" />
+                        <span className="text-[25px] font-semibold font-mono dark:text-white text-gray-800 hidden sm:block">SPNotz</span>
                     </div>
+                    <div className='flex items-center gap-4'>
                     <h1 className='text-2xl font-bold md:ml-[-150px] font-mono dark:text-white text-gray-800 drop-shadow-sm'>
                         Shared Note
                     </h1>
-                    <ProfileSwitch checked={darkMode} onChange={setDarkMode} />
+                        <ProfileSwitch checked={darkMode} onChange={setDarkMode} />
+                    </div>
                 </div>
 
                 {loading ? (
@@ -117,7 +119,7 @@ export const ShareNote = () => {
                 ) : noteData ? (
                     <div className='border rounded-lg p-8 shadow-md dark:border-gray-700 dark:bg-gray-900/50 dark:text-white border-gray-200 bg-white/95 text-gray-800 backdrop-blur-sm'>
                         <div className='mb-6 border-b pb-4 dark:border-gray-700 border-gray-200'>
-                            <h2 className='text-xl font-mono font-semibold mb-2 dark:text-white text-gray-800'>
+                            <h2 className='text-xl font-semibold mb-2 dark:text-white text-gray-800'>
                                 {noteData.note_name}
                             </h2>
                             <p className='text-sm font-mono dark:text-gray-400 text-gray-600'>
@@ -130,7 +132,7 @@ export const ShareNote = () => {
                             dangerouslySetInnerHTML={{ __html: noteData.notes }}
                         />
 
-                        {!noteData.notes && (
+                        {!noteData && (
                             <p className='italic dark:text-gray-400 text-gray-500'>
                                 No content to display.
                             </p>
@@ -139,7 +141,7 @@ export const ShareNote = () => {
                 ) : (
                     <div className='border rounded-lg p-8 shadow-md dark:border-gray-700 dark:bg-gray-800/95 dark:text-white border-gray-200 bg-white/95 text-gray-800 backdrop-blur-sm'>
                         <p className='italic dark:text-gray-400 text-gray-500'>
-                            Failed to load note. Please try again.
+                            No notes found.
                         </p>
                     </div>
                 )}

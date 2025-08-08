@@ -1,4 +1,4 @@
-import React, { useRef, useState, useCallback } from 'react';
+import React, { useRef, useState, useCallback, useEffect } from 'react';
 import {
   Bold,
   Underline,
@@ -28,6 +28,62 @@ const EditorToolKit = ({ editor, onToolbarAction }) => {
   const [fontFamily, setFontFamily] = useState(fontFamilyOptions[0].family);
   const [fontSize, setFontSize] = useState("18px");
   const fileInputRef = useRef(null);
+
+  // Sync all toolbar states with editor's current attributes
+  useEffect(() => {
+    if (!editor) return;
+
+    const updateToolbarState = () => {
+      // Get current text style attributes
+      const textStyleAttrs = editor.getAttributes('textStyle');
+
+      // Update font family
+      const currentFontFamily = textStyleAttrs.fontFamily;
+      if (currentFontFamily) {
+        setFontFamily(currentFontFamily);
+      } else {
+        // Reset to default if no font family is set
+        setFontFamily(fontFamilyOptions[0].family);
+      }
+
+      // Update font size
+      const currentFontSize = textStyleAttrs.fontSize;
+      if (currentFontSize) {
+        setFontSize(currentFontSize);
+      } else {
+        // Reset to default if no font size is set
+        setFontSize("18px");
+      }
+    };
+
+    // Update toolbar state on selection change
+    const handleSelectionUpdate = () => {
+      updateToolbarState();
+    };
+
+    // Update toolbar state on transaction (content change)
+    const handleTransaction = () => {
+      updateToolbarState();
+    };
+
+    // Update on focus change
+    const handleFocus = () => {
+      updateToolbarState();
+    };
+
+    editor.on('selectionUpdate', handleSelectionUpdate);
+    editor.on('transaction', handleTransaction);
+    editor.on('focus', handleFocus);
+
+    // Initial update
+    updateToolbarState();
+
+    return () => {
+      editor.off('selectionUpdate', handleSelectionUpdate);
+      editor.off('transaction', handleTransaction);
+      editor.off('focus', handleFocus);
+    };
+  }, [editor]);
 
   const handleToolbarAction = useCallback((action) => {
     if (!editor) return;
@@ -86,7 +142,24 @@ const EditorToolKit = ({ editor, onToolbarAction }) => {
 
     if (editor && editor.commands.setFontFamily) {
       handleToolbarAction(() => {
+        // Always apply font family for consistency
         editor.chain().focus().setFontFamily(newFontFamily).run();
+
+        // If selection is empty (just cursor), also set it as current typing style
+        if (editor.state.selection.empty) {
+          // Force the font family to persist for new text
+          const { state } = editor;
+          const { selection } = state;
+          const { $from } = selection;
+
+          // Get current text style attributes and add font family
+          const currentAttrs = editor.getAttributes('textStyle');
+          const newAttrs = { ...currentAttrs, fontFamily: newFontFamily };
+
+          const mark = state.schema.marks.textStyle.create(newAttrs);
+          const tr = state.tr.addStoredMark(mark);
+          editor.view.dispatch(tr);
+        }
       });
     } else {
       console.warn('FontFamily extension not available in editor');
@@ -98,7 +171,14 @@ const EditorToolKit = ({ editor, onToolbarAction }) => {
     setFontSize(newFontSize);
 
     handleToolbarAction(() => {
-      editor.chain().focus().setFontSize(newFontSize).run();
+      // Apply font size to current selection or set it for new text
+      if (editor.state.selection.empty) {
+        // If no selection, set it for future typing
+        editor.chain().focus().setFontSize(newFontSize).run();
+      } else {
+        // If there's a selection, apply to selected text
+        editor.chain().focus().setFontSize(newFontSize).run();
+      }
     });
   }, [editor, handleToolbarAction]);
 
@@ -139,14 +219,8 @@ const EditorToolKit = ({ editor, onToolbarAction }) => {
     {
       name: "Link",
       icon: <Link />,
-      onClick: () => onEditorChange("linkModal",true)
+      onClick: () => onEditorChange("linkModal", true)
     },
-    // {
-    //   name: "Code",
-    //   icon: <Code />,
-    //   onClick: () => handleToolbarAction(() => editor.chain().focus().toggleCodeBlock().run()),
-    //   pressed: () => editor.isActive("codeBlock")
-    // },
     {
       name: "Upload",
       icon: <UploadFile />,
@@ -242,8 +316,6 @@ const EditorToolKit = ({ editor, onToolbarAction }) => {
       <div onMouseDown={handleMouseDown}>
         <ColorPopover editor={editor} onToolbarAction={onToolbarAction} />
       </div>
-
-
     </div>
   );
 };
