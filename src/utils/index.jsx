@@ -1,61 +1,3 @@
-export const tabsData = [
-    {
-        id: 1,
-        date: "2025-04-12",
-        data: [
-            { id: 1, title: "Meeting Notes", content: "Tab 1" },
-            { id: 2, title: "Project Ideas", content: "Tab 2" },
-            { id: 3, title: "To-Do List", content: "Tab 3" },
-        ],
-    },
-    {
-        id: 2,
-        date: "2025-04-11",
-        data: [
-            { id: 1, title: "Brainstorming", content: "Tab 1" },
-            { id: 2, title: "Research", content: "Tab 2" },
-            { id: 3, title: "Daily Journal", content: "Tab 3" },
-        ],
-    },
-    {
-        id: 3,
-        date: "2025-04-9",
-        data: [
-            { id: 1, title: "Meeting Notes", content: "Tab 1" },
-            { id: 2, title: "Project Ideas", content: "Tab 2" },
-            { id: 3, title: "To-Do List", content: "Tab 3" },
-        ],
-    },
-    {
-        id: 4,
-        date: "2025-04-8",
-        data: [
-            { id: 1, title: "Brainstorming", content: "Tab 1" },
-            { id: 2, title: "Research", content: "Tab 2" },
-            { id: 3, title: "Daily Journal", content: "Tab 3" },
-        ],
-    },
-    {
-        id: 5,
-        date: "2025-04-5",
-        data: [
-            { id: 1, title: "Meeting Notes", content: "Tab 1" },
-            { id: 2, title: "Project Ideas", content: "Tab 2" },
-            { id: 3, title: "To-Do List", content: "Tab 3" },
-        ],
-    },
-    {
-        id: 6,
-        date: "2025-03-2",
-        data: [
-            { id: 1, title: "Brainstorming", content: "Tab 1" },
-            { id: 2, title: "Research", content: "Tab 2" },
-            { id: 3, title: "Daily Journal", content: "Tab 3" },
-        ],
-    }
-];
-
-    
 export const fontFamilyOptions = [
     {
         id: 1,
@@ -122,38 +64,47 @@ export const fontFamilyOptions = [
 export const fontSizes = [
     {
         id: 1,
-        size:'8px'
+        name:"8px",
+        value:'8px'
     },
     {
         id: 2,
-        size:'10px'
+        name: "10px",
+        value:'10px'
     },
     {
         id: 3,
-        size:'12px'
+        name: "12px",
+        value:'12px'
     },
     {
         id: 4,
-        size:'14px'
+        name: "14px",
+        value:'14px'
     },
     {
         id: 5,
-        size:'16px'
+        name: "16px",
+        value:'16px'
     },
     {
         id: 6,
-        size:'18px'
+        name: "18px",
+        value:'18px'
     },
     {
         id: 7,
-        size:'20px'
+        name: "20px",
+        value:'20px'
     },
     {
         id: 8,
-        size:'22px'
+        name: "22px",
+        value:'22px'
     },
     {
         id: 9,
-        size:'24px'
+        name: "24px",
+        value:'24px'
     }
 ];

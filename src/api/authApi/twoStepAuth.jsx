@@ -1,0 +1,49 @@
+import axios from "axios";
+import { useLoginStore } from "../../store/loginStore";
+import { AUTH_URL } from "../globalApi";
+import secureLocalStorage from "react-secure-storage";
+
+export const TwoStepAuth = async (otp) => {
+    const { email, otpToken, onChange, onChangeLoaders } = useLoginStore.getState();
+
+    try {
+        onChangeLoaders("isTwoStepLoading", true);
+        const response = await axios.post(
+            `${AUTH_URL}/check-otp`,
+            {
+                email: email,
+                otp: otp,
+                otpToken: otpToken
+            },
+            {
+                headers: {
+                    authorization: `Bearer ${otpToken}`,
+                    'Content-Type': 'application/json'
+                }
+            }
+        );
+
+        const userData = response?.data?.userData;
+        const token = response?.data?.token;
+        secureLocalStorage.setItem("token", token);
+        secureLocalStorage.setItem("userName", userData?.name);
+        secureLocalStorage.setItem("gender", userData?.gender);
+        secureLocalStorage.setItem("loginId", userData?.id);
+        onChange("isUserLoggedIn", true);
+        onChange("token", token);
+        onChange("userName", userData?.name);
+        onChange("gender", userData?.gender);
+        onChange("loginId", userData?.id);
+
+        return { state: true };
+
+    } catch (err) {
+        return {
+            state: false,
+            message: err?.response?.data?.message || "Some error occurred. Try again."
+        };
+    } finally {
+        onChangeLoaders("isTwoStepLoading", false);
+        onChange("firstLogin", false);
+    }
+};
