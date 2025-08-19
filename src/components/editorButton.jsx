@@ -1,6 +1,6 @@
 import React from 'react';
 import { ButtonComponent } from './button';
-import useEditorStore from '../globalStore';
+import useEditorStore from '../store/globalStore';
 
 const EditorButton = ({ handleClick, btnText, isActive, classes }) => {
   const { darkMode } = useEditorStore();
@@ -32,7 +32,7 @@ const EditorButton = ({ handleClick, btnText, isActive, classes }) => {
     boxShadow:  0 ,
     "&:hover": {
       backgroundColor: "#4A5568",
-      color:"#6D28D9",
+      color:"#8B5CF6",
       "&:active": {
         boxShadow: 0,
         backgroundColor: "#424242",
