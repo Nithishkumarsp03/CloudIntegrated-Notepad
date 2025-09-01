@@ -142,12 +142,12 @@ const OnboardingFlow = () => {
           message: response?.message
         });
         setTimeout(() => {
-          navigate('/');
+          navigate('/login');
           setSnackBar({
             state: false,
             message: ""
           });
-        }, timeoutDuration || 7000);
+        }, 3000);
       }
       setRegister(false);
     }
