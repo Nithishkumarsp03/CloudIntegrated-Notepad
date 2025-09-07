@@ -1,11 +1,13 @@
 import React from 'react';
 import { ButtonComponent } from '../../../components';
 import useEditorStore from '../../../store/globalStore';
+import { Height } from '@mui/icons-material';
 
 const EditorButton = ({ handleClick, btnText, classes, handlePressed }) => {
   const darkMode = useEditorStore(e => e.darkMode); 
   const lightStyles = {
     minWidth: "44px",
+    height:"44px",
     padding: "11px 6px 11px 8px",
     backgroundColor: "#F3F4F6",
     borderColor: "#9CA3AF",
@@ -25,6 +27,7 @@ const EditorButton = ({ handleClick, btnText, classes, handlePressed }) => {
 
   const darkStyles = {
     minWidth: "44px",
+    height: "44px",
     padding: "11px 6px 11px 8px",
     borderColor:"#1F2937",
     borderRadius: "12px",

@@ -4,8 +4,8 @@ const StrikeThrough = (props) => (
     <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
-        width={"2em"}
-        height={"2em"}
+        width={"2.2em"}
+        height={"2.2em"}
         style={{
             transition: "all 0s ease-in-out",
             ...props.style

@@ -132,7 +132,7 @@ const OnboardingFlow = () => {
     if (step < steps.length - 1) {
       setStep(step + 1);
     } else if (!register) {
-      setRegister(true);
+        setRegister(true);
       const response = await authentication("register");
       if (response.status) {
         navigate('/notes');
