@@ -11,7 +11,7 @@ import TwoStepAuthentication from './screens/twoStepAuth';
 import { ShareNote } from './screens/editorDisplay';
 import NotePad from './screens/notePad';
 import { useLoginStore } from './store/loginStore';
-import { useEffect } from 'react';
+import { useEffect } from 'react'; 
 
 function App() {
   const timer = useLoginStore(state => state.timer);
@@ -38,7 +38,7 @@ function App() {
             <Route path='/note-pad/:id' element={<Main />} />
           </Route>
         </Routes>
-        
+
       </BrowserRouter>
     </div>
   );
