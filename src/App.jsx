@@ -38,6 +38,7 @@ function App() {
             <Route path='/note-pad/:id' element={<Main />} />
           </Route>
         </Routes>
+        
       </BrowserRouter>
     </div>
   );

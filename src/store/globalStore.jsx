@@ -9,7 +9,7 @@ const useEditorStore = create((set, get) => ({
     charactersTotalCount: 0,
     isLoading: false,
     
-    getNote: () => {
+    getNote: () => { 
         set({ isLoading: true });
         setTimeout(() => {
             set({isLoading:false})
