@@ -111,7 +111,7 @@ export const useLoginStore = create((set, get) => ({
     getOnBoardingFlow: async () => {
         const { onBoardingData } = get();
         if (onBoardingData) {
-            const data = JSON.parse(onBoardingData);
+            const data = onBoardingData;
             return data;
         }
         const response = await OnboardingFlow();  

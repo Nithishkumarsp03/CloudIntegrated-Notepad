@@ -84,24 +84,18 @@ const OnboardingFlow = () => {
   useEffect(() => {
     const fetchPersonas = async () => {
       const response = await getOnBoardingFlow();
+      console.log(response)
       if (!response.state) {
         setSnackBar({
           state: true,
           message: response.message
         });
-        setTimeout(() => {
-          navigate('/');
-          setSnackBar({
-            state: false,
-            message: response.message
-          });
-        }, timeoutDuration);
       } else {
         setPersonas(response?.data || []);
       }
     };
     fetchPersonas();
-  }, [timeoutDuration, getOnBoardingFlow, navigate]);
+  }, []);
 
   const steps = [
     {
